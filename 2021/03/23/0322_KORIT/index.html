@@ -4,7 +4,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="theme-color" content=#58b77a>
-  <title>R markdown 예제 | 이현정의 블로그</title>
+  <title>0322_KORIT | 이현정의 블로그</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="author" content="lhj">
   <meta name="keywords" content="">
@@ -69,8 +69,8 @@
   <div class="overlay">
   <div class="page-title">
     <div class="avatar"><a href="/"><img src="/images/avatar.jpeg"></a></div>
-    <span>2021-03-22</span>
-    <h2>R markdown 예제</h2>
+    <span>2021-03-23</span>
+    <h2>0322_KORIT</h2>
     
     </div>
 </div>
@@ -80,14 +80,35 @@
   <div class="lx-post">
     <div class="lx-entry padding">
       <div>
-        <h2 id="R-Markdown"><a href="#R-Markdown" class="headerlink" title="R Markdown"></a>R Markdown</h2><p>R마크다운 예제</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">summary(cars)</span><br></pre></td></tr></table></figure>
+        <h2 id="1-블로그-관리"><a href="#1-블로그-관리" class="headerlink" title="1. 블로그 관리"></a>1. 블로그 관리</h2><p>-blog 포스트나 내용을 추가 수정했을때는<br>#hexo generate<br>-제대로 동작하는지 임시 서버로 확인<br>#hexo server<br>-확인 후 배포<br>#hexo deploy</p>
+<p><em>오류 1 : ggaggu.github.io 레파지토리를 제대로 생성하지않아서 404 NOT FOUND</em><br><em>오류 2:  config_의 url은 https://주소</em></p>
+<p>-포스트 작성하기</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1) hexo new [theme]&lt;title&gt;</span><br><span class="line">2) hexo new (post: 디폴트라 안적어도됨) temp.md</span><br></pre></td></tr></table></figure>
+<h2 id="2-R-언어"><a href="#2-R-언어" class="headerlink" title="2. R 언어"></a>2. R 언어</h2><p><em>R은 통계분석하기 좋은 언어</em><br>*초보자가 입문하기 굉장히 좋은 언어. *<br>*데이터를 어떻게 시각화할지 가이드라인이 잘 나와있다. *</p>
+<ol>
+<li>기본 문법 </li>
+</ol>
+<p>변수 &lt;- 42: 자료형이 숫자<br>변수 &lt;- “char” :자료형이 문자. ===&gt; 자료형 자동으로 판별됨<br>class(변수) ===&gt; 이 변수의 자료형을 출력한다.</p>
+<p><strong>2) 벡터</strong><br>변수&lt;-c(1,2,3)==&gt; 이 변수를 벡터로 선언한다. 이 벡터는 하나의 자료형을 가짐<br>만약 전부 다른 자료형일때, 우선순위대로 변환시킨다.<br>*논리형&lt;숫자형&lt;문자형 *</p>
+<p><strong>3)factor **</strong><br><em>어떤 자료형이든 통계적으로 분석 할 수 있게 해주는 문법</em></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">factor_location &lt;- factor(location)</span><br><span class="line">   &#x3D;&#x3D;&#x3D;&gt; factor_loaction의 Levels: 부산 서울 인천</span><br></pre></td></tr></table></figure>
+<p>우선순위를 정할 수 도 있다.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">factor_location&lt;-factor(location, ordered&#x3D;TRUE, levels&#x3D;c(&quot;서울&quot;,&quot;인천&quot;,&quot;부산&quot;))</span><br><span class="line">   &#x3D;&#x3D;&#x3D;&gt; factor location의 levels&quot;서울&quot;&lt;&quot;인천&quot;&lt;&quot;부산&quot;</span><br><span class="line">   </span><br></pre></td></tr></table></figure>
 
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">##      speed           dist       </span><br><span class="line">##  Min.   : 4.0   Min.   :  2.00  </span><br><span class="line">##  1st Qu.:12.0   1st Qu.: 26.00  </span><br><span class="line">##  Median :15.0   Median : 36.00  </span><br><span class="line">##  Mean   :15.4   Mean   : 42.98  </span><br><span class="line">##  3rd Qu.:19.0   3rd Qu.: 56.00  </span><br><span class="line">##  Max.   :25.0   Max.   :120.00</span><br></pre></td></tr></table></figure>
-
-<h2 id="Including-Plots"><a href="#Including-Plots" class="headerlink" title="Including Plots"></a>Including Plots</h2><p>이미지 출력 </p>
-<p><img src="/image/r_markdown/imsi.png"></p>
-<p>Note that the <code>echo = FALSE</code> parameter was added to the code chunk to prevent printing of the R code that generated the plot.</p>
+<p><strong>4) <strong><strong><strong>ggplot</strong></strong></strong>*</strong></p>
+<ul>
+<li><p>1단계 : 패키지 불러오기</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">install.packages(&quot;ggplot2&quot;) #gglot 패키지 설치</span><br><span class="line">library(ggplot2)</span><br></pre></td></tr></table></figure></li>
+<li><p>2단계 : 데이터 불러오기 및 확인</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">data(&quot;데이터&quot;)</span><br><span class="line">str(&quot;데이터&quot;)</span><br></pre></td></tr></table></figure></li>
+<li><p>3단계 : 가공되지 않은 데이터 가공하기(시각화 위해)</p>
+</li>
+<li><p>4단계 : 시각화 하기</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ggplot(data&#x3D;iris, mapping&#x3D;aes(x&#x3D;x축이름, y&#x3D;y축 이름))+geom_point() + ... ...... </span><br><span class="line">#ggplot의 장점은 레이어 형식이란것과 틀이 주어져있다는 것. +를 사용하여 뒤에 계속 붙일수있다는게 장점이다. </span><br></pre></td></tr></table></figure>
+<p>참고 링크:<br><a target="_blank" rel="noopener" href="http://r-statistics.co/Top50-Ggplot2-Visualizations-MasterList-R-Code.html">50개의 ggplot 틀 </a></p>
+</li>
+</ul>
+<p>#심화 예제는 티스토리에 따로 포스팅.</p>
 
       </div>
     </div>
@@ -96,12 +117,12 @@
 <div class="lx-navigation">
 	<div class="lx-cover prev lx-cover-sm" style="background-image: url(//cdn.jsdelivr.net/npm/theme-lx@0.3.9/source/images/footer-l.jpeg)">
 		<div class="overlay"></div>
-		<a class="copy" href="/2021/03/23/0322_KORIT/">
+		<a class="copy" href="/2021/03/23/0319_KORIT/">
 			<div class="display-t">
 				<div class="display-tc">
 					<div>
 						<span>Next</span>
-						<h3>0322_KO...</h3>
+						<h3>0319_KO...</h3>
 					</div>
 				</div>
 			</div>
@@ -109,12 +130,12 @@
 	</div>
         <div class="lx-cover next lx-cover-sm" style="background-image: url(//cdn.jsdelivr.net/npm/theme-lx@0.3.9/source/images/footer-r.jpeg)">
 		<div class="overlay"></div>
-		<a class="copy" href="/2021/03/22/hello-world/">
+		<a class="copy" href="/2021/03/22/temp3/">
 			<div class="display-t">
 				<div class="display-tc">
 					<div>
 						<span>Prev</span>
-						<h3>Hello W...</h3>
+						<h3>R markd...</h3>
 					</div>
 				</div>
 			</div>
