@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="theme-color" content=#58b77a>
+  <title>단순 회귀모형 실습 | 이현정의 블로그</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="lhj">
+  <meta name="keywords" content="">
+  <meta name="description" content="">
+  <script id="hexo-configurations">
+  var CONFIG = {
+    root: '/',
+    theme: 'lx',
+    version: '0.3.9',
+    localsearch:{
+      "enable": false,
+      "trigger": "auto",
+      "top_n_per_article": 1,
+      "unescape": false,
+      "preload": false
+      },
+    path: 'null'
+  };
+</script>
+
+  <link rel="shortcut icon" href="/favicon.ico">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/theme-lx@0.3.9/source/css/main.min.css">
+  <style type="text/css">
+    pre,
+    code {
+      font-family: 'Fira Code', monospace;
+    }
+    html {
+      font-family: sans-serif;
+    }
+    body {
+      font-family: sans-serif;
+    }
+    h1, h2, h3, h4, h5, figure {
+      font-family: sans-serif;
+    }
+    .menu-container{
+      font-family: sans-serif;
+    }
+  </style>
+
+  <script src="//cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/theme-lx@0.3.9/source/js/jquery.jside.menu.js"></script>
+	<script>
+	$(document).ready(function(){
+	$(".menu-container").jSideMenu({
+	    jSidePosition: "position-right",
+	    jSideSticky: true,
+	    jSideSkin: "greenish",
+	     });
+	}); 
+	</script>
+  
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Fira Code:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+<meta name="generator" content="Hexo 5.4.0"></head>
+<body>
+<div class="single">
+
+<div id="page">
+<div id="lx-aside" style="background-image: url(//cdn.jsdelivr.net/npm/theme-lx@0.3.9/source/images/post_cover.jpeg)" data-stellar-background-ratio="0.5">
+  <div class="overlay">
+  <div class="page-title">
+    <div class="avatar"><a href="/"><img src="/images/avatar.jpeg"></a></div>
+    <span>2021-03-31</span>
+    <h2>단순 회귀모형 실습</h2>
+    
+    </div>
+</div>
+</div>
+
+<div id="lx-main-content">
+  <div class="lx-post">
+    <div class="lx-entry padding">
+      <div>
+        <h3 id="단순-회귀분석-예제"><a href="#단순-회귀분석-예제" class="headerlink" title="단순 회귀분석 예제"></a>단순 회귀분석 예제</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">data(cars)</span><br><span class="line">head(cars)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">##   speed dist</span><br><span class="line">## 1     4    2</span><br><span class="line">## 2     4   10</span><br><span class="line">## 3     7    4</span><br><span class="line">## 4     7   22</span><br><span class="line">## 5     8   16</span><br><span class="line">## 6     9   10</span><br></pre></td></tr></table></figure>
+<p>독립변수는 speed이고, 종속 변수는 dist라고 본다.</p>
+<p>식은 dist(Y)=X0+X1*(speed)+e</p>
+<p>이 데이터를 회귀분석한다. </p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">m1&lt;-lm(dist~speed,cars)</span><br><span class="line">summary(m1)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">## </span><br><span class="line">## Call:</span><br><span class="line">## lm(formula &#x3D; dist ~ speed, data &#x3D; cars)</span><br><span class="line">## </span><br><span class="line">## Residuals:</span><br><span class="line">##     Min      1Q  Median      3Q     Max </span><br><span class="line">## -29.069  -9.525  -2.272   9.215  43.201 </span><br><span class="line">## </span><br><span class="line">## Coefficients:</span><br><span class="line">##             Estimate Std. Error t value Pr(&gt;|t|)    </span><br><span class="line">## (Intercept) -17.5791     6.7584  -2.601   0.0123 *  </span><br><span class="line">## speed         3.9324     0.4155   9.464 1.49e-12 ***</span><br><span class="line">## ---</span><br><span class="line">## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span><br><span class="line">## </span><br><span class="line">## Residual standard error: 15.38 on 48 degrees of freedom</span><br><span class="line">## Multiple R-squared:  0.6511,	Adjusted R-squared:  0.6438 </span><br><span class="line">## F-statistic: 89.57 on 1 and 48 DF,  p-value: 1.49e-12</span><br></pre></td></tr></table></figure>
+
+<p><em>여기서 Intercept는 y절편을 의미한다. x0 = -17.579</em></p>
+<p><em>speed는 회귀선의 기울기를 의미한다. x1 = 3.932</em></p>
+<p>그래서 식은 dist(Y)=-17.579 + (3.932)*(speed)+e 로 구해질 수 있다.<br>유의수준 5%하에서 F-통계량의 p-값이 0.05보다 작기때문에 추정된 회귀식은 통계적으로<br>유의하다고 볼 수 있다.</p>
+<p>이렇게 추정한 회귀모형을 그래프로 소개하고자 한다.</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">library(ggplot2)</span><br><span class="line">ggplot(m1,aes(x=speed,y=dist))+</span><br><span class="line">  geom_point(shape=<span class="number">1</span>)+<span class="comment">#중앙이 빈 동그라미 만들기 shape=1</span></span><br><span class="line">  stat_smooth(method=<span class="string">&#x27;lm&#x27;</span>,se=<span class="built_in">F</span>) <span class="comment">#단순선형회귀분석옵션method=&#x27;lm&#x27;,se=F 표준오차를 표현하지않는다는 것. </span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">## &#96;geom_smooth()&#96; using formula &#39;y ~ x&#39;</span><br></pre></td></tr></table></figure>
+
+<p><img src="0330_%EB%8B%A8%EC%88%9C%ED%9A%8C%EA%B7%80%EB%AA%A8%ED%98%95_files/figure-html/unnamed-chunk-3-1.png"><!-- --></p>
+<p>이 회귀선이 타당한지 보기위해 회귀식과 모형간의 잔차를 따로 구할 수 있다.</p>
+<p>그리고, 이 잔차가 정규 분포를 따르는지 확인한다.</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">res_m1&lt;-residuals(m1)</span><br><span class="line">shapiro.test(res_m1)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">## </span><br><span class="line">## 	Shapiro-Wilk normality test</span><br><span class="line">## </span><br><span class="line">## data:  res_m1</span><br><span class="line">## W &#x3D; 0.94509, p-value &#x3D; 0.02152</span><br></pre></td></tr></table></figure>
+<p><em>귀무가설: 정규분포를 따르지 않는다.</em></p>
+<p><em>대립가설: 정규분포를 따른다.</em></p>
+<p>여기서 p-value가  0.02152 기 때문에, 귀무가설을 기각할 수 있고 따라서 이 회귀선의 잔차는 정규분포를 따른다. </p>
+<h1 id="이-모형은-회귀가정들을-만족할까"><a href="#이-모형은-회귀가정들을-만족할까" class="headerlink" title="이 모형은 회귀가정들을 만족할까?"></a><strong>이 모형은 회귀가정들을 만족할까?</strong></h1><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">par(mfrow=<span class="built_in">c</span>(<span class="number">2</span>,<span class="number">2</span>))</span><br><span class="line">plot(m1)</span><br></pre></td></tr></table></figure>
+
+<p><img src="0330_%EB%8B%A8%EC%88%9C%ED%9A%8C%EA%B7%80%EB%AA%A8%ED%98%95_files/figure-html/unnamed-chunk-5-1.png"><!-- --></p>
+<p>왼쪽 위의 그림을 보면 그래프의 기울기가 거의 0에 가까우므로 <em>선형성 가정</em>을 만족한다.</p>
+<p>오른쪽 위의 그림을 보면 23,35,40 을 제외한 값들은 *잔차 정규성(정상성)*이 확인된다.</p>
+<p>왼쪽 아래의 그림을 보면 그래프의 기울기가 거의 0에 가까우므로 <em>등분산성 가정</em>을 만족한다.</p>
+<p>오른쪽 밑의 그림에서는 23번과 49번의 이상치가 확인된다. </p>
+<p>독립성 가정을 만족하는지 확인하기 위해 durbinWatson 검정을 시행한다.</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#install.packages(&quot;durbinWatsonTest&quot;)</span></span><br><span class="line">library(car)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">## Loading required package: carData</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">durbinWatsonTest(m1)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">##  lag Autocorrelation D-W Statistic p-value</span><br><span class="line">##    1       0.1604322      1.676225   0.214</span><br><span class="line">##  Alternative hypothesis: rho !&#x3D; 0</span><br></pre></td></tr></table></figure>
+
+<p><em>귀무가설: 잔차들 사이에 자기상관관계가 없다.</em><br><em>대립가설: 잔차가 자기상관관계가 있다.</em></p>
+<p>여기서 p-value가 매우 크므로, 귀무가설을 채택하여 잔차들 사이에 상관관계가 없다는 뜻이다. 그러므로 독립성을 만족한다.</p>
+<p> <strong>모든 가설을 만족하므로 이 회귀분석은 타당하다고 할 수 있다.</strong></p>
+
+      </div>
+    </div>
+  </div>
+</div>
+<div class="lx-navigation">
+	<div class="lx-cover prev lx-cover-sm" style="background-image: url(//cdn.jsdelivr.net/npm/theme-lx@0.3.9/source/images/footer-l.jpeg)">
+		<div class="overlay"></div>
+		<a class="copy" href="#">
+			<div class="display-t">
+				<div class="display-tc">
+					<div>
+						<span>Next</span>
+						<h3>No newer post</h3>
+					</div>
+				</div>
+			</div>
+		</a>
+	</div>
+        <div class="lx-cover next lx-cover-sm" style="background-image: url(//cdn.jsdelivr.net/npm/theme-lx@0.3.9/source/images/footer-r.jpeg)">
+		<div class="overlay"></div>
+		<a class="copy" href="/2021/03/29/0329_KORIT/">
+			<div class="display-t">
+				<div class="display-tc">
+					<div>
+						<span>Prev</span>
+						<h3>빅데이터_시각...</h3>
+					</div>
+				</div>
+			</div>
+		</a>
+	</div>
+</div>
+
+</div>
+
+<footer>
+  <div>
+  Copyright &copy; 2021.<a href="/">이현정의 블로그</a><br>Powered by <a href="https://hexo.io" target="_blank">Hexo</a> | Theme <a href="https://lx.js.org" target="_blank">Lx</a><br>
+  </div>
+</footer>
+
+</div>
+
+<button class="hamburger hamburger--arrow-r" type="button">
+    <div class="hamburger-box">
+      <div class="hamburger-inner"></div>
+    </div>
+</button> 
+<div class="menu visibility">
+  <div class="menu-head">
+    <span class="layer">
+      <div class="col">
+        <div class="row for-pic">
+          <div class="profile-pic">
+            <a href="/"><img src="/images/avatar.jpeg" alt="lhj"/></a>
+          </div>
+        </div>
+        <div class="row for-name">
+          <p>lhj</p>
+          <span class="tagline">Hello, World!</span>
+        </div>
+      </div>
+    </span>
+  </div>
+  <nav class="menu-container">
+  <ul class="menu-items">
+    <li><a href="/"><i class="fa fa-home fa-fw"></i>Home</a></li>
+    <li><a href="/archives/"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
+    
+    <li class="has-sub"><span class="dropdown-heading">
+      <i class="fa fa-bookmark fa-fw"></i>Pages</span>
+        <ul>
+          <li><a href="/guestbook/">Guestbook</a></li>
+        <li><a href="/about/">About</a></li>
+        </ul>
+    </li>
+    <li class="has-sub"><span class="dropdown-heading">
+      <i class="fa fa-link fa-fw"></i>Friends</span>
+        <ul>
+          <li> <a href="https://lx.js.org" target="_blank">Theme-Lx</a></li>
+        </ul>
+    </li>
+  </ul>
+  </nav>
+</div>
+
+<div class="gototop js-top">
+  <a href="#" class="js-gotop"><i class="fa fa-arrow-up"></i></a>
+</div>
+<script src="//cdn.jsdelivr.net/npm/theme-lx@0.3.9/source/js/jquery.easing.min.js"></script>
+<script>
+(function () {
+	"use strict";
+	var goToTop = function() {
+		$(".js-gotop").on("click", function(event){
+			event.preventDefault();
+			$("html, body").animate({
+				scrollTop: $("html").offset().top
+			}, 500, "easeInOutExpo");
+			return false;
+		});
+		$(window).scroll(function(){
+			var $win = $(window);
+			if ($win.scrollTop() > 200) {
+				$(".js-top").addClass("active");
+			} else {
+				$(".js-top").removeClass("active");
+			}
+		});
+	};
+	$(function(){
+		goToTop();
+	});
+}());
+</script>
+
+
+</body>
+</html>

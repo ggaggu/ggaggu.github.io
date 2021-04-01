@@ -81,6 +81,60 @@
 
   <div class="lx-entry padding">
     <div>
+      <h2 class="title"><a href="/2021/03/31/0330_%EB%8B%A8%EC%88%9C%ED%9A%8C%EA%B7%80%EB%AA%A8%ED%98%95/">단순 회귀모형 실습</a></h2>
+      <span class="lx-post-detail"><i class="fa fa-calendar-o"></i> 2021-03-31</span>
+      <p><h3 id="단순-회귀분석-예제"><a href="#단순-회귀분석-예제" class="headerlink" title="단순 회귀분석 예제"></a>단순 회귀분석 예제</h3><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">data(cars)</span><br><span class="line">head(cars)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">##   speed dist</span><br><span class="line">## 1     4    2</span><br><span class="line">## 2     4   10</span><br><span class="line">## 3     7    4</span><br><span class="line">## 4     7   22</span><br><span class="line">## 5     8   16</span><br><span class="line">## 6     9   10</span><br></pre></td></tr></table></figure>
+<p>독립변수는 speed이고, 종속 변수는 dist라고 본다.</p>
+<p>식은 dist(Y)=X0+X1*(speed)+e</p>
+<p>이 데이터를 회귀분석한다. </p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">m1&lt;-lm(dist~speed,cars)</span><br><span class="line">summary(m1)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">## </span><br><span class="line">## Call:</span><br><span class="line">## lm(formula &#x3D; dist ~ speed, data &#x3D; cars)</span><br><span class="line">## </span><br><span class="line">## Residuals:</span><br><span class="line">##     Min      1Q  Median      3Q     Max </span><br><span class="line">## -29.069  -9.525  -2.272   9.215  43.201 </span><br><span class="line">## </span><br><span class="line">## Coefficients:</span><br><span class="line">##             Estimate Std. Error t value Pr(&gt;|t|)    </span><br><span class="line">## (Intercept) -17.5791     6.7584  -2.601   0.0123 *  </span><br><span class="line">## speed         3.9324     0.4155   9.464 1.49e-12 ***</span><br><span class="line">## ---</span><br><span class="line">## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</span><br><span class="line">## </span><br><span class="line">## Residual standard error: 15.38 on 48 degrees of freedom</span><br><span class="line">## Multiple R-squared:  0.6511,	Adjusted R-squared:  0.6438 </span><br><span class="line">## F-statistic: 89.57 on 1 and 48 DF,  p-value: 1.49e-12</span><br></pre></td></tr></table></figure>
+
+<p><em>여기서 Intercept는 y절편을 의미한다. x0 = -17.579</em></p>
+<p><em>speed는 회귀선의 기울기를 의미한다. x1 = 3.932</em></p>
+<p>그래서 식은 dist(Y)=-17.579 + (3.932)*(speed)+e 로 구해질 수 있다.<br>유의수준 5%하에서 F-통계량의 p-값이 0.05보다 작기때문에 추정된 회귀식은 통계적으로<br>유의하다고 볼 수 있다.</p>
+<p>이렇게 추정한 회귀모형을 그래프로 소개하고자 한다.</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">library(ggplot2)</span><br><span class="line">ggplot(m1,aes(x=speed,y=dist))+</span><br><span class="line">  geom_point(shape=<span class="number">1</span>)+<span class="comment">#중앙이 빈 동그라미 만들기 shape=1</span></span><br><span class="line">  stat_smooth(method=<span class="string">&#x27;lm&#x27;</span>,se=<span class="built_in">F</span>) <span class="comment">#단순선형회귀분석옵션method=&#x27;lm&#x27;,se=F 표준오차를 표현하지않는다는 것. </span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">## &#96;geom_smooth()&#96; using formula &#39;y ~ x&#39;</span><br></pre></td></tr></table></figure>
+
+<p><img src="0330_%EB%8B%A8%EC%88%9C%ED%9A%8C%EA%B7%80%EB%AA%A8%ED%98%95_files/figure-html/unnamed-chunk-3-1.png"><!-- --></p>
+<p>이 회귀선이 타당한지 보기위해 회귀식과 모형간의 잔차를 따로 구할 수 있다.</p>
+<p>그리고, 이 잔차가 정규 분포를 따르는지 확인한다.</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">res_m1&lt;-residuals(m1)</span><br><span class="line">shapiro.test(res_m1)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">## </span><br><span class="line">## 	Shapiro-Wilk normality test</span><br><span class="line">## </span><br><span class="line">## data:  res_m1</span><br><span class="line">## W &#x3D; 0.94509, p-value &#x3D; 0.02152</span><br></pre></td></tr></table></figure>
+<p><em>귀무가설: 정규분포를 따르지 않는다.</em></p>
+<p><em>대립가설: 정규분포를 따른다.</em></p>
+<p>여기서 p-value가  0.02152 기 때문에, 귀무가설을 기각할 수 있고 따라서 이 회귀선의 잔차는 정규분포를 따른다. </p>
+<h1 id="이-모형은-회귀가정들을-만족할까"><a href="#이-모형은-회귀가정들을-만족할까" class="headerlink" title="이 모형은 회귀가정들을 만족할까?"></a><strong>이 모형은 회귀가정들을 만족할까?</strong></h1><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">par(mfrow=<span class="built_in">c</span>(<span class="number">2</span>,<span class="number">2</span>))</span><br><span class="line">plot(m1)</span><br></pre></td></tr></table></figure>
+
+<p><img src="0330_%EB%8B%A8%EC%88%9C%ED%9A%8C%EA%B7%80%EB%AA%A8%ED%98%95_files/figure-html/unnamed-chunk-5-1.png"><!-- --></p>
+<p>왼쪽 위의 그림을 보면 그래프의 기울기가 거의 0에 가까우므로 <em>선형성 가정</em>을 만족한다.</p>
+<p>오른쪽 위의 그림을 보면 23,35,40 을 제외한 값들은 *잔차 정규성(정상성)*이 확인된다.</p>
+<p>왼쪽 아래의 그림을 보면 그래프의 기울기가 거의 0에 가까우므로 <em>등분산성 가정</em>을 만족한다.</p>
+<p>오른쪽 밑의 그림에서는 23번과 49번의 이상치가 확인된다. </p>
+<p>독립성 가정을 만족하는지 확인하기 위해 durbinWatson 검정을 시행한다.</p>
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#install.packages(&quot;durbinWatsonTest&quot;)</span></span><br><span class="line">library(car)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">## Loading required package: carData</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">durbinWatsonTest(m1)</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">##  lag Autocorrelation D-W Statistic p-value</span><br><span class="line">##    1       0.1604322      1.676225   0.214</span><br><span class="line">##  Alternative hypothesis: rho !&#x3D; 0</span><br></pre></td></tr></table></figure>
+
+<p><em>귀무가설: 잔차들 사이에 자기상관관계가 없다.</em><br><em>대립가설: 잔차가 자기상관관계가 있다.</em></p>
+<p>여기서 p-value가 매우 크므로, 귀무가설을 채택하여 잔차들 사이에 상관관계가 없다는 뜻이다. 그러므로 독립성을 만족한다.</p>
+<p> <strong>모든 가설을 만족하므로 이 회귀분석은 타당하다고 할 수 있다.</strong></p>
+</p>
+      <div class="post-button"><a class="btn" href="/2021/03/31/0330_%EB%8B%A8%EC%88%9C%ED%9A%8C%EA%B7%80%EB%AA%A8%ED%98%95/" rel="noopener"><i class="fa fa-angle-double-right fa-fw"></i>Read More</a></div>
+    </div>
+  </div>
+  <div class="lx-entry padding">
+    <div>
       <h2 class="title"><a href="/2021/03/29/0329_KORIT/">빅데이터_시각화_0329_이현정</a></h2>
       <span class="lx-post-detail"><i class="fa fa-calendar-o"></i> 2021-03-29</span>
       <p><h2 id="통계학-강의"><a href="#통계학-강의" class="headerlink" title="통계학 강의"></a>통계학 강의</h2><p>귀무 가설 : 어떠한 가설이 <em>관련성이 없다고</em> 가정한다.<br>대립 가설 : 어떠한 가설이 <em>관련성이 있다고</em> 가정한다.<br>X-squared: 어떠한 기준점을 갖고 통계량을 구해서 대립/귀무 가설중에 고르는 지표<br>p-value (유의 확률) : 귀무 가설이 맞다는 전제하에 표본에서 실제로 관측된 통계치와 같거나 더 극단적인 통계치가 관측될 확률. 특정값(0.05,0.01등)보다 작을 경우 귀무가설을 기각한다.(대립 가설 채택) 하지만 높게 나오면 귀무가설을 채택한다.</p>
