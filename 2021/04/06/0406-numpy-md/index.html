@@ -4,7 +4,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="theme-color" content=#58b77a>
-  <title>R markdown 예제 | 이현정의 블로그</title>
+  <title>리스트 vs 튜플 | 이현정의 블로그</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="author" content="lhj">
   <meta name="keywords" content="">
@@ -69,8 +69,8 @@
   <div class="overlay">
   <div class="page-title">
     <div class="avatar"><a href="/"><img src="/images/avatar.jpeg"></a></div>
-    <span>2021-03-22</span>
-    <h2>R markdown 예제</h2>
+    <span>2021-04-06</span>
+    <h2>리스트 vs 튜플</h2>
     
     </div>
 </div>
@@ -80,14 +80,15 @@
   <div class="lx-post">
     <div class="lx-entry padding">
       <div>
-        <h2 id="R-Markdown"><a href="#R-Markdown" class="headerlink" title="R Markdown"></a>R Markdown</h2><p>R마크다운 예제</p>
-<figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">summary(cars)</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">##      speed           dist       </span><br><span class="line">##  Min.   : 4.0   Min.   :  2.00  </span><br><span class="line">##  1st Qu.:12.0   1st Qu.: 26.00  </span><br><span class="line">##  Median :15.0   Median : 36.00  </span><br><span class="line">##  Mean   :15.4   Mean   : 42.98  </span><br><span class="line">##  3rd Qu.:19.0   3rd Qu.: 56.00  </span><br><span class="line">##  Max.   :25.0   Max.   :120.00</span><br></pre></td></tr></table></figure>
-
-<h2 id="Including-Plots"><a href="#Including-Plots" class="headerlink" title="Including Plots"></a>Including Plots</h2><p>이미지 출력 </p>
-<p><img src="/image/r_markdown/imsi.png"></p>
-<p>Note that the <code>echo = FALSE</code> parameter was added to the code chunk to prevent printing of the R code that generated the plot.</p>
+        <h2 id="리스트와-튜플의-차이점이-무-엇일까"><a href="#리스트와-튜플의-차이점이-무-엇일까" class="headerlink" title="리스트와 튜플의 차이점이 무 엇일까?"></a>리스트와 튜플의 차이점이 무 엇일까?</h2><h1 id="1-리스트와-튜플"><a href="#1-리스트와-튜플" class="headerlink" title="1. 리스트와 튜플"></a>1. 리스트와 튜플</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">my_list&#x3D;[1,2,3]</span><br><span class="line">print(my_list)</span><br><span class="line"></span><br><span class="line">my_tuple&#x3D;(1,2,3)</span><br><span class="line">print(my_tuple)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>둘 다 타입과 상관 없이 일련의 요소(element)를 갖을 수 있다.<br>두 타입 모두 요소의 순서를 관리한다. (세트(set)나 딕셔너리(dict)와 다르게 말이다.)</p>
+<h1 id="2-리스트와-튜플의-차이"><a href="#2-리스트와-튜플의-차이" class="headerlink" title="2. 리스트와 튜플의 차이"></a>2. 리스트와 튜플의 차이</h1><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">my_list[1]&#x3D;&quot;two&quot;</span><br><span class="line">print(my_list)</span><br><span class="line"></span><br><span class="line">my_tuple[1]&#x3D;&quot;two&quot; #error!</span><br></pre></td></tr></table></figure>
+<p>리스트와 튜플의 기술적 차이점은 불변성에 있다.<br>리스트는 가변적(mutable, 변경 가능)이며 튜플은 불변적(immutable, 변경 불가)이다.</p>
+<h1 id="4-튜플의-특징과-장점"><a href="#4-튜플의-특징과-장점" class="headerlink" title="4. 튜플의 특징과 장점?"></a>4. 튜플의 특징과 장점?</h1><h2 id="인덱스-요소마다-의미가-있다면-tuple로"><a href="#인덱스-요소마다-의미가-있다면-tuple로" class="headerlink" title="인덱스 요소마다 의미가 있다면, tuple로!"></a>인덱스 요소마다 의미가 있다면, tuple로!</h2><p>리스트는 리스트 안의 요소가 불확실한 경우에 주로 사용한다.<br>하지만 튜플은 들어있는 요소의 수와 종류를 사전에 정확히 알고 있을 경우에 사용한다.<br>why? 각 요소의 위치가 큰 의미를 갖고있기 때문에.</p>
+<p>튜플은 구조체(struct)같은 특징을 지닌다.<br>그래서, 다양한 타입을 저장하는 경우에 자주 사용된다. </p>
+<h2 id="튜플은-공간효율성이-좋다"><a href="#튜플은-공간효율성이-좋다" class="headerlink" title="튜플은 공간효율성이 좋다."></a>튜플은 공간효율성이 좋다.</h2><p>리스트는 요소를 추가하는 동작을 빠르게 수행할 수 있도록 더 많은 공간을 저장해둔다.<br>하지만 튜플은 고정적이기때문에 공간을 많이 차지하지않는다.</p>
+<h2 id="튜플은-얕은-복사"><a href="#튜플은-얕은-복사" class="headerlink" title="튜플은 얕은 복사"></a>튜플은 얕은 복사</h2><p>리스트는 객체를 복사할 경우에 새로운 객체로 복사가 된다.<br>하지만 튜플은 서로 id가 같은 객체로 복사가 된다.<br>새로운 메모리에 값을 할당하는게 아닌, 복사된 변수가 원본과 같은 객체를 가리키고 있다는 뜻이다. </p>
+<h1 id="3-그렇다면-언제-tuple을-쓰는가"><a href="#3-그렇다면-언제-tuple을-쓰는가" class="headerlink" title="3. 그렇다면 언제 tuple을 쓰는가?"></a>3. 그렇다면 언제 tuple을 쓰는가?</h1><p>빠른 연산속도라는 장점을 지니고 있는 튜플은 읽기 전용데이터에 많이 쓰인다.<br>또한 원소로 다양한 타입을 저장하는 경우에도 자주쓰인다.</p>
 
       </div>
     </div>
@@ -96,12 +97,12 @@
 <div class="lx-navigation">
 	<div class="lx-cover prev lx-cover-sm" style="background-image: url(//cdn.jsdelivr.net/npm/theme-lx@0.3.9/source/images/footer-l.jpeg)">
 		<div class="overlay"></div>
-		<a class="copy" href="/2021/03/23/%EB%B9%85%EB%8D%B0%EC%9D%B4%ED%84%B0_%EC%8B%9C%EA%B0%81%ED%99%94_0323_%EC%9D%B4%ED%98%84%EC%A0%95/">
+		<a class="copy" href="#">
 			<div class="display-t">
 				<div class="display-tc">
 					<div>
 						<span>Next</span>
-						<h3>빅데이터 시각...</h3>
+						<h3>No newer post</h3>
 					</div>
 				</div>
 			</div>
@@ -109,12 +110,12 @@
 	</div>
         <div class="lx-cover next lx-cover-sm" style="background-image: url(//cdn.jsdelivr.net/npm/theme-lx@0.3.9/source/images/footer-r.jpeg)">
 		<div class="overlay"></div>
-		<a class="copy" href="/2021/03/22/hello-world/">
+		<a class="copy" href="/2021/03/31/0330_%EB%8B%A8%EC%88%9C%ED%9A%8C%EA%B7%80%EB%AA%A8%ED%98%95/">
 			<div class="display-t">
 				<div class="display-tc">
 					<div>
 						<span>Prev</span>
-						<h3>Hello W...</h3>
+						<h3>단순 회귀모형...</h3>
 					</div>
 				</div>
 			</div>

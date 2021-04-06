@@ -4,7 +4,7 @@
   <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="theme-color" content=#58b77a>
-  <title>빅데이터_시각화_0329_이현정 | 이현정의 블로그</title>
+  <title>빅데이터 시각화 시험 | 이현정의 블로그</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="author" content="lhj">
   <meta name="keywords" content="">
@@ -70,7 +70,7 @@
   <div class="page-title">
     <div class="avatar"><a href="/"><img src="/images/avatar.jpeg"></a></div>
     <span>2021-03-29</span>
-    <h2>빅데이터_시각화_032...</h2>
+    <h2>빅데이터 시각화 시험</h2>
     
     </div>
 </div>
@@ -102,7 +102,7 @@
 
 <figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">summary(data) <span class="comment">#수치형의 기술통계형</span></span><br></pre></td></tr></table></figure>
 
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">##     resident         gender          age            level      </span><br><span class="line">##  Min.   :1.000   Min.   :0.00   Min.   :40.00   Min.   :1.000  </span><br><span class="line">##  1st Qu.:1.000   1st Qu.:1.00   1st Qu.:48.00   1st Qu.:1.000  </span><br><span class="line">##  Median :2.000   Median :1.00   Median :53.00   Median :2.000  </span><br><span class="line">##  Mean   :2.233   Mean   :1.42   Mean   :53.88   Mean   :1.836  </span><br><span class="line">##  3rd Qu.:3.000   3rd Qu.:2.00   3rd Qu.:60.00   3rd Qu.:2.000  </span><br><span class="line">##  Max.   :5.000   Max.   :5.00   Max.   :69.00   Max.   :3.000  </span><br><span class="line">##  NA&#39;s   :21                                     NA&#39;s   :13     </span><br><span class="line">##       cost               type          survey          pass      </span><br><span class="line">##  Min.   :-457.200   Min.   :1.00   Min.   :1.00   Min.   :1.000  </span><br><span class="line">##  1st Qu.:   4.425   1st Qu.:1.00   1st Qu.:2.00   1st Qu.:1.000  </span><br><span class="line">##  Median :   5.400   Median :1.00   Median :3.00   Median :1.000  </span><br><span class="line">##  Mean   :   8.752   Mean   :1.27   Mean   :2.61   Mean   :1.432  </span><br><span class="line">##  3rd Qu.:   6.300   3rd Qu.:2.00   3rd Qu.:3.00   3rd Qu.:2.000  </span><br><span class="line">##  Max.   : 675.000   Max.   :2.00   Max.   :5.00   Max.   :2.000  </span><br><span class="line">##  NA&#39;s   :30         NA&#39;s   :26     NA&#39;s   :113    NA&#39;s   :20</span><br></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">##     resident         gender          age            level      </span><br><span class="line">##  Min.   :1.000   Min.   :0.00   Min.   :40.00   Min.   :1.000  </span><br><span class="line">##  1st Qu.:1.000   1st Qu.:1.00   1st Qu.:48.00   1st Qu.:1.000  </span><br><span class="line">##  Median :2.000   Median :1.00   Median :53.00   Median :2.000  </span><br><span class="line">##  Mean   :2.233   Mean   :1.42   Mean   :53.88   Mean   :1.836  </span><br><span class="line">##  3rd Qu.:3.000   3rd Qu.:2.00   3rd Qu.:60.00   3rd Qu.:2.000  </span><br><span class="line">##  Max.   :5.000   Max.   :5.00   Max.   :69.00   Max.   :3.000  </span><br><span class="line">##  NA&#39;s   :21                                     NA&#39;s   :13     </span><br><span class="line">##       cost               type          survey          pass      </span><br><span class="line">##  Min.   :-457.200   Min.   :1.00   Min.   :1.00   Min.   :1.000  </span><br><span class="line">##  1st Qu.:   4.425   1st Qu.:1.00   1st Qu.:2.00   1st Qu.:1.000  </span><br><span class="line">##  Median :   5.400   Median :1.00   Median :3.00   Median :1.000  </span><br><span class="line">##  Mean   :   8.752   Mean   :1.27   Mean   :2.61   Mean   :1.432  </span><br><span class="line"></span><br><span class="line">##  3rd Qu.:   6.300   3rd Qu.:2.00   3rd Qu.:3.00   3rd Qu.:2.000  </span><br><span class="line">##  Max.   : 675.000   Max.   :2.00   Max.   :5.00   Max.   :2.000  </span><br><span class="line">##  NA&#39;s   :30         NA&#39;s   :26     NA&#39;s   :113    NA&#39;s   :20</span><br></pre></td></tr></table></figure>
 
 <figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># 위 소스를 실행하고 나면, 각 갈럼 최대, 최소, 평균, 중간 값을 확인할 수 있다. </span></span><br><span class="line"><span class="comment"># NA&#x27;s는 각 데이터의 Missing Values를 의미한다. </span></span><br><span class="line"></span><br><span class="line"><span class="comment">## gender를 확인해보자.</span></span><br><span class="line">summary(data$gender)</span><br></pre></td></tr></table></figure>
 
@@ -389,7 +389,7 @@
 				<div class="display-tc">
 					<div>
 						<span>Prev</span>
-						<h3>빅데이터_시각...</h3>
+						<h3>빅데이터 시각...</h3>
 					</div>
 				</div>
 			</div>
