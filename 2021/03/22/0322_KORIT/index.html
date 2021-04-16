@@ -1,24 +1,701 @@
-extends ./includes/layout.pug
-include ./mixins/postItem.pug
-include ./mixins/horizontalLine.pug
+
+<!DOCTYPE html>
+<html lang="en">
+    
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="generator" content="이현정의 블로그">
+    <title>0322_KORIT - 이현정의 블로그</title>
+    <meta name="author" content="lhj">
+    
+    
+    
+    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"lhj","sameAs":["https://github.com/","http://stackoverflow.com/users","https://twitter.com/","https://facebook.com/","https://plus.google.com/","https://www.linkedin.com/profile/","mailto"]},"articleBody":"1. 블로그 관리-blog 포스트나 내용을 추가 수정했을때는#hexo generate-제대로 동작하는지 임시 서버로 확인#hexo server-확인 후 배포#hexo deploy\n오류 1 : ggaggu.github.io 레파지토리를 제대로 생성하지않아서 404 NOT FOUND오류 2:  config_의 url은 https://주소\n-포스트 작성하기\n121) hexo new [theme]&lt;title&gt;2) hexo new (post: 디폴트라 안적어도됨) temp.md\n2. R 언어R은 통계분석하기 좋은 언어*초보자가 입문하기 굉장히 좋은 언어. **데이터를 어떻게 시각화할지 가이드라인이 잘 나와있다. *\n\n기본 문법 \n\n변수 &lt;- 42: 자료형이 숫자변수 &lt;- “char” :자료형이 문자. ===&gt; 자료형 자동으로 판별됨class(변수) ===&gt; 이 변수의 자료형을 출력한다.\n2) 벡터변수&lt;-c(1,2,3)==&gt; 이 변수를 벡터로 선언한다. 이 벡터는 하나의 자료형을 가짐만약 전부 다른 자료형일때, 우선순위대로 변환시킨다.*논리형&lt;숫자형&lt;문자형 *\n3)factor **어떤 자료형이든 통계적으로 분석 할 수 있게 해주는 문법\n12factor_location &lt;- factor(location)   &#x3D;&#x3D;&#x3D;&gt; factor_loaction의 Levels: 부산 서울 인천\n우선순위를 정할 수 도 있다.\n123factor_location&lt;-factor(location, ordered&#x3D;TRUE, levels&#x3D;c(&quot;서울&quot;,&quot;인천&quot;,&quot;부산&quot;))   &#x3D;&#x3D;&#x3D;&gt; factor location의 levels&quot;서울&quot;&lt;&quot;인천&quot;&lt;&quot;부산&quot;   \n\n4) ggplot*\n\n1단계 : 패키지 불러오기\n12install.packages(&quot;ggplot2&quot;) #gglot 패키지 설치library(ggplot2)\n2단계 : 데이터 불러오기 및 확인\n12data(&quot;데이터&quot;)str(&quot;데이터&quot;)\n3단계 : 가공되지 않은 데이터 가공하기(시각화 위해)\n\n4단계 : 시각화 하기\n12ggplot(data&#x3D;iris, mapping&#x3D;aes(x&#x3D;x축이름, y&#x3D;y축 이름))+geom_point() + ... ...... #ggplot의 장점은 레이어 형식이란것과 틀이 주어져있다는 것. +를 사용하여 뒤에 계속 붙일수있다는게 장점이다. \n참고 링크:50개의 ggplot 틀 \n\n\n#심화 예제는 티스토리에 따로 포스팅.\n","dateCreated":"2021-03-22T00:00:00+09:00","dateModified":"2021-03-29T17:25:45+09:00","datePublished":"2021-03-22T00:00:00+09:00","description":"","headline":"0322_KORIT","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"https://ggaggu.github.io/2021/03/22/0322_KORIT/"},"publisher":{"@type":"Organization","name":"lhj","sameAs":["https://github.com/","http://stackoverflow.com/users","https://twitter.com/","https://facebook.com/","https://plus.google.com/","https://www.linkedin.com/profile/","mailto"]},"url":"https://ggaggu.github.io/2021/03/22/0322_KORIT/"}</script>
+    <meta name="description" content="1. 블로그 관리-blog 포스트나 내용을 추가 수정했을때는#hexo generate-제대로 동작하는지 임시 서버로 확인#hexo server-확인 후 배포#hexo deploy 오류 1 : ggaggu.github.io 레파지토리를 제대로 생성하지않아서 404 NOT FOUND오류 2:  config_의 url은 https:&#x2F;&#x2F;주소 -포스트 작성하기 12">
+<meta property="og:type" content="blog">
+<meta property="og:title" content="0322_KORIT">
+<meta property="og:url" content="https://ggaggu.github.io/2021/03/22/0322_KORIT/index.html">
+<meta property="og:site_name" content="이현정의 블로그">
+<meta property="og:description" content="1. 블로그 관리-blog 포스트나 내용을 추가 수정했을때는#hexo generate-제대로 동작하는지 임시 서버로 확인#hexo server-확인 후 배포#hexo deploy 오류 1 : ggaggu.github.io 레파지토리를 제대로 생성하지않아서 404 NOT FOUND오류 2:  config_의 url은 https:&#x2F;&#x2F;주소 -포스트 작성하기 12">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2021-03-21T15:00:00.000Z">
+<meta property="article:modified_time" content="2021-03-29T08:25:45.260Z">
+<meta property="article:author" content="lhj">
+<meta name="twitter:card" content="summary">
+    
+    
+        
+    
+    
+    
+    
+    
+    <!--STYLES-->
+    
+<link rel="stylesheet" href="/assets/css/all.css">
+
+    
+<link rel="stylesheet" href="/assets/css/jquery.fancybox.css">
+
+    
+<link rel="stylesheet" href="/assets/css/thumbs.css">
+
+    
+<link rel="stylesheet" href="/assets/css/tranquilpeak.css">
+
+    <!--STYLES END-->
+    
+
+    
+
+    
+        
+    
+</head>
+
+    <body>
+        <div id="blog">
+            <!-- Define author's picture -->
 
 
-block content
-  .main
-    include ./includes/location-bar.pug
-    .main__2-col
-      article.post-view__article
-        .article__infomation
-          - const post = { date: page.date, tags: page.tags, title: page.title, path: ''}
-          +postItem(post)
-        .article__content
-          != page.content
-      .post-view__sidebar
-        include includes/sidebar.pug
-    +horizontalLine('1px')
-    .main__bottom
-      include includes/pre-next.pug
-      if page.content && theme.comment && theme.comment.enable
-        #comments
+    
+
+<header id="header" data-behavior="4">
+    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
+    <div class="header-title">
+        <a
+            class="header-title-link"
+            href="/"
+            aria-label=""
+        >
+            이현정의 블로그
+        </a>
+    </div>
+    
+        
+            <a
+                class="header-right-picture "
+                href="#about"
+                aria-label="Open the link: /#about"
+            >
+        
+        
+        </a>
+    
+</header>
+
+            <!-- Define author's picture -->
 
 
+<nav id="sidebar" data-behavior="4">
+    <div class="sidebar-container">
+        
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/"
+                            
+                            rel="noopener"
+                            title="Home"
+                        >
+                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Home</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-categories"
+                            
+                            rel="noopener"
+                            title="Categories"
+                        >
+                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Categories</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-tags"
+                            
+                            rel="noopener"
+                            title="Tags"
+                        >
+                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Tags</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/all-archives"
+                            
+                            rel="noopener"
+                            title="Archives"
+                        >
+                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Archives</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link open-algolia-search"
+                            href="#search"
+                            
+                            rel="noopener"
+                            title="Search"
+                        >
+                        <i class="sidebar-button-icon fa fa-search" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Search</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="#about"
+                            
+                            rel="noopener"
+                            title="About"
+                        >
+                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">About</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="https://github.com/"
+                            
+                                target="_blank"
+                            
+                            rel="noopener"
+                            title="GitHub"
+                        >
+                        <i class="sidebar-button-icon fab fa-github" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">GitHub</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="http://stackoverflow.com/users"
+                            
+                                target="_blank"
+                            
+                            rel="noopener"
+                            title="Stack Overflow"
+                        >
+                        <i class="sidebar-button-icon fab fa-stack-overflow" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Stack Overflow</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="https://twitter.com/"
+                            
+                                target="_blank"
+                            
+                            rel="noopener"
+                            title="Twitter"
+                        >
+                        <i class="sidebar-button-icon fab fa-twitter" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Twitter</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="https://facebook.com/"
+                            
+                                target="_blank"
+                            
+                            rel="noopener"
+                            title="Facebook"
+                        >
+                        <i class="sidebar-button-icon fab fa-facebook" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Facebook</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="https://plus.google.com/"
+                            
+                                target="_blank"
+                            
+                            rel="noopener"
+                            title="Google +"
+                        >
+                        <i class="sidebar-button-icon fab fa-google-plus" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Google +</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="https://www.linkedin.com/profile/"
+                            
+                                target="_blank"
+                            
+                            rel="noopener"
+                            title="LinkedIn"
+                        >
+                        <i class="sidebar-button-icon fab fa-linkedin" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">LinkedIn</span>
+                    </a>
+            </li>
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/mailto"
+                            
+                            rel="noopener"
+                            title="Mail"
+                        >
+                        <i class="sidebar-button-icon fa fa-envelope" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">Mail</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+            <ul class="sidebar-buttons">
+            
+                <li class="sidebar-button">
+                    
+                        <a
+                            class="sidebar-button-link "
+                            href="/atom.xml"
+                            
+                            rel="noopener"
+                            title="RSS"
+                        >
+                        <i class="sidebar-button-icon fa fa-rss" aria-hidden="true"></i>
+                        <span class="sidebar-button-desc">RSS</span>
+                    </a>
+            </li>
+            
+        </ul>
+        
+    </div>
+</nav>
+
+            
+            <div id="main" data-behavior="4"
+                 class="
+                        hasCoverMetaIn
+                        ">
+                
+<article class="post">
+    
+    
+        <div class="post-header main-content-wrap text-left">
+    
+        <h1 class="post-title">
+            0322_KORIT
+        </h1>
+    
+    
+        <div class="post-meta">
+    <time datetime="2021-03-22T00:00:00+09:00">
+	
+		    Mar 22, 2021
+    	
+    </time>
+    
+</div>
+
+    
+</div>
+
+    
+    <div class="post-content markdown">
+        <div class="main-content-wrap">
+            <h2 id="1-블로그-관리"><a href="#1-블로그-관리" class="headerlink" title="1. 블로그 관리"></a>1. 블로그 관리</h2><p>-blog 포스트나 내용을 추가 수정했을때는<br>#hexo generate<br>-제대로 동작하는지 임시 서버로 확인<br>#hexo server<br>-확인 후 배포<br>#hexo deploy</p>
+<p><em>오류 1 : ggaggu.github.io 레파지토리를 제대로 생성하지않아서 404 NOT FOUND</em><br><em>오류 2:  config_의 url은 https://주소</em></p>
+<p>-포스트 작성하기</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1) hexo new [theme]&lt;title&gt;</span><br><span class="line">2) hexo new (post: 디폴트라 안적어도됨) temp.md</span><br></pre></td></tr></table></figure>
+<h2 id="2-R-언어"><a href="#2-R-언어" class="headerlink" title="2. R 언어"></a>2. R 언어</h2><p><em>R은 통계분석하기 좋은 언어</em><br>*초보자가 입문하기 굉장히 좋은 언어. *<br>*데이터를 어떻게 시각화할지 가이드라인이 잘 나와있다. *</p>
+<ol>
+<li>기본 문법 </li>
+</ol>
+<p>변수 &lt;- 42: 자료형이 숫자<br>변수 &lt;- “char” :자료형이 문자. ===&gt; 자료형 자동으로 판별됨<br>class(변수) ===&gt; 이 변수의 자료형을 출력한다.</p>
+<p><strong>2) 벡터</strong><br>변수&lt;-c(1,2,3)==&gt; 이 변수를 벡터로 선언한다. 이 벡터는 하나의 자료형을 가짐<br>만약 전부 다른 자료형일때, 우선순위대로 변환시킨다.<br>*논리형&lt;숫자형&lt;문자형 *</p>
+<p><strong>3)factor **</strong><br><em>어떤 자료형이든 통계적으로 분석 할 수 있게 해주는 문법</em></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">factor_location &lt;- factor(location)</span><br><span class="line">   &#x3D;&#x3D;&#x3D;&gt; factor_loaction의 Levels: 부산 서울 인천</span><br></pre></td></tr></table></figure>
+<p>우선순위를 정할 수 도 있다.</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">factor_location&lt;-factor(location, ordered&#x3D;TRUE, levels&#x3D;c(&quot;서울&quot;,&quot;인천&quot;,&quot;부산&quot;))</span><br><span class="line">   &#x3D;&#x3D;&#x3D;&gt; factor location의 levels&quot;서울&quot;&lt;&quot;인천&quot;&lt;&quot;부산&quot;</span><br><span class="line">   </span><br></pre></td></tr></table></figure>
+
+<p><strong>4) <strong><strong><strong>ggplot</strong></strong></strong>*</strong></p>
+<ul>
+<li><p>1단계 : 패키지 불러오기</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">install.packages(&quot;ggplot2&quot;) #gglot 패키지 설치</span><br><span class="line">library(ggplot2)</span><br></pre></td></tr></table></figure></li>
+<li><p>2단계 : 데이터 불러오기 및 확인</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">data(&quot;데이터&quot;)</span><br><span class="line">str(&quot;데이터&quot;)</span><br></pre></td></tr></table></figure></li>
+<li><p>3단계 : 가공되지 않은 데이터 가공하기(시각화 위해)</p>
+</li>
+<li><p>4단계 : 시각화 하기</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ggplot(data&#x3D;iris, mapping&#x3D;aes(x&#x3D;x축이름, y&#x3D;y축 이름))+geom_point() + ... ...... </span><br><span class="line">#ggplot의 장점은 레이어 형식이란것과 틀이 주어져있다는 것. +를 사용하여 뒤에 계속 붙일수있다는게 장점이다. </span><br></pre></td></tr></table></figure>
+<p>참고 링크:<br><a target="_blank" rel="noopener" href="http://r-statistics.co/Top50-Ggplot2-Visualizations-MasterList-R-Code.html">50개의 ggplot 틀 </a></p>
+</li>
+</ul>
+<p>#심화 예제는 티스토리에 따로 포스팅.</p>
+
+            
+
+
+        </div>
+    </div>
+    <div id="post-footer" class="post-footer main-content-wrap">
+        
+        
+            <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2021/03/22/hello-world/"
+                    data-tooltip="Hello World"
+                    aria-label="PREVIOUS: Hello World"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2021/03/19/0319_KORIT/"
+                    data-tooltip="0319_KORIT"
+                    aria-label="NEXT: 0319_KORIT"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Share this post"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://ggaggu.github.io/2021/03/22/0322_KORIT/"
+                    title="Share on Facebook"
+                    aria-label="Share on Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=https://ggaggu.github.io/2021/03/22/0322_KORIT/"
+                    title="Share on Twitter"
+                    aria-label="Share on Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=https://ggaggu.github.io/2021/03/22/0322_KORIT/"
+                    title="Share on Google+"
+                    aria-label="Share on Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Back to top">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+        
+        
+            
+        
+    </div>
+</article>
+
+
+
+                <footer id="footer" class="main-content-wrap">
+    <span class="copyrights">
+        Copyrights &copy; 2021 lhj. All Rights Reserved.
+    </span>
+</footer>
+
+            </div>
+            
+                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
+                    <div class="post-actions-wrap">
+    <nav>
+        <ul class="post-actions post-action-nav">
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2021/03/22/hello-world/"
+                    data-tooltip="Hello World"
+                    aria-label="PREVIOUS: Hello World"
+                >
+                    
+                        <i class="fa fa-angle-left" aria-hidden="true"></i>
+                        <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
+                    </a>
+            </li>
+            <li class="post-action">
+                
+                    
+                <a
+                    class="post-action-btn btn btn--default tooltip--top"
+                    href="/2021/03/19/0319_KORIT/"
+                    data-tooltip="0319_KORIT"
+                    aria-label="NEXT: 0319_KORIT"
+                >
+                    
+                        <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
+                        <i class="fa fa-angle-right" aria-hidden="true"></i>
+                    </a>
+            </li>
+        </ul>
+    </nav>
+    <ul class="post-actions post-action-share">
+        <li class="post-action hide-lg hide-md hide-sm">
+            <a
+                class="post-action-btn btn btn--default btn-open-shareoptions"
+                href="#btn-open-shareoptions"
+                aria-label="Share this post"
+            >
+                <i class="fa fa-share-alt" aria-hidden="true"></i>
+            </a>
+        </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://ggaggu.github.io/2021/03/22/0322_KORIT/"
+                    title="Share on Facebook"
+                    aria-label="Share on Facebook"
+                >
+                    <i class="fab fa-facebook" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://twitter.com/intent/tweet?text=https://ggaggu.github.io/2021/03/22/0322_KORIT/"
+                    title="Share on Twitter"
+                    aria-label="Share on Twitter"
+                >
+                    <i class="fab fa-twitter" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+            
+            
+            <li class="post-action hide-xs">
+                <a
+                    class="post-action-btn btn btn--default"
+                    target="new" href="https://plus.google.com/share?url=https://ggaggu.github.io/2021/03/22/0322_KORIT/"
+                    title="Share on Google+"
+                    aria-label="Share on Google+"
+                >
+                    <i class="fab fa-google-plus" aria-hidden="true"></i>
+                </a>
+            </li>
+        
+        
+            
+        
+        <li class="post-action">
+            
+                <a class="post-action-btn btn btn--default" href="#" aria-label="Back to top">
+            
+                <i class="fa fa-list" aria-hidden="true"></i>
+            </a>
+        </li>
+    </ul>
+</div>
+
+
+                </div>
+                
+    <div id="share-options-bar" class="share-options-bar" data-behavior="4">
+        <i id="btn-close-shareoptions" class="fa fa-times"></i>
+        <ul class="share-options">
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://www.facebook.com/sharer/sharer.php?u=https://ggaggu.github.io/2021/03/22/0322_KORIT/"
+                        aria-label="Share on Facebook"
+                    >
+                        <i class="fab fa-facebook" aria-hidden="true"></i><span>Share on Facebook</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://twitter.com/intent/tweet?text=https://ggaggu.github.io/2021/03/22/0322_KORIT/"
+                        aria-label="Share on Twitter"
+                    >
+                        <i class="fab fa-twitter" aria-hidden="true"></i><span>Share on Twitter</span>
+                    </a>
+                </li>
+            
+                
+                
+                <li class="share-option">
+                    <a
+                        class="share-option-btn"
+                        target="new"
+                        href="https://plus.google.com/share?url=https://ggaggu.github.io/2021/03/22/0322_KORIT/"
+                        aria-label="Share on Google+"
+                    >
+                        <i class="fab fa-google-plus" aria-hidden="true"></i><span>Share on Google+</span>
+                    </a>
+                </li>
+            
+        </ul>
+    </div>
+
+
+            
+        </div>
+        
+
+
+<div id="about">
+    <div id="about-card">
+        <div id="about-btn-close">
+            <i class="fa fa-times"></i>
+        </div>
+        
+            <h4 id="about-card-name">lhj</h4>
+        
+            <div id="about-card-bio"><p>author.bio</p>
+</div>
+        
+        
+            <div id="about-card-job">
+                <i class="fa fa-briefcase"></i>
+                <br/>
+                <p>author.job</p>
+
+            </div>
+        
+        
+    </div>
+</div>
+
+        
+        
+<div id="cover" style="background-image:url('/assets/images/cover.jpg');"></div>
+        <!--SCRIPTS-->
+
+<script src="/assets/js/jquery.js"></script>
+
+
+<script src="/assets/js/jquery.fancybox.js"></script>
+
+
+<script src="/assets/js/thumbs.js"></script>
+
+
+<script src="/assets/js/tranquilpeak.js"></script>
+
+<!--SCRIPTS END-->
+
+
+    
+
+
+
+
+    </body>
+</html>
