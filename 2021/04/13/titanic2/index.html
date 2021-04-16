@@ -1,354 +1,86 @@
-
 <!DOCTYPE html>
 <html lang="en">
-    
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="generator" content="이현정의 블로그">
-    <title> - 이현정의 블로그</title>
-    <meta name="author" content="lhj">
-    
-    
-    
-    <script type="application/ld+json">{"@context":"http://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"lhj","sameAs":["https://github.com/","http://stackoverflow.com/users","https://twitter.com/","https://facebook.com/","https://plus.google.com/","https://www.linkedin.com/profile/","mailto"]},"articleBody":"Titanic data결정 트리, 랜덤포레스트, XGBoost, lightBGM, CATBoost 비교\n전처리1!pip install catboost\n\nCollecting catboost\n\u001b[?25l  Downloading https://files.pythonhosted.org/packages/47/80/8e9c57ec32dfed6ba2922bc5c96462cbf8596ce1a6f5de532ad1e43e53fe/catboost-0.25.1-cp37-none-manylinux1_x86_64.whl (67.3MB)\n\u001b[K     |████████████████████████████████| 67.3MB 57kB/s \n\u001b[?25hRequirement already satisfied: plotly in /usr/local/lib/python3.7/dist-packages (from catboost) (4.4.1)\nRequirement already satisfied: scipy in /usr/local/lib/python3.7/dist-packages (from catboost) (1.4.1)\nRequirement already satisfied: numpy&gt;=1.16.0 in /usr/local/lib/python3.7/dist-packages (from catboost) (1.19.5)\nRequirement already satisfied: matplotlib in /usr/local/lib/python3.7/dist-packages (from catboost) (3.2.2)\nRequirement already satisfied: six in /usr/local/lib/python3.7/dist-packages (from catboost) (1.15.0)\nRequirement already satisfied: pandas&gt;=0.24.0 in /usr/local/lib/python3.7/dist-packages (from catboost) (1.1.5)\nRequirement already satisfied: graphviz in /usr/local/lib/python3.7/dist-packages (from catboost) (0.10.1)\nRequirement already satisfied: retrying&gt;=1.3.3 in /usr/local/lib/python3.7/dist-packages (from plotly-&gt;catboost) (1.3.3)\nRequirement already satisfied: kiwisolver&gt;=1.0.1 in /usr/local/lib/python3.7/dist-packages (from matplotlib-&gt;catboost) (1.3.1)\nRequirement already satisfied: pyparsing!=2.0.4,!=2.1.2,!=2.1.6,&gt;=2.0.1 in /usr/local/lib/python3.7/dist-packages (from matplotlib-&gt;catboost) (2.4.7)\nRequirement already satisfied: cycler&gt;=0.10 in /usr/local/lib/python3.7/dist-packages (from matplotlib-&gt;catboost) (0.10.0)\nRequirement already satisfied: python-dateutil&gt;=2.1 in /usr/local/lib/python3.7/dist-packages (from matplotlib-&gt;catboost) (2.8.1)\nRequirement already satisfied: pytz&gt;=2017.2 in /usr/local/lib/python3.7/dist-packages (from pandas&gt;=0.24.0-&gt;catboost) (2018.9)\nInstalling collected packages: catboost\nSuccessfully installed catboost-0.25.1\n\n1234567891011121314151617181920212223import osimport randomimport numpy as npimport pandas as pdimport matplotlib.pyplot as pltimport seaborn as snsimport xgboost as xgbimport lightgbm as lgbmimport catboost as cbfrom sklearn.model_selection import train_test_split, GridSearchCVfrom sklearn.metrics import accuracy_scorefrom sklearn.tree import DecisionTreeClassifierfrom sklearn.ensemble import RandomForestClassifierfrom sklearn.preprocessing import LabelEncoderfrom sklearn.preprocessing import StandardScalerfrom sklearn.linear_model import LogisticRegressionfrom sklearn.svm import SVCfrom sklearn.ensemble import AdaBoostClassifierfrom sklearn.neighbors import KNeighborsClassifierfrom sklearn import metrics    from sklearn.model_selection import RandomizedSearchCV\n\n\n12345678def set_seed(seed_value):    random.seed(seed_value)    np.random.seed(seed_value)    os.environ[&quot;PYTHONHASHSEED&quot;] = str(seed_value)    SEED = 42set_seed(SEED)\n\n\n1234train_df = pd.read_csv(&#x27;/content/sample_data/titanic_train.csv&#x27;)test_df = pd.read_csv(&#x27;/content/sample_data/titanic_test.csv&#x27;)print(f&quot;Train shape: &#123;train_df.shape&#125;&quot;)train_df.sample(3)\n\nTrain shape: (891, 12)\n\n\n\n    .dataframe tbody tr th:only-of-type {\n        vertical-align: middle;\n    }\n\n.dataframe tbody tr th &#123;\n    vertical-align: top;\n&#125;\n\n.dataframe thead th &#123;\n    text-align: right;\n&#125;\n\n\n\n  \n    \n      \n      PassengerId\n      Survived\n      Pclass\n      Name\n      Sex\n      Age\n      SibSp\n      Parch\n      Ticket\n      Fare\n      Cabin\n      Embarked\n    \n  \n  \n    \n      709\n      710\n      1\n      3\n      Moubarek, Master. Halim Gonios (\"William George\")\n      male\n      NaN\n      1\n      1\n      2661\n      15.2458\n      NaN\n      C\n    \n    \n      439\n      440\n      0\n      2\n      Kvillner, Mr. Johan Henrik Johannesson\n      male\n      31.0\n      0\n      0\n      C.A. 18723\n      10.5000\n      NaN\n      S\n    \n    \n      840\n      841\n      0\n      3\n      Alhomaki, Mr. Ilmari Rudolf\n      male\n      20.0\n      0\n      0\n      SOTON/O2 3101287\n      7.9250\n      NaN\n      S\n    \n  \n\n\n\n\n\n\n12print(f&quot;Test shape: &#123;test_df.shape&#125;&quot;)test_df.sample(3)\n\nTest shape: (418, 11)\n\n\n\n    .dataframe tbody tr th:only-of-type {\n        vertical-align: middle;\n    }\n\n.dataframe tbody tr th &#123;\n    vertical-align: top;\n&#125;\n\n.dataframe thead th &#123;\n    text-align: right;\n&#125;\n\n\n\n  \n    \n      \n      PassengerId\n      Pclass\n      Name\n      Sex\n      Age\n      SibSp\n      Parch\n      Ticket\n      Fare\n      Cabin\n      Embarked\n    \n  \n  \n    \n      20\n      912\n      1\n      Rothschild, Mr. Martin\n      male\n      55.00\n      1\n      0\n      PC 17603\n      59.40\n      NaN\n      C\n    \n    \n      338\n      1230\n      2\n      Denbury, Mr. Herbert\n      male\n      25.00\n      0\n      0\n      C.A. 31029\n      31.50\n      NaN\n      S\n    \n    \n      250\n      1142\n      2\n      West, Miss. Barbara J\n      female\n      0.92\n      1\n      2\n      C.A. 34651\n      27.75\n      NaN\n      S\n    \n  \n\n\n\n\n\n\n1234567full_df = pd.concat(    [        train_df.drop([&quot;PassengerId&quot;, &quot;Survived&quot;], axis=1),         test_df.drop([&quot;PassengerId&quot;], axis=1),    ])y_train = train_df[&quot;Survived&quot;].values\n\n\n1full_df.isna().sum()\n\n\n\n\nPclass         0\nName           0\nSex            0\nAge          263\nSibSp          0\nParch          0\nTicket         0\nFare           1\nCabin       1014\nEmbarked       2\ndtype: int64\n\n1full_df = full_df.drop([&quot;Age&quot;, &quot;Cabin&quot;], axis=1)\n\n\n12345678910111213plt.figure(figsize=(10, 5))plt.subplot(1, 2, 1)plt.hist(full_df[&quot;Fare&quot;], bins=20)plt.xticks(fontsize=14)plt.yticks(fontsize=14)plt.title(&quot;Fare distribution&quot;, fontsize=16)plt.subplot(1, 2, 2)embarked_info = full_df[&quot;Embarked&quot;].value_counts()plt.bar(embarked_info.index, embarked_info.values)plt.xticks(fontsize=14)plt.yticks(fontsize=14)plt.title(&quot;Embarked distribution&quot;, fontsize=16);\n\n\n\n12full_df[&quot;Embarked&quot;].fillna(&quot;S&quot;, inplace=True)full_df[&quot;Fare&quot;].fillna(full_df[&quot;Fare&quot;].mean(), inplace=True)\n\n\n12345full_df[&quot;Title&quot;] = full_df[&quot;Name&quot;].str.extract(&quot; ([A-Za-z]+)\\.&quot;)full_df[&quot;Title&quot;] = full_df[&quot;Title&quot;].replace([&quot;Ms&quot;, &quot;Mlle&quot;], &quot;Miss&quot;)full_df[&quot;Title&quot;] = full_df[&quot;Title&quot;].replace([&quot;Mme&quot;, &quot;Countess&quot;, &quot;Lady&quot;, &quot;Dona&quot;], &quot;Mrs&quot;)full_df[&quot;Title&quot;] = full_df[&quot;Title&quot;].replace([&quot;Dr&quot;, &quot;Major&quot;, &quot;Col&quot;, &quot;Sir&quot;, &quot;Rev&quot;, &quot;Jonkheer&quot;, &quot;Capt&quot;, &quot;Don&quot;], &quot;Mr&quot;)full_df = full_df.drop([&quot;Name&quot;], axis=1)\n\n\n123full_df[&quot;Sex&quot;] = full_df[&quot;Sex&quot;].map(&#123;&quot;male&quot;: 1, &quot;female&quot;: 0&#125;).astype(int)    full_df[&quot;Embarked&quot;] = full_df[&quot;Embarked&quot;].map(&#123;&quot;S&quot;: 1, &quot;C&quot;: 2, &quot;Q&quot;: 3&#125;).astype(int)    full_df[&#x27;Title&#x27;] = full_df[&#x27;Title&#x27;].map(&#123;&quot;Mr&quot;: 0, &quot;Miss&quot;: 1, &quot;Mrs&quot;: 2, &quot;Master&quot;: 3&#125;).astype(int)   \n\n\n1234full_df[&quot;TicketNumber&quot;] = full_df[&quot;Ticket&quot;].str.split()full_df[&quot;TicketNumber&quot;] = full_df[&quot;TicketNumber&quot;].str[-1]full_df[&quot;TicketNumber&quot;] = LabelEncoder().fit_transform(full_df[&quot;TicketNumber&quot;])full_df = full_df.drop([&quot;Ticket&quot;], axis=1)\n\n\n12full_df[&quot;FamilySize&quot;] = full_df[&quot;SibSp&quot;] + full_df[&quot;Parch&quot;] + 1full_df[&quot;IsAlone&quot;] = full_df[&quot;FamilySize&quot;].apply(lambda x: 1 if x == 1 else 0)\n\n\n1full_df.head()\n\n\n\n\n\n\n    .dataframe tbody tr th:only-of-type {\n        vertical-align: middle;\n    }\n\n.dataframe tbody tr th &#123;\n    vertical-align: top;\n&#125;\n\n.dataframe thead th &#123;\n    text-align: right;\n&#125;\n\n\n\n  \n    \n      \n      Pclass\n      Sex\n      SibSp\n      Parch\n      Fare\n      Embarked\n      Title\n      TicketNumber\n      FamilySize\n      IsAlone\n    \n  \n  \n    \n      0\n      3\n      1\n      1\n      0\n      7.2500\n      1\n      0\n      209\n      2\n      0\n    \n    \n      1\n      1\n      0\n      1\n      0\n      71.2833\n      2\n      2\n      166\n      2\n      0\n    \n    \n      2\n      3\n      0\n      0\n      0\n      7.9250\n      1\n      1\n      466\n      1\n      1\n    \n    \n      3\n      1\n      0\n      1\n      0\n      53.1000\n      1\n      2\n      67\n      2\n      0\n    \n    \n      4\n      3\n      1\n      0\n      0\n      8.0500\n      1\n      0\n      832\n      1\n      1\n    \n  \n\n\n\n\n\n\n123456X_train = full_df[:y_train.shape[0]]X_test = full_df[y_train.shape[0]:]print(f&quot;Train X shape: &#123;X_train.shape&#125;&quot;)print(f&quot;Train y shape: &#123;y_train.shape&#125;&quot;)print(f&quot;Test X shape: &#123;X_test.shape&#125;&quot;)\n\nTrain X shape: (891, 10)\nTrain y shape: (891,)\nTest X shape: (418, 10)\n\n12345678one_hot_cols = [&quot;Embarked&quot;, &quot;Title&quot;]for col in one_hot_cols:    full_df = pd.concat(        [full_df, pd.get_dummies(full_df[col], prefix=col)],         axis=1,         join=&quot;inner&quot;,    )full_df = full_df.drop(one_hot_cols, axis=1)\n\n\n12scaler = StandardScaler()full_df.loc[:] = scaler.fit_transform(full_df)\n\n\n1print(full_df)\n\n\n\n\n\n\n    .dataframe tbody tr th:only-of-type {\n        vertical-align: middle;\n    }\n\n.dataframe tbody tr th &#123;\n    vertical-align: top;\n&#125;\n\n.dataframe thead th &#123;\n    text-align: right;\n&#125;\n\n\n\n  \n    \n      \n      Pclass\n      Sex\n      SibSp\n      Parch\n      Fare\n      TicketNumber\n      FamilySize\n      IsAlone\n      Embarked_1\n      Embarked_2\n      Embarked_3\n      Title_0\n      Title_1\n      Title_2\n      Title_3\n    \n  \n  \n    \n      0\n      0.841916\n      0.743497\n      0.481288\n      -0.445000\n      -0.503595\n      -0.846179\n      0.073352\n      -1.233758\n      0.655011\n      -0.50977\n      -0.32204\n      0.819619\n      -0.502625\n      -0.425920\n      -0.221084\n    \n    \n      1\n      -1.546098\n      -1.344995\n      0.481288\n      -0.445000\n      0.734503\n      -1.004578\n      0.073352\n      -1.233758\n      -1.526692\n      1.96167\n      -0.32204\n      -1.220079\n      -0.502625\n      2.347858\n      -0.221084\n    \n    \n      2\n      0.841916\n      -1.344995\n      -0.479087\n      -0.445000\n      -0.490544\n      0.100529\n      -0.558346\n      0.810532\n      0.655011\n      -0.50977\n      -0.32204\n      -1.220079\n      1.989556\n      -0.425920\n      -0.221084\n    \n    \n      3\n      -1.546098\n      -1.344995\n      0.481288\n      -0.445000\n      0.382925\n      -1.369263\n      0.073352\n      -1.233758\n      0.655011\n      -0.50977\n      -0.32204\n      -1.220079\n      -0.502625\n      2.347858\n      -0.221084\n    \n    \n      4\n      0.841916\n      0.743497\n      -0.479087\n      -0.445000\n      -0.488127\n      1.448759\n      -0.558346\n      0.810532\n      0.655011\n      -0.50977\n      -0.32204\n      0.819619\n      -0.502625\n      -0.425920\n      -0.221084\n    \n    \n      ...\n      ...\n      ...\n      ...\n      ...\n      ...\n      ...\n      ...\n      ...\n      ...\n      ...\n      ...\n      ...\n      ...\n      ...\n      ...\n    \n    \n      413\n      0.841916\n      0.743497\n      -0.479087\n      -0.445000\n      -0.488127\n      0.347336\n      -0.558346\n      0.810532\n      0.655011\n      -0.50977\n      -0.32204\n      0.819619\n      -0.502625\n      -0.425920\n      -0.221084\n    \n    \n      414\n      -1.546098\n      -1.344995\n      -0.479087\n      -0.445000\n      1.461829\n      -0.938271\n      -0.558346\n      0.810532\n      -1.526692\n      1.96167\n      -0.32204\n      -1.220079\n      -0.502625\n      2.347858\n      -0.221084\n    \n    \n      415\n      0.841916\n      0.743497\n      -0.479087\n      -0.445000\n      -0.503595\n      0.026855\n      -0.558346\n      0.810532\n      0.655011\n      -0.50977\n      -0.32204\n      0.819619\n      -0.502625\n      -0.425920\n      -0.221084\n    \n    \n      416\n      0.841916\n      0.743497\n      -0.479087\n      -0.445000\n      -0.488127\n      1.183533\n      -0.558346\n      0.810532\n      0.655011\n      -0.50977\n      -0.32204\n      0.819619\n      -0.502625\n      -0.425920\n      -0.221084\n    \n    \n      417\n      0.841916\n      0.743497\n      0.481288\n      0.710763\n      -0.211473\n      -0.253105\n      0.705051\n      -1.233758\n      -1.526692\n      1.96167\n      -0.32204\n      -1.220079\n      -0.502625\n      -0.425920\n      4.523164\n    \n  \n\n1309 rows × 15 columns\n\n\n\n\n\n123456X_train_norm = full_df[:y_train.shape[0]]X_test_norm = full_df[y_train.shape[0]:]print(f&quot;Train norm X shape: &#123;X_train_norm.shape&#125;&quot;)print(f&quot;Train y shape: &#123;y_train.shape&#125;&quot;)print(f&quot;Test norm X shape: &#123;X_test_norm.shape&#125;&quot;)\n\nTrain norm X shape: (891, 15)\nTrain y shape: (891,)\nTest norm X shape: (418, 15)\n\n1categorical_columns = [&#x27;Sex&#x27;, &#x27;Embarked&#x27;, &#x27;Title&#x27;, &#x27;TicketNumber&#x27;, &#x27;IsAlone&#x27;]\n\n\n1cross_valid_scores = &#123;&#125;\n\n\n1X1_train, X1_test, y1_train, y1_test = train_test_split(X_train, y_train, test_size=0.3)\n\n결정트리 생성123456789101112131415161718192021222324252627%%timeparameters = &#123;    &quot;max_depth&quot;: [3, 5, 7, 9, 11, 13],&#125;model_desicion_tree = DecisionTreeClassifier(    random_state=SEED,    class_weight=&#x27;balanced&#x27;,)model_desicion_tree = GridSearchCV(    model_desicion_tree,     parameters,     cv=5,    scoring=&#x27;accuracy&#x27;,)model_desicion_tree.fit(X_train, y_train)print(&#x27;-----&#x27;)print(f&#x27;Best parameters &#123;model_desicion_tree.best_params_&#125;&#x27;)print(    f&#x27;Mean cross-validated accuracy score of the best_estimator: &#x27; + \\    f&#x27;&#123;model_desicion_tree.best_score_:.3f&#125;&#x27;)cross_valid_scores[&#x27;desicion_tree&#x27;] = model_desicion_tree.best_score_print(&#x27;-----&#x27;)\n\n-----\nBest parameters &#123;&#39;max_depth&#39;: 11&#125;\nMean cross-validated accuracy score of the best_estimator: 0.817\n-----\nCPU times: user 180 ms, sys: 2.04 ms, total: 182 ms\nWall time: 202 ms\n\n랜덤 포레스트그리드서치12345678910111213141516171819202122232425262728%%timeparameters = &#123;    &quot;n_estimators&quot;: [5, 10, 15, 20, 25],     &quot;max_depth&quot;: [3, 5, 7, 9, 11, 13],&#125;model_random_forest = RandomForestClassifier(    random_state=SEED,    class_weight=&#x27;balanced&#x27;,)model_random_forest = GridSearchCV(    model_random_forest,     parameters,     cv=5,    scoring=&#x27;accuracy&#x27;,)model_random_forest.fit(X_train, y_train)print(&#x27;-----&#x27;)print(f&#x27;Best parameters &#123;model_random_forest.best_params_&#125;&#x27;)print(    f&#x27;Mean cross-validated accuracy score of the best_estimator: &#x27;+ \\    f&#x27;&#123;model_random_forest.best_score_:.3f&#125;&#x27;)cross_valid_scores[&#x27;random_forest&#x27;] = model_random_forest.best_score_print(&#x27;-----&#x27;)\n\n-----\nBest parameters &#123;&#39;max_depth&#39;: 11, &#39;n_estimators&#39;: 25&#125;\nMean cross-validated accuracy score of the best_estimator: 0.844\n-----\nCPU times: user 4.84 s, sys: 43 ms, total: 4.89 s\nWall time: 4.9 s\n\n랜덤 서치12345678910111213141516171819%%timeparameters = &#123;    &quot;n_estimators&quot;: [5, 10, 15, 20, 25],     &quot;max_depth&quot;: [3, 5, 7, 9, 11, 13],&#125;model2_random_forest_rs = RandomizedSearchCV(model2_random_forest,parameters,cv=5,n_iter=50,random_state=0,scoring=&quot;accuracy&quot;)model2_random_forest_rs.fit(X_train, y_train)print(&#x27;-----&#x27;)print(f&#x27;Best parameters &#123;model2_random_forest_rs.best_params_&#125;&#x27;)print(    f&#x27;Mean cross-validated accuracy score of the best_estimator: &#x27;+ \\    f&#x27;&#123;model2_random_forest_rs.best_score_:.3f&#125;&#x27;)cross_valid_scores[&#x27;random_forest&#x27;] = model2_random_forest_rs.best_score_print(&#x27;-----&#x27;)\n\n/usr/local/lib/python3.7/dist-packages/sklearn/model_selection/_search.py:281: UserWarning: The total space of parameters 30 is smaller than n_iter=50. Running 30 iterations. For exhaustive searches, use GridSearchCV.\n  % (grid_size, self.n_iter, grid_size), UserWarning)\n\n\n-----\nBest parameters &#123;&#39;n_estimators&#39;: 25, &#39;max_depth&#39;: 11&#125;\nMean cross-validated accuracy score of the best_estimator: 0.844\n-----\nCPU times: user 4.68 s, sys: 27.1 ms, total: 4.71 s\nWall time: 4.73 s\n\n###파라미터 튜닝을 하지않은 randomForest\n1234567model_rf1=RandomForestClassifier(max_depth=5)model_rf1.fit(X_train,y_train)y_pred_rf1=model_rf1.predict(X1_test)print(&#x27;\\n정확도 :&#x27;, metrics.accuracy_score(y1_test, y_pred_rf1))\n\n정확도 : 1.0\n\n123456model_rf2=RandomForestClassifier(n_estimators= 25, max_depth= 11)model_rf2.fit(X_train,y_train)y_pred_rf2=model_rf2.predict(X1_test)print(&#x27;\\n정확도 :&#x27;, metrics.accuracy_score(y1_test, y_pred_rf2))\n\n정확도 : 0.9589552238805971\n\nXGBOOSTgridSearch12345678910111213141516171819202122232425262728%%timeparameters = &#123;    &#x27;max_depth&#x27;: [3, 5, 7, 9],     &#x27;n_estimators&#x27;: [5, 10, 15, 20, 25, 50, 100],    &#x27;learning_rate&#x27;: [0.01, 0.05, 0.1]&#125;model_xgb = xgb.XGBClassifier(    random_state=SEED,)model_xgb = GridSearchCV(    model_xgb,     parameters,     cv=5,    scoring=&#x27;accuracy&#x27;,)model_xgb.fit(X_train, y_train)print(&#x27;-----&#x27;)print(f&#x27;Best parameters &#123;model_xgb.best_params_&#125;&#x27;)print(    f&#x27;Mean cross-validated accuracy score of the best_estimator: &#x27; +     f&#x27;&#123;model_xgb.best_score_:.3f&#125;&#x27;)cross_valid_scores[&#x27;xgboost&#x27;] = model_xgb.best_score_print(&#x27;-----&#x27;)\n\n-----\nBest parameters &#123;&#39;learning_rate&#39;: 0.1, &#39;max_depth&#39;: 7, &#39;n_estimators&#39;: 100&#125;\nMean cross-validated accuracy score of the best_estimator: 0.846\n-----\nCPU times: user 13.7 s, sys: 177 ms, total: 13.9 s\nWall time: 14 s\n\nxgboost에서 하이퍼파라미터튜닝을 위해 GridSearch를 진행.time : 14.3 sBest parameters {‘n_estimators’: 100, ‘max_depth’: 7, ‘learning_rate’: 0.1}  \n랜덤 서치12345678910111213141516171819202122%%timeparams = &#123;    &#x27;max_depth&#x27;: [3, 5, 7, 9],     &#x27;n_estimators&#x27;: [5, 10, 15, 20, 25, 50, 100],    &#x27;learning_rate&#x27;: [0.01, 0.05, 0.1]&#125;model_xgb_random = xgb.XGBClassifier(    random_state=SEED,)model_xgb_random =RandomizedSearchCV(model_xgb_random ,params,cv=5,n_iter=50,random_state=0,scoring=&quot;accuracy&quot;)model_xgb_random .fit(X_train, y_train)print(&#x27;-----&#x27;)print(f&#x27;Best parameters &#123;model_xgb_random .best_params_&#125;&#x27;)print(    f&#x27;Mean cross-validated accuracy score of the best_estimator: &#x27; +     f&#x27;&#123;model_xgb_random .best_score_:.3f&#125;&#x27;)cross_valid_scores[&#x27;xgboost&#x27;] = model_xgb_random .best_score_print(&#x27;-----&#x27;)\n\n-----\nBest parameters &#123;&#39;n_estimators&#39;: 100, &#39;max_depth&#39;: 7, &#39;learning_rate&#39;: 0.1&#125;\nMean cross-validated accuracy score of the best_estimator: 0.846\n-----\nCPU times: user 9.22 s, sys: 119 ms, total: 9.34 s\nWall time: 9.34 s\n\nxgboost에서 두 서치의 성능을 보기위해 똑같은 환경에서 RandomSearch를 진행.time : 9.46 sBest parameters {‘n_estimators’: 100, ‘max_depth’: 7, ‘learning_rate’: 0.1}  \n파라미터튜닝을 하지않은 xgboost123456model_1=xgb.XGBClassifier()model_1.fit(X_train,y_train)pred_y1=model_1.predict(X1_test)print(&#x27;\\n정확도 :&#x27;, metrics.accuracy_score(y1_test, pred_y1))\n\n정확도 : 0.8843283582089553\n\n하이퍼 파라미터 적용123456model_2=xgb.XGBClassifier(learning_rate= 0.1, max_depth= 7, n_estimators=100)model_2.fit(X_train,y_train)pred_y2=model_2.predict(X1_test)print(&#x27;\\n정확도 :&#x27;, metrics.accuracy_score(y1_test, pred_y2))\n\n정확도 : 0.9514925373134329\n\n\n그리드 서치보다 랜덤 서치의 속도가 더 빠른 것을 알 수있다.또한 하이퍼 파라미터를 튜닝 한 후의 정확도가 훨씬 올라갔음을 알 수 있다.\n\nlightBGM123456789101112131415161718192021222324252627282930313233%%timeparameters = &#123;    &#x27;n_estimators&#x27;: [5, 10, 15, 20, 25, 50, 100],    &#x27;learning_rate&#x27;: [0.01, 0.05, 0.1],    &#x27;num_leaves&#x27;: [7, 15, 31],&#125;model_lgbm = lgbm.LGBMClassifier(    random_state=SEED,    class_weight=&#x27;balanced&#x27;,)model_lgbm = GridSearchCV(    model_lgbm,     parameters,     cv=5,    scoring=&#x27;accuracy&#x27;,)model_lgbm.fit(    X_train,     y_train,     categorical_feature=categorical_columns)print(&#x27;-----&#x27;)print(f&#x27;Best parameters &#123;model_lgbm.best_params_&#125;&#x27;)print(    f&#x27;Mean cross-validated accuracy score of the best_estimator: &#x27; +     f&#x27;&#123;model_lgbm.best_score_:.3f&#125;&#x27;)cross_valid_scores[&#x27;lightgbm&#x27;] = model_lgbm.best_score_print(&#x27;-----&#x27;)\n\nCatboost12345678910111213141516171819202122232425262728%%timeparameters = &#123;    &#x27;iterations&#x27;: [5, 10, 15, 20, 25, 50, 100],    &#x27;learning_rate&#x27;: [0.01, 0.05, 0.1],    &#x27;depth&#x27;: [3, 5, 7, 9, 11, 13],&#125;model_catboost = cb.CatBoostClassifier(    verbose=False,)model_catboost = GridSearchCV(    model_catboost,     parameters,     cv=5,    scoring=&#x27;accuracy&#x27;,)model_catboost.fit(X_train, y_train)print(&#x27;-----&#x27;)print(f&#x27;Best parameters &#123;model_catboost.best_params_&#125;&#x27;)print(    f&#x27;Mean cross-validated accuracy score of the best_estimator: &#x27; +     f&#x27;&#123;model_catboost.best_score_:.3f&#125;&#x27;)cross_valid_scores[&#x27;catboost&#x27;] = model_catboost.best_score_print(&#x27;-----&#x27;)\n","dateCreated":"2021-04-13T17:06:18+09:00","dateModified":"2021-04-13T17:05:48+09:00","datePublished":"2021-04-13T17:06:18+09:00","description":"","headline":"","image":[],"mainEntityOfPage":{"@type":"WebPage","@id":"https://ggaggu.github.io/2021/04/13/titanic2/"},"publisher":{"@type":"Organization","name":"lhj","sameAs":["https://github.com/","http://stackoverflow.com/users","https://twitter.com/","https://facebook.com/","https://plus.google.com/","https://www.linkedin.com/profile/","mailto"]},"url":"https://ggaggu.github.io/2021/04/13/titanic2/"}</script>
-    <meta name="description" content="Titanic data결정 트리, 랜덤포레스트, XGBoost, lightBGM, CATBoost 비교 전처리1!pip install catboost  Collecting catboost [?25l  Downloading https:&#x2F;&#x2F;files.pythonhosted.org&#x2F;packages&#x2F;47&#x2F;80&#x2F;8e9c57ec32dfed6ba2922bc5c9646">
-<meta property="og:type" content="blog">
-<meta property="og:title" content="이현정의 블로그">
-<meta property="og:url" content="https://ggaggu.github.io/2021/04/13/titanic2/index.html">
-<meta property="og:site_name" content="이현정의 블로그">
-<meta property="og:description" content="Titanic data결정 트리, 랜덤포레스트, XGBoost, lightBGM, CATBoost 비교 전처리1!pip install catboost  Collecting catboost [?25l  Downloading https:&#x2F;&#x2F;files.pythonhosted.org&#x2F;packages&#x2F;47&#x2F;80&#x2F;8e9c57ec32dfed6ba2922bc5c9646">
-<meta property="og:locale" content="en_US">
-<meta property="og:image" content="https://ggaggu.github.io/2021/04/13/titanic2/output_11_0.png">
-<meta property="article:published_time" content="2021-04-13T08:06:18.449Z">
-<meta property="article:modified_time" content="2021-04-13T08:05:48.000Z">
-<meta property="article:author" content="lhj">
-<meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://ggaggu.github.io/2021/04/13/titanic2/output_11_0.png">
-    
-    
-        
-    
-    
-    
-    
-    
-    <!--STYLES-->
-    
-<link rel="stylesheet" href="/assets/css/all.css">
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="theme-color" content=#58b77a>
+  <title>이현정의 블로그</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="author" content="lhj">
+  <meta name="keywords" content="">
+  <meta name="description" content="">
+  <script id="hexo-configurations">
+  var CONFIG = {
+    root: '/',
+    theme: 'lx',
+    version: '0.3.9',
+    localsearch:{
+      "enable": false,
+      "trigger": "auto",
+      "top_n_per_article": 1,
+      "unescape": false,
+      "preload": false
+      },
+    path: 'null'
+  };
+</script>
 
+  <link rel="shortcut icon" href="/favicon.ico">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/theme-lx@0.3.9/source/css/main.min.css">
+  <style type="text/css">
+    pre,
+    code {
+      font-family: 'Fira Code', monospace;
+    }
+    html {
+      font-family: sans-serif;
+    }
+    body {
+      font-family: sans-serif;
+    }
+    h1, h2, h3, h4, h5, figure {
+      font-family: sans-serif;
+    }
+    .menu-container{
+      font-family: sans-serif;
+    }
+  </style>
+
+  <script src="//cdn.jsdelivr.net/npm/jquery@3.4.1/dist/jquery.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/theme-lx@0.3.9/source/js/jquery.jside.menu.js"></script>
+	<script>
+	$(document).ready(function(){
+	$(".menu-container").jSideMenu({
+	    jSidePosition: "position-right",
+	    jSideSticky: true,
+	    jSideSkin: "greenish",
+	     });
+	}); 
+	</script>
+  
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Fira Code:300,300italic,400,400italic,700,700italic&display=swap&subset=latin,latin-ext">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/npm/font-awesome@4/css/font-awesome.min.css">
+<meta name="generator" content="Hexo 5.4.0"></head>
+<body>
+<div class="single">
+
+<div id="page">
+<div id="lx-aside" style="background-image: url(//cdn.jsdelivr.net/npm/theme-lx@0.3.9/source/images/post_cover.jpeg)" data-stellar-background-ratio="0.5">
+  <div class="overlay">
+  <div class="page-title">
+    <div class="avatar"><a href="/"><img src="/images/avatar.jpeg"></a></div>
+    <span>2021-04-13</span>
+    <h2></h2>
     
-<link rel="stylesheet" href="/assets/css/jquery.fancybox.css">
-
-    
-<link rel="stylesheet" href="/assets/css/thumbs.css">
-
-    
-<link rel="stylesheet" href="/assets/css/tranquilpeak.css">
-
-    <!--STYLES END-->
-    
-
-    
-
-    
-        
-    
-</head>
-
-    <body>
-        <div id="blog">
-            <!-- Define author's picture -->
-
-
-    
-
-<header id="header" data-behavior="4">
-    <i id="btn-open-sidebar" class="fa fa-lg fa-bars"></i>
-    <div class="header-title">
-        <a
-            class="header-title-link"
-            href="/"
-            aria-label=""
-        >
-            이현정의 블로그
-        </a>
     </div>
-    
-        
-            <a
-                class="header-right-picture "
-                href="#about"
-                aria-label="Open the link: /#about"
-            >
-        
-        
-        </a>
-    
-</header>
-
-            <!-- Define author's picture -->
-
-
-<nav id="sidebar" data-behavior="4">
-    <div class="sidebar-container">
-        
-        
-            <ul class="sidebar-buttons">
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="/"
-                            
-                            rel="noopener"
-                            title="Home"
-                        >
-                        <i class="sidebar-button-icon fa fa-home" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">Home</span>
-                    </a>
-            </li>
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="/all-categories"
-                            
-                            rel="noopener"
-                            title="Categories"
-                        >
-                        <i class="sidebar-button-icon fa fa-bookmark" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">Categories</span>
-                    </a>
-            </li>
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="/all-tags"
-                            
-                            rel="noopener"
-                            title="Tags"
-                        >
-                        <i class="sidebar-button-icon fa fa-tags" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">Tags</span>
-                    </a>
-            </li>
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="/all-archives"
-                            
-                            rel="noopener"
-                            title="Archives"
-                        >
-                        <i class="sidebar-button-icon fa fa-archive" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">Archives</span>
-                    </a>
-            </li>
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link open-algolia-search"
-                            href="#search"
-                            
-                            rel="noopener"
-                            title="Search"
-                        >
-                        <i class="sidebar-button-icon fa fa-search" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">Search</span>
-                    </a>
-            </li>
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="#about"
-                            
-                            rel="noopener"
-                            title="About"
-                        >
-                        <i class="sidebar-button-icon fa fa-question" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">About</span>
-                    </a>
-            </li>
-            
-        </ul>
-        
-            <ul class="sidebar-buttons">
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="https://github.com/"
-                            
-                                target="_blank"
-                            
-                            rel="noopener"
-                            title="GitHub"
-                        >
-                        <i class="sidebar-button-icon fab fa-github" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">GitHub</span>
-                    </a>
-            </li>
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="http://stackoverflow.com/users"
-                            
-                                target="_blank"
-                            
-                            rel="noopener"
-                            title="Stack Overflow"
-                        >
-                        <i class="sidebar-button-icon fab fa-stack-overflow" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">Stack Overflow</span>
-                    </a>
-            </li>
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="https://twitter.com/"
-                            
-                                target="_blank"
-                            
-                            rel="noopener"
-                            title="Twitter"
-                        >
-                        <i class="sidebar-button-icon fab fa-twitter" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">Twitter</span>
-                    </a>
-            </li>
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="https://facebook.com/"
-                            
-                                target="_blank"
-                            
-                            rel="noopener"
-                            title="Facebook"
-                        >
-                        <i class="sidebar-button-icon fab fa-facebook" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">Facebook</span>
-                    </a>
-            </li>
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="https://plus.google.com/"
-                            
-                                target="_blank"
-                            
-                            rel="noopener"
-                            title="Google +"
-                        >
-                        <i class="sidebar-button-icon fab fa-google-plus" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">Google +</span>
-                    </a>
-            </li>
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="https://www.linkedin.com/profile/"
-                            
-                                target="_blank"
-                            
-                            rel="noopener"
-                            title="LinkedIn"
-                        >
-                        <i class="sidebar-button-icon fab fa-linkedin" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">LinkedIn</span>
-                    </a>
-            </li>
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="/mailto"
-                            
-                            rel="noopener"
-                            title="Mail"
-                        >
-                        <i class="sidebar-button-icon fa fa-envelope" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">Mail</span>
-                    </a>
-            </li>
-            
-        </ul>
-        
-            <ul class="sidebar-buttons">
-            
-                <li class="sidebar-button">
-                    
-                        <a
-                            class="sidebar-button-link "
-                            href="/atom.xml"
-                            
-                            rel="noopener"
-                            title="RSS"
-                        >
-                        <i class="sidebar-button-icon fa fa-rss" aria-hidden="true"></i>
-                        <span class="sidebar-button-desc">RSS</span>
-                    </a>
-            </li>
-            
-        </ul>
-        
-    </div>
-</nav>
-
-            
-            <div id="main" data-behavior="4"
-                 class="
-                        hasCoverMetaIn
-                        ">
-                
-<article class="post">
-    
-    
-        <div class="post-header main-content-wrap text-left">
-    
-        <h1 class="post-title">
-            (no title)
-        </h1>
-    
-    
-        <div class="post-meta">
-    <time datetime="2021-04-13T17:06:18+09:00">
-	
-		    Apr 13, 2021
-    	
-    </time>
-    
+</div>
 </div>
 
-    
-</div>
-
-    
-    <div class="post-content markdown">
-        <div class="main-content-wrap">
-            <h1 id="Titanic-data"><a href="#Titanic-data" class="headerlink" title="Titanic data"></a>Titanic data</h1><p>결정 트리, 랜덤포레스트, XGBoost, lightBGM, CATBoost 비교</p>
+<div id="lx-main-content">
+  <div class="lx-post">
+    <div class="lx-entry padding">
+      <div>
+        <h1 id="Titanic-data"><a href="#Titanic-data" class="headerlink" title="Titanic data"></a>Titanic data</h1><p>결정 트리, 랜덤포레스트, XGBoost, lightBGM, CATBoost 비교</p>
 <h2 id="전처리"><a href="#전처리" class="headerlink" title="전처리"></a>전처리</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">!pip install catboost</span><br></pre></td></tr></table></figure>
 
 <pre><code>Collecting catboost
@@ -1052,326 +784,122 @@ Wall time: 9.34 s
 
 <h2 id="Catboost"><a href="#Catboost" class="headerlink" title="Catboost"></a>Catboost</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">%%time</span><br><span class="line">parameters = &#123;</span><br><span class="line">    <span class="string">&#x27;iterations&#x27;</span>: [<span class="number">5</span>, <span class="number">10</span>, <span class="number">15</span>, <span class="number">20</span>, <span class="number">25</span>, <span class="number">50</span>, <span class="number">100</span>],</span><br><span class="line">    <span class="string">&#x27;learning_rate&#x27;</span>: [<span class="number">0.01</span>, <span class="number">0.05</span>, <span class="number">0.1</span>],</span><br><span class="line">    <span class="string">&#x27;depth&#x27;</span>: [<span class="number">3</span>, <span class="number">5</span>, <span class="number">7</span>, <span class="number">9</span>, <span class="number">11</span>, <span class="number">13</span>],</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">model_catboost = cb.CatBoostClassifier(</span><br><span class="line">    verbose=<span class="literal">False</span>,</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">model_catboost = GridSearchCV(</span><br><span class="line">    model_catboost, </span><br><span class="line">    parameters, </span><br><span class="line">    cv=<span class="number">5</span>,</span><br><span class="line">    scoring=<span class="string">&#x27;accuracy&#x27;</span>,</span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">model_catboost.fit(X_train, y_train)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;-----&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">f&#x27;Best parameters <span class="subst">&#123;model_catboost.best_params_&#125;</span>&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>(</span><br><span class="line">    <span class="string">f&#x27;Mean cross-validated accuracy score of the best_estimator: &#x27;</span> + </span><br><span class="line">    <span class="string">f&#x27;<span class="subst">&#123;model_catboost.best_score_:<span class="number">.3</span>f&#125;</span>&#x27;</span></span><br><span class="line">)</span><br><span class="line">cross_valid_scores[<span class="string">&#x27;catboost&#x27;</span>] = model_catboost.best_score_</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;-----&#x27;</span>)</span><br></pre></td></tr></table></figure>
 
-            
-
-
-        </div>
+      </div>
     </div>
-    <div id="post-footer" class="post-footer main-content-wrap">
-        
-        
-            <div class="post-actions-wrap">
-    <nav>
-        <ul class="post-actions post-action-nav">
-            <li class="post-action">
-                
-                    
-                <a
-                    class="post-action-btn btn btn--default tooltip--top"
-                    href="/2021/04/15/Tree_Method%EC%8A%A4%ED%84%B0%EB%94%94_%EB%B2%94%EC%A3%BC%ED%98%95/"
-                    data-tooltip="(no title)"
-                    aria-label="PREVIOUS: (no title)"
-                >
-                    
-                        <i class="fa fa-angle-left" aria-hidden="true"></i>
-                        <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
-                    </a>
-            </li>
-            <li class="post-action">
-                
-                    
-                <a
-                    class="post-action-btn btn btn--default tooltip--top"
-                    href="/2021/04/07/0407%ED%8C%8C%EC%9D%B4%EC%8D%AC%EA%B8%B0%EC%B4%88/"
-                    data-tooltip="(no title)"
-                    aria-label="NEXT: (no title)"
-                >
-                    
-                        <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
-                        <i class="fa fa-angle-right" aria-hidden="true"></i>
-                    </a>
-            </li>
-        </ul>
-    </nav>
-    <ul class="post-actions post-action-share">
-        <li class="post-action hide-lg hide-md hide-sm">
-            <a
-                class="post-action-btn btn btn--default btn-open-shareoptions"
-                href="#btn-open-shareoptions"
-                aria-label="Share this post"
-            >
-                <i class="fa fa-share-alt" aria-hidden="true"></i>
-            </a>
-        </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://ggaggu.github.io/2021/04/13/titanic2/"
-                    title="Share on Facebook"
-                    aria-label="Share on Facebook"
-                >
-                    <i class="fab fa-facebook" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://twitter.com/intent/tweet?text=https://ggaggu.github.io/2021/04/13/titanic2/"
-                    title="Share on Twitter"
-                    aria-label="Share on Twitter"
-                >
-                    <i class="fab fa-twitter" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://plus.google.com/share?url=https://ggaggu.github.io/2021/04/13/titanic2/"
-                    title="Share on Google+"
-                    aria-label="Share on Google+"
-                >
-                    <i class="fab fa-google-plus" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-        
-            
-        
-        <li class="post-action">
-            
-                <a class="post-action-btn btn btn--default" href="#" aria-label="Back to top">
-            
-                <i class="fa fa-list" aria-hidden="true"></i>
-            </a>
-        </li>
-    </ul>
+  </div>
+</div>
+<div class="lx-navigation">
+	<div class="lx-cover prev lx-cover-sm" style="background-image: url(//cdn.jsdelivr.net/npm/theme-lx@0.3.9/source/images/footer-l.jpeg)">
+		<div class="overlay"></div>
+		<a class="copy" href="/2021/04/15/Tree_Method%EC%8A%A4%ED%84%B0%EB%94%94_%EB%B2%94%EC%A3%BC%ED%98%95/">
+			<div class="display-t">
+				<div class="display-tc">
+					<div>
+						<span>Next</span>
+						<h3></h3>
+					</div>
+				</div>
+			</div>
+		</a>
+	</div>
+        <div class="lx-cover next lx-cover-sm" style="background-image: url(//cdn.jsdelivr.net/npm/theme-lx@0.3.9/source/images/footer-r.jpeg)">
+		<div class="overlay"></div>
+		<a class="copy" href="/2021/04/07/0407%ED%8C%8C%EC%9D%B4%EC%8D%AC%EA%B8%B0%EC%B4%88/">
+			<div class="display-t">
+				<div class="display-tc">
+					<div>
+						<span>Prev</span>
+						<h3></h3>
+					</div>
+				</div>
+			</div>
+		</a>
+	</div>
 </div>
 
+</div>
 
-        
-        
-            
-        
-    </div>
-</article>
-
-
-
-                <footer id="footer" class="main-content-wrap">
-    <span class="copyrights">
-        Copyrights &copy; 2021 lhj. All Rights Reserved.
-    </span>
+<footer>
+  <div>
+  Copyright &copy; 2021.<a href="/">이현정의 블로그</a><br>Powered by <a href="https://hexo.io" target="_blank">Hexo</a> | Theme <a href="https://lx.js.org" target="_blank">Lx</a><br>
+  </div>
 </footer>
 
-            </div>
-            
-                <div id="bottom-bar" class="post-bottom-bar" data-behavior="4">
-                    <div class="post-actions-wrap">
-    <nav>
-        <ul class="post-actions post-action-nav">
-            <li class="post-action">
-                
-                    
-                <a
-                    class="post-action-btn btn btn--default tooltip--top"
-                    href="/2021/04/15/Tree_Method%EC%8A%A4%ED%84%B0%EB%94%94_%EB%B2%94%EC%A3%BC%ED%98%95/"
-                    data-tooltip="(no title)"
-                    aria-label="PREVIOUS: (no title)"
-                >
-                    
-                        <i class="fa fa-angle-left" aria-hidden="true"></i>
-                        <span class="hide-xs hide-sm text-small icon-ml">PREVIOUS</span>
-                    </a>
-            </li>
-            <li class="post-action">
-                
-                    
-                <a
-                    class="post-action-btn btn btn--default tooltip--top"
-                    href="/2021/04/07/0407%ED%8C%8C%EC%9D%B4%EC%8D%AC%EA%B8%B0%EC%B4%88/"
-                    data-tooltip="(no title)"
-                    aria-label="NEXT: (no title)"
-                >
-                    
-                        <span class="hide-xs hide-sm text-small icon-mr">NEXT</span>
-                        <i class="fa fa-angle-right" aria-hidden="true"></i>
-                    </a>
-            </li>
-        </ul>
-    </nav>
-    <ul class="post-actions post-action-share">
-        <li class="post-action hide-lg hide-md hide-sm">
-            <a
-                class="post-action-btn btn btn--default btn-open-shareoptions"
-                href="#btn-open-shareoptions"
-                aria-label="Share this post"
-            >
-                <i class="fa fa-share-alt" aria-hidden="true"></i>
-            </a>
-        </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://www.facebook.com/sharer/sharer.php?u=https://ggaggu.github.io/2021/04/13/titanic2/"
-                    title="Share on Facebook"
-                    aria-label="Share on Facebook"
-                >
-                    <i class="fab fa-facebook" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://twitter.com/intent/tweet?text=https://ggaggu.github.io/2021/04/13/titanic2/"
-                    title="Share on Twitter"
-                    aria-label="Share on Twitter"
-                >
-                    <i class="fab fa-twitter" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-            
-            
-            <li class="post-action hide-xs">
-                <a
-                    class="post-action-btn btn btn--default"
-                    target="new" href="https://plus.google.com/share?url=https://ggaggu.github.io/2021/04/13/titanic2/"
-                    title="Share on Google+"
-                    aria-label="Share on Google+"
-                >
-                    <i class="fab fa-google-plus" aria-hidden="true"></i>
-                </a>
-            </li>
-        
-        
-            
-        
-        <li class="post-action">
-            
-                <a class="post-action-btn btn btn--default" href="#" aria-label="Back to top">
-            
-                <i class="fa fa-list" aria-hidden="true"></i>
-            </a>
-        </li>
-    </ul>
 </div>
 
-
-                </div>
-                
-    <div id="share-options-bar" class="share-options-bar" data-behavior="4">
-        <i id="btn-close-shareoptions" class="fa fa-times"></i>
-        <ul class="share-options">
-            
-                
-                
-                <li class="share-option">
-                    <a
-                        class="share-option-btn"
-                        target="new"
-                        href="https://www.facebook.com/sharer/sharer.php?u=https://ggaggu.github.io/2021/04/13/titanic2/"
-                        aria-label="Share on Facebook"
-                    >
-                        <i class="fab fa-facebook" aria-hidden="true"></i><span>Share on Facebook</span>
-                    </a>
-                </li>
-            
-                
-                
-                <li class="share-option">
-                    <a
-                        class="share-option-btn"
-                        target="new"
-                        href="https://twitter.com/intent/tweet?text=https://ggaggu.github.io/2021/04/13/titanic2/"
-                        aria-label="Share on Twitter"
-                    >
-                        <i class="fab fa-twitter" aria-hidden="true"></i><span>Share on Twitter</span>
-                    </a>
-                </li>
-            
-                
-                
-                <li class="share-option">
-                    <a
-                        class="share-option-btn"
-                        target="new"
-                        href="https://plus.google.com/share?url=https://ggaggu.github.io/2021/04/13/titanic2/"
-                        aria-label="Share on Google+"
-                    >
-                        <i class="fab fa-google-plus" aria-hidden="true"></i><span>Share on Google+</span>
-                    </a>
-                </li>
-            
-        </ul>
+<button class="hamburger hamburger--arrow-r" type="button">
+    <div class="hamburger-box">
+      <div class="hamburger-inner"></div>
     </div>
-
-
-            
+</button> 
+<div class="menu visibility">
+  <div class="menu-head">
+    <span class="layer">
+      <div class="col">
+        <div class="row for-pic">
+          <div class="profile-pic">
+            <a href="/"><img src="/images/avatar.jpeg" alt="lhj"/></a>
+          </div>
         </div>
-        
-
-
-<div id="about">
-    <div id="about-card">
-        <div id="about-btn-close">
-            <i class="fa fa-times"></i>
+        <div class="row for-name">
+          <p>lhj</p>
+          <span class="tagline">Hello, World!</span>
         </div>
-        
-            <h4 id="about-card-name">lhj</h4>
-        
-            <div id="about-card-bio"><p>author.bio</p>
-</div>
-        
-        
-            <div id="about-card-job">
-                <i class="fa fa-briefcase"></i>
-                <br/>
-                <p>author.job</p>
-
-            </div>
-        
-        
-    </div>
-</div>
-
-        
-        
-<div id="cover" style="background-image:url('/assets/images/cover.jpg');"></div>
-        <!--SCRIPTS-->
-
-<script src="/assets/js/jquery.js"></script>
-
-
-<script src="/assets/js/jquery.fancybox.js"></script>
-
-
-<script src="/assets/js/thumbs.js"></script>
-
-
-<script src="/assets/js/tranquilpeak.js"></script>
-
-<!--SCRIPTS END-->
-
-
+      </div>
+    </span>
+  </div>
+  <nav class="menu-container">
+  <ul class="menu-items">
+    <li><a href="/"><i class="fa fa-home fa-fw"></i>Home</a></li>
+    <li><a href="/archives/"><i class="fa fa-archive fa-fw"></i>Archives</a></li>
     
+    <li class="has-sub"><span class="dropdown-heading">
+      <i class="fa fa-bookmark fa-fw"></i>Pages</span>
+        <ul>
+          <li><a href="/guestbook/">Guestbook</a></li>
+        <li><a href="/about/">About</a></li>
+        </ul>
+    </li>
+    <li class="has-sub"><span class="dropdown-heading">
+      <i class="fa fa-link fa-fw"></i>Friends</span>
+        <ul>
+          <li> <a href="https://lx.js.org" target="_blank">Theme-Lx</a></li>
+        </ul>
+    </li>
+  </ul>
+  </nav>
+</div>
+
+<div class="gototop js-top">
+  <a href="#" class="js-gotop"><i class="fa fa-arrow-up"></i></a>
+</div>
+<script src="//cdn.jsdelivr.net/npm/theme-lx@0.3.9/source/js/jquery.easing.min.js"></script>
+<script>
+(function () {
+	"use strict";
+	var goToTop = function() {
+		$(".js-gotop").on("click", function(event){
+			event.preventDefault();
+			$("html, body").animate({
+				scrollTop: $("html").offset().top
+			}, 500, "easeInOutExpo");
+			return false;
+		});
+		$(window).scroll(function(){
+			var $win = $(window);
+			if ($win.scrollTop() > 200) {
+				$(".js-top").addClass("active");
+			} else {
+				$(".js-top").removeClass("active");
+			}
+		});
+	};
+	$(function(){
+		goToTop();
+	});
+}());
+</script>
 
 
-
-
-    </body>
+</body>
 </html>
