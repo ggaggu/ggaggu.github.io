@@ -81,6 +81,713 @@
 
   <div class="lx-entry padding">
     <div>
+      <h2 class="title"><a href="/2021/04/27/kaggle_playground_featureengineering_study2/">2021 0427 타이타닉 playground EDA 스터디</a></h2>
+      <span class="lx-post-detail"><i class="fa fa-calendar-o"></i> 2021-04-27</span>
+      <p><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># This Python 3 environment comes with many helpful analytics libraries installed</span></span><br><span class="line"><span class="comment"># It is defined by the kaggle/python Docker image: https://github.com/kaggle/docker-python</span></span><br><span class="line"><span class="comment"># For example, here&#x27;s several helpful packages to load</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np <span class="comment"># linear algebra</span></span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd <span class="comment"># data processing, CSV file I/O (e.g. pd.read_csv)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Input data files are available in the read-only &quot;../input/&quot; directory</span></span><br><span class="line"><span class="comment"># For example, running this (by clicking run or pressing Shift+Enter) will list all files under the input directory</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">for</span> dirname, _, filenames <span class="keyword">in</span> os.walk(<span class="string">&#x27;/kaggle/input&#x27;</span>):</span><br><span class="line">    <span class="keyword">for</span> filename <span class="keyword">in</span> filenames:</span><br><span class="line">        <span class="built_in">print</span>(os.path.join(dirname, filename))</span><br><span class="line"></span><br><span class="line"><span class="comment"># You can write up to 20GB to the current directory (/kaggle/working/) that gets preserved as output when you create a version using &quot;Save &amp; Run All&quot; </span></span><br><span class="line"><span class="comment"># You can also write temporary files to /kaggle/temp/, but they won&#x27;t be saved outside of the current session</span></span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><a target="_blank" rel="noopener" href="https://www.kaggle.com/udbhavpangotra/tps-apr21-eda-model">https://www.kaggle.com/udbhavpangotra/tps-apr21-eda-model</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.kaggle.com/hiro5299834/tps-apr-2021-voting-pseudo-labeling">https://www.kaggle.com/hiro5299834/tps-apr-2021-voting-pseudo-labeling</a></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">!pip install catboost</span><br></pre></td></tr></table></figure>
+
+<pre><code>Collecting catboost
+[?25l  Downloading https://files.pythonhosted.org/packages/47/80/8e9c57ec32dfed6ba2922bc5c96462cbf8596ce1a6f5de532ad1e43e53fe/catboost-0.25.1-cp37-none-manylinux1_x86_64.whl (67.3MB)
+[K     |████████████████████████████████| 67.3MB 42kB/s 
+[?25hRequirement already satisfied: six in /usr/local/lib/python3.7/dist-packages (from catboost) (1.15.0)
+Requirement already satisfied: scipy in /usr/local/lib/python3.7/dist-packages (from catboost) (1.4.1)
+Requirement already satisfied: plotly in /usr/local/lib/python3.7/dist-packages (from catboost) (4.4.1)
+Requirement already satisfied: numpy&gt;=1.16.0 in /usr/local/lib/python3.7/dist-packages (from catboost) (1.19.5)
+Requirement already satisfied: pandas&gt;=0.24.0 in /usr/local/lib/python3.7/dist-packages (from catboost) (1.1.5)
+Requirement already satisfied: matplotlib in /usr/local/lib/python3.7/dist-packages (from catboost) (3.2.2)
+Requirement already satisfied: graphviz in /usr/local/lib/python3.7/dist-packages (from catboost) (0.10.1)
+Requirement already satisfied: retrying&gt;=1.3.3 in /usr/local/lib/python3.7/dist-packages (from plotly-&gt;catboost) (1.3.3)
+Requirement already satisfied: pytz&gt;=2017.2 in /usr/local/lib/python3.7/dist-packages (from pandas&gt;=0.24.0-&gt;catboost) (2018.9)
+Requirement already satisfied: python-dateutil&gt;=2.7.3 in /usr/local/lib/python3.7/dist-packages (from pandas&gt;=0.24.0-&gt;catboost) (2.8.1)
+Requirement already satisfied: cycler&gt;=0.10 in /usr/local/lib/python3.7/dist-packages (from matplotlib-&gt;catboost) (0.10.0)
+Requirement already satisfied: kiwisolver&gt;=1.0.1 in /usr/local/lib/python3.7/dist-packages (from matplotlib-&gt;catboost) (1.3.1)
+Requirement already satisfied: pyparsing!=2.0.4,!=2.1.2,!=2.1.6,&gt;=2.0.1 in /usr/local/lib/python3.7/dist-packages (from matplotlib-&gt;catboost) (2.4.7)
+Installing collected packages: catboost
+Successfully installed catboost-0.25.1
+</code></pre>
+<h1 id="KAGGLE-스터디"><a href="#KAGGLE-스터디" class="headerlink" title="KAGGLE 스터디"></a>KAGGLE 스터디</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> random</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> accuracy_score</span><br><span class="line"><span class="keyword">from</span> sklearn.preprocessing <span class="keyword">import</span> LabelEncoder, StandardScaler</span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split, KFold, StratifiedKFold</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lightgbm <span class="keyword">as</span> lgb</span><br><span class="line"><span class="keyword">import</span> catboost <span class="keyword">as</span> ctb</span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> GridSearchCV</span><br><span class="line"><span class="keyword">from</span> sklearn.tree <span class="keyword">import</span> DecisionTreeClassifier, export_graphviz</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> graphviz</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">import</span> seaborn <span class="keyword">as</span> sns</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> warnings</span><br><span class="line">warnings.simplefilter(<span class="string">&#x27;ignore&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">!pip install kaggle</span><br></pre></td></tr></table></figure>
+
+<pre><code>Requirement already satisfied: kaggle in /usr/local/lib/python3.7/dist-packages (1.5.12)
+Requirement already satisfied: python-dateutil in /usr/local/lib/python3.7/dist-packages (from kaggle) (2.8.1)
+Requirement already satisfied: urllib3 in /usr/local/lib/python3.7/dist-packages (from kaggle) (1.24.3)
+Requirement already satisfied: requests in /usr/local/lib/python3.7/dist-packages (from kaggle) (2.23.0)
+Requirement already satisfied: six&gt;=1.10 in /usr/local/lib/python3.7/dist-packages (from kaggle) (1.15.0)
+Requirement already satisfied: certifi in /usr/local/lib/python3.7/dist-packages (from kaggle) (2020.12.5)
+Requirement already satisfied: python-slugify in /usr/local/lib/python3.7/dist-packages (from kaggle) (4.0.1)
+Requirement already satisfied: tqdm in /usr/local/lib/python3.7/dist-packages (from kaggle) (4.41.1)
+Requirement already satisfied: chardet&lt;4,&gt;=3.0.2 in /usr/local/lib/python3.7/dist-packages (from requests-&gt;kaggle) (3.0.4)
+Requirement already satisfied: idna&lt;3,&gt;=2.5 in /usr/local/lib/python3.7/dist-packages (from requests-&gt;kaggle) (2.10)
+Requirement already satisfied: text-unidecode&gt;=1.3 in /usr/local/lib/python3.7/dist-packages (from python-slugify-&gt;kaggle) (1.3)
+</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">!mkdir ~/.kaggle</span><br><span class="line">!echo <span class="string">&#x27;&#123; &quot;username&quot;: &quot;tlgks32&quot;, &quot;key&quot;: &quot;ebc90b09f1ea143f3ff91bf4b19c9956&quot;&#125;&#x27;</span> &gt; ~/.kaggle/kaggle.json</span><br><span class="line">!chmod <span class="number">600</span> ~/.kaggle/kaggle.json</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">!kaggle competitions <span class="built_in">list</span></span><br></pre></td></tr></table></figure>
+
+<pre><code>Warning: Looks like you&#39;re using an outdated API Version, please consider updating (server 1.5.12 / client 1.5.4)
+ref                                            deadline             category            reward  teamCount  userHasEntered  
+---------------------------------------------  -------------------  ---------------  ---------  ---------  --------------  
+contradictory-my-dear-watson                   2030-07-01 23:59:00  Getting Started     Prizes        132           False  
+gan-getting-started                            2030-07-01 23:59:00  Getting Started     Prizes        244           False  
+tpu-getting-started                            2030-06-03 23:59:00  Getting Started  Knowledge        783           False  
+digit-recognizer                               2030-01-01 00:00:00  Getting Started  Knowledge       4207           False  
+titanic                                        2030-01-01 00:00:00  Getting Started  Knowledge      34273            True  
+house-prices-advanced-regression-techniques    2030-01-01 00:00:00  Getting Started  Knowledge       8993            True  
+connectx                                       2030-01-01 00:00:00  Getting Started  Knowledge        727           False  
+nlp-getting-started                            2030-01-01 00:00:00  Getting Started  Knowledge       2403            True  
+competitive-data-science-predict-future-sales  2022-12-31 23:59:00  Playground           Kudos      11051           False  
+jane-street-market-prediction                  2021-08-23 23:59:00  Featured          $100,000       4245           False  
+hungry-geese                                   2021-07-26 23:59:00  Playground          Prizes        556           False  
+coleridgeinitiative-show-us-the-data           2021-06-22 23:59:00  Featured           $90,000        707           False  
+bms-molecular-translation                      2021-06-02 23:59:00  Featured           $50,000        553            True  
+birdclef-2021                                  2021-05-31 23:59:00  Research            $5,000        314           False  
+iwildcam2021-fgvc8                             2021-05-26 23:59:00  Research         Knowledge         25           False  
+herbarium-2021-fgvc8                           2021-05-26 23:59:00  Research         Knowledge         50           False  
+plant-pathology-2021-fgvc8                     2021-05-26 23:59:00  Research         Knowledge        354           False  
+hotel-id-2021-fgvc8                            2021-05-26 23:59:00  Research         Knowledge         67           False  
+hashcode-2021-oqr-extension                    2021-05-25 23:59:00  Playground       Knowledge        136           False  
+indoor-location-navigation                     2021-05-17 23:59:00  Research           $10,000       1020           False  
+</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">!kaggle competitions download -c tabular-playground-series-apr-<span class="number">2021</span></span><br></pre></td></tr></table></figure>
+
+<pre><code>Warning: Looks like you&#39;re using an outdated API Version, please consider updating (server 1.5.12 / client 1.5.4)
+Downloading train.csv.zip to /content
+  0% 0.00/2.13M [00:00&lt;?, ?B/s]
+100% 2.13M/2.13M [00:00&lt;00:00, 72.1MB/s]
+Downloading sample_submission.csv to /content
+  0% 0.00/879k [00:00&lt;?, ?B/s]
+100% 879k/879k [00:00&lt;00:00, 125MB/s]
+Downloading test.csv.zip to /content
+  0% 0.00/2.07M [00:00&lt;?, ?B/s]
+100% 2.07M/2.07M [00:00&lt;00:00, 141MB/s]
+</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">TARGET = <span class="string">&#x27;Survived&#x27;</span></span><br><span class="line"></span><br><span class="line">N_ESTIMATORS = <span class="number">1000</span></span><br><span class="line">N_SPLITS = <span class="number">10</span></span><br><span class="line">SEED = <span class="number">2021</span></span><br><span class="line">EARLY_STOPPING_ROUNDS = <span class="number">100</span></span><br><span class="line">VERBOSE = <span class="number">100</span></span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#랜덤 시드 생성</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">set_seed</span>(<span class="params">seed=<span class="number">42</span></span>):</span></span><br><span class="line">    random.seed(seed)</span><br><span class="line">    os.environ[<span class="string">&#x27;PYTHONHASHSEED&#x27;</span>] = <span class="built_in">str</span>(seed)</span><br><span class="line">    np.random.seed(seed)</span><br><span class="line">    </span><br><span class="line">set_seed(SEED)</span><br></pre></td></tr></table></figure>
+
+<h2 id="데이터-전처리"><a href="#데이터-전처리" class="headerlink" title="데이터 전처리"></a>데이터 전처리</h2><h3 id="lode-data"><a href="#lode-data" class="headerlink" title="lode data"></a>lode data</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">train_df = pd.read_csv(<span class="string">&#x27;train.csv&#x27;</span>)</span><br><span class="line">test_df = pd.read_csv(<span class="string">&#x27;test.csv&#x27;</span>)</span><br><span class="line">submission = pd.read_csv(<span class="string">&#x27;sample_submission.csv&#x27;</span>)</span><br><span class="line"><span class="comment">#test_df[&#x27;Survived&#x27;] = pd.read_csv(&quot;../input/submission-merged3/submission_merged3.csv&quot;)[&#x27;Survived&#x27;]</span></span><br><span class="line"></span><br><span class="line">all_df = pd.concat([train_df, test_df]).reset_index(drop=<span class="literal">True</span>)</span><br><span class="line"><span class="comment">#reset_index : 인덱스를 세팅한다. drop=True를 하면 인덱스를 세팅한걸 삭제함. </span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;Rows and Columns in train dataset:&#x27;</span>, train_df.shape)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;Rows and Columns in test dataset:&#x27;</span>, test_df.shape)</span><br></pre></td></tr></table></figure>
+
+<pre><code>Rows and Columns in train dataset: (100000, 12)
+Rows and Columns in test dataset: (100000, 11)
+</code></pre>
+<h3 id="결측치-갯수-출력"><a href="#결측치-갯수-출력" class="headerlink" title="결측치 갯수 출력"></a>결측치 갯수 출력</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;Missing values per columns in train dataset&#x27;</span>)</span><br><span class="line"><span class="keyword">for</span> col <span class="keyword">in</span> train_df.columns:</span><br><span class="line">    temp_col = train_df[col].isnull().<span class="built_in">sum</span>()</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&#x27;<span class="subst">&#123;col&#125;</span>: <span class="subst">&#123;temp_col&#125;</span>&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>()</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;Missing values per columns in test dataset&#x27;</span>)</span><br><span class="line"><span class="keyword">for</span> col <span class="keyword">in</span> test_df.columns:</span><br><span class="line">    temp_col = test_df[col].isnull().<span class="built_in">sum</span>()</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&#x27;<span class="subst">&#123;col&#125;</span>: <span class="subst">&#123;temp_col&#125;</span>&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<pre><code>Missing values per columns in train dataset
+PassengerId: 0
+Survived: 0
+Pclass: 0
+Name: 0
+Sex: 0
+Age: 3292
+SibSp: 0
+Parch: 0
+Ticket: 4623
+Fare: 134
+Cabin: 67866
+Embarked: 250
+
+Missing values per columns in test dataset
+PassengerId: 0
+Pclass: 0
+Name: 0
+Sex: 0
+Age: 3487
+SibSp: 0
+Parch: 0
+Ticket: 5181
+Fare: 133
+Cabin: 70831
+Embarked: 277
+</code></pre>
+<h3 id="Filling-missing-values"><a href="#Filling-missing-values" class="headerlink" title="Filling missing values"></a>Filling missing values</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#나이는 나이의 평균치로 채운다.</span></span><br><span class="line">all_df[<span class="string">&#x27;Age&#x27;</span>] = all_df[<span class="string">&#x27;Age&#x27;</span>].fillna(all_df[<span class="string">&#x27;Age&#x27;</span>].mean())</span><br><span class="line"></span><br><span class="line"><span class="comment">#cabin은 문자열을 분할하고, 제일 첫번째 글자를 따와서 넣는다. 결측치엔 X를 넣는다.</span></span><br><span class="line"><span class="comment">#strip() : 양쪽 공백을 지운다. 여기서느 x[0]외엔 다 지우는듯. </span></span><br><span class="line">all_df[<span class="string">&#x27;Cabin&#x27;</span>] = all_df[<span class="string">&#x27;Cabin&#x27;</span>].fillna(<span class="string">&#x27;X&#x27;</span>).<span class="built_in">map</span>(<span class="keyword">lambda</span> x: x[<span class="number">0</span>].strip())</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#print(all_df[&#x27;Ticket&#x27;].head(10))</span></span><br><span class="line"><span class="comment">#Ticket, fillna with &#x27;X&#x27;, split string and take first split </span></span><br><span class="line"><span class="comment">#split() : 문자열 나누기. 디폴트는 &#x27; &#x27;이고, 문자를 가진 데이터들이 전부 띄워쓰기로 구분되어있기때문에 가능. </span></span><br><span class="line">all_df[<span class="string">&#x27;Ticket&#x27;</span>] = all_df[<span class="string">&#x27;Ticket&#x27;</span>].fillna(<span class="string">&#x27;X&#x27;</span>).<span class="built_in">map</span>(<span class="keyword">lambda</span> x:<span class="built_in">str</span>(x).split()[<span class="number">0</span>] <span class="keyword">if</span> <span class="built_in">len</span>(<span class="built_in">str</span>(x).split()) &gt; <span class="number">1</span> <span class="keyword">else</span> <span class="string">&#x27;X&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">#pclass에 따른 Fare의 평균을 구해서 dictionary형태로 만든다. </span></span><br><span class="line">fare_map = all_df[[<span class="string">&#x27;Fare&#x27;</span>, <span class="string">&#x27;Pclass&#x27;</span>]].dropna().groupby(<span class="string">&#x27;Pclass&#x27;</span>).median().to_dict()</span><br><span class="line"><span class="comment">#fare의 결측치에 본인 행의 pclass 값을 넣고, 그 값을 fare 평균에 맵핑시킨다.  </span></span><br><span class="line">all_df[<span class="string">&#x27;Fare&#x27;</span>] = all_df[<span class="string">&#x27;Fare&#x27;</span>].fillna(all_df[<span class="string">&#x27;Pclass&#x27;</span>].<span class="built_in">map</span>(fare_map[<span class="string">&#x27;Fare&#x27;</span>]))</span><br><span class="line"><span class="comment">#유독 높은 가격이나 낮은 가격이 있기때문에, 이상치의 영향을 줄이기 위해서 Fare에 log를 취해준다.</span></span><br><span class="line">all_df[<span class="string">&#x27;Fare&#x27;</span>] = np.log1p(all_df[<span class="string">&#x27;Fare&#x27;</span>])</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#항구의 결측치를 X로 채운다. </span></span><br><span class="line">all_df[<span class="string">&#x27;Embarked&#x27;</span>] = all_df[<span class="string">&#x27;Embarked&#x27;</span>].fillna(<span class="string">&#x27;X&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">#이름은 성만 사용한다.</span></span><br><span class="line">all_df[<span class="string">&#x27;Name&#x27;</span>] = all_df[<span class="string">&#x27;Name&#x27;</span>].<span class="built_in">map</span>(<span class="keyword">lambda</span> x: x.split(<span class="string">&#x27;,&#x27;</span>)[<span class="number">0</span>])</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">data_1=all_df.loc[all_df[<span class="string">&#x27;Pclass&#x27;</span>]==<span class="number">1</span>].groupby(<span class="string">&#x27;Ticket&#x27;</span>)[<span class="string">&#x27;Ticket&#x27;</span>].count().sort_values(ascending=<span class="literal">False</span>)</span><br><span class="line"><span class="built_in">print</span>(data_1)</span><br><span class="line"><span class="built_in">print</span>()</span><br><span class="line">data_2=all_df.loc[all_df[<span class="string">&#x27;Pclass&#x27;</span>]==<span class="number">2</span>].groupby(<span class="string">&#x27;Ticket&#x27;</span>)[<span class="string">&#x27;Ticket&#x27;</span>].count().sort_values(ascending=<span class="literal">False</span>)</span><br><span class="line"><span class="built_in">print</span>(data_2)</span><br><span class="line"><span class="built_in">print</span>()</span><br><span class="line">data_3=all_df.loc[all_df[<span class="string">&#x27;Pclass&#x27;</span>]==<span class="number">3</span>].groupby(<span class="string">&#x27;Ticket&#x27;</span>)[<span class="string">&#x27;Ticket&#x27;</span>].count().sort_values(ascending=<span class="literal">False</span>)</span><br><span class="line"><span class="built_in">print</span>(data_3)</span><br><span class="line"><span class="built_in">print</span>()</span><br></pre></td></tr></table></figure>
+
+<pre><code>Ticket
+X             36336
+PC            16814
+C.A.            338
+SC/Paris        334
+SC/PARIS        260
+W./C.           206
+S.O.C.          192
+S.C./PARIS      191
+PP              186
+F.C.            183
+SC/AH           178
+F.C.C.          167
+STON/O          163
+CA.             161
+SOTON/O.Q.      123
+A/4             115
+A/5.            108
+W.E.P.           94
+WE/P             92
+SOTON/OQ         87
+STON/O2.         81
+CA               81
+A/5              70
+C                67
+A/4.             66
+P/PP             66
+SC               59
+SOTON/O2         48
+A./5.            46
+S.O./P.P.        40
+A.5.             33
+AQ/4             27
+A/S              23
+SCO/W            19
+S.P.             17
+SC/A4            16
+SW/PP            16
+S.O.P.           15
+SC/A.3           15
+SO/C             14
+S.C./A.4.        14
+C.A./SOTON       14
+A.               14
+STON/OQ.         13
+W/C              13
+S.W./PP          11
+LP               11
+AQ/3.             8
+Fa                7
+A4.               6
+Name: Ticket, dtype: int64
+
+Ticket
+X             31337
+A.              997
+C.A.            717
+SC/PARIS        470
+STON/O          387
+PC              330
+S.O.C.          313
+PP              308
+SC/AH           284
+W./C.           259
+SOTON/O.Q.      219
+F.C.C.          203
+A/5.            200
+A/4             152
+SC/Paris        135
+S.C./PARIS      119
+SOTON/O2        112
+CA.             107
+STON/O2.        106
+C               104
+F.C.            100
+WE/P             92
+SOTON/OQ         86
+A/5              82
+CA               66
+W.E.P.           60
+A./5.            60
+S.O./P.P.        54
+P/PP             50
+A/4.             46
+SCO/W            36
+SC               33
+A.5.             29
+AQ/4             29
+LP               25
+SC/A.3           20
+A/S              19
+C.A./SOTON       19
+SC/A4            17
+Fa               15
+S.C./A.4.        13
+S.W./PP          13
+SO/C             13
+STON/OQ.         12
+W/C              11
+S.P.             10
+S.O.P.            9
+SW/PP             9
+A4.               7
+AQ/3.             6
+Name: Ticket, dtype: int64
+
+Ticket
+X             84781
+A.             6420
+C.A.           2615
+STON/O         1508
+A/5.            918
+SOTON/O.Q.      719
+PP              679
+SC/PARIS        642
+W./C.           623
+PC              595
+F.C.C.          541
+A/5             420
+CA.             368
+STON/O2.        363
+SC/AH           331
+A/4             268
+SOTON/O2        264
+S.O.C.          231
+C               227
+SC/Paris        177
+S.O./P.P.       177
+CA              172
+SOTON/OQ        172
+W.E.P.          154
+F.C.            131
+S.C./PARIS      127
+A./5.           122
+WE/P            121
+SC              106
+A/4.            104
+SCO/W            74
+A.5.             72
+P/PP             68
+SC/A4            67
+AQ/4             56
+LP               41
+Fa               37
+STON/OQ.         37
+S.W./PP          32
+SC/A.3           31
+C.A./SOTON       31
+SW/PP            30
+SO/C             28
+A/S              28
+AQ/3.            26
+S.P.             24
+S.C./A.4.        23
+S.O.P.           21
+A4.              20
+W/C              20
+Name: Ticket, dtype: int64
+</code></pre>
+<h2 id="인코딩"><a href="#인코딩" class="headerlink" title="인코딩"></a>인코딩</h2><p>변수별로 인코딩을 다르게 해준다. </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">label_cols = [<span class="string">&#x27;Name&#x27;</span>, <span class="string">&#x27;Ticket&#x27;</span>, <span class="string">&#x27;Sex&#x27;</span>,<span class="string">&#x27;Pclass&#x27;</span>,<span class="string">&#x27;Embarked&#x27;</span>]</span><br><span class="line">onehot_cols = [ <span class="string">&#x27;Cabin&#x27;</span>,]</span><br><span class="line">numerical_cols = [ <span class="string">&#x27;Age&#x27;</span>, <span class="string">&#x27;SibSp&#x27;</span>, <span class="string">&#x27;Parch&#x27;</span>, <span class="string">&#x27;Fare&#x27;</span>]</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#라벨 인코딩 함수. c라는 매개변수를 받아서 맞게 트렌스폼 해준다. </span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">label_encoder</span>(<span class="params">c</span>):</span></span><br><span class="line">    le = LabelEncoder()</span><br><span class="line">    <span class="keyword">return</span> le.fit_transform(c)</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">#StandardScaler(): 평균을 제거하고 데이터를 단위 분산으로 조정한다. </span></span><br><span class="line"><span class="comment">#그러나 이상치가 있다면 평균과 표준편차에 영향을 미쳐 변환된 데이터의 확산은 매우 달라지게 되는 함수</span></span><br><span class="line">scaler = StandardScaler()</span><br><span class="line"></span><br><span class="line">onehot_encoded_df = pd.get_dummies(all_df[onehot_cols])</span><br><span class="line">label_encoded_df = all_df[label_cols].apply(label_encoder)</span><br><span class="line">numerical_df = pd.DataFrame(scaler.fit_transform(all_df[numerical_cols]), columns=numerical_cols)</span><br><span class="line">target_df = all_df[TARGET]</span><br><span class="line"></span><br><span class="line">all_df = pd.concat([numerical_df, label_encoded_df,onehot_encoded_df, target_df], axis=<span class="number">1</span>)</span><br><span class="line"><span class="comment">#all_df = pd.concat([numerical_df, label_encoded_df, target_df], axis=1)</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="모델링"><a href="#모델링" class="headerlink" title="모델링"></a>모델링</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">drop_list=[<span class="string">&#x27;Survived&#x27;</span>,<span class="string">&#x27;Parch&#x27;</span>]</span><br></pre></td></tr></table></figure>
+
+<h2 id="not-pseudo"><a href="#not-pseudo" class="headerlink" title="not pseudo"></a>not pseudo</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">train = all_df.iloc[:<span class="number">100000</span>, :]<span class="comment">#0개~100000개</span></span><br><span class="line">test = all_df.iloc[<span class="number">100000</span>:, :] <span class="comment">#100000개~ </span></span><br><span class="line"><span class="comment">#iloc은 정수형 인덱싱</span></span><br><span class="line">test = test.drop(<span class="string">&#x27;Survived&#x27;</span>, axis=<span class="number">1</span>) <span class="comment">#test에서 종속변수를 드랍한다. </span></span><br><span class="line">model_results = pd.DataFrame()</span><br><span class="line">folds = <span class="number">5</span></span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">y= train.loc[:,<span class="string">&#x27;Survived&#x27;</span>]</span><br><span class="line">X= train.drop(drop_list,axis=<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="pseudo"><a href="#pseudo" class="headerlink" title="pseudo"></a>pseudo</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># y=all_df.loc[:,&#x27;Survived&#x27;]</span></span><br><span class="line"><span class="comment"># X=all_df.drop(&#x27;Survived&#x27;,axis=1)</span></span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">X_train, X_valid, y_train, y_valid = train_test_split(X,y,test_size=<span class="number">0.25</span>, random_state=<span class="number">21</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> sklearn <span class="keyword">import</span> metrics  </span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> accuracy_score</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">params = &#123;</span><br><span class="line">    <span class="string">&#x27;metric&#x27;</span>: <span class="string">&#x27;binary_logloss&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;n_estimators&#x27;</span>: N_ESTIMATORS,</span><br><span class="line">    <span class="string">&#x27;objective&#x27;</span>: <span class="string">&#x27;binary&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;random_state&#x27;</span>: SEED,</span><br><span class="line">    <span class="string">&#x27;learning_rate&#x27;</span>: <span class="number">0.01</span>,</span><br><span class="line">    <span class="string">&#x27;min_child_samples&#x27;</span>: <span class="number">150</span>,</span><br><span class="line">    <span class="string">&#x27;reg_alpha&#x27;</span>: <span class="number">3e-5</span>,</span><br><span class="line">    <span class="string">&#x27;reg_lambda&#x27;</span>: <span class="number">9e-2</span>,</span><br><span class="line">    <span class="string">&#x27;num_leaves&#x27;</span>: <span class="number">20</span>,</span><br><span class="line">    <span class="string">&#x27;max_depth&#x27;</span>: <span class="number">16</span>,</span><br><span class="line">    <span class="string">&#x27;colsample_bytree&#x27;</span>: <span class="number">0.8</span>,</span><br><span class="line">    <span class="string">&#x27;subsample&#x27;</span>: <span class="number">0.8</span>,</span><br><span class="line">    <span class="string">&#x27;subsample_freq&#x27;</span>: <span class="number">2</span>,</span><br><span class="line">    <span class="string">&#x27;max_bin&#x27;</span>: <span class="number">240</span>,</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">lgbm_model=lgb.LGBMClassifier(**params)</span><br><span class="line">lgbm_model.fit(X_train,y_train)</span><br><span class="line">lgbm_pred=lgbm_model.predict(X_valid)</span><br><span class="line"></span><br><span class="line">lgbm_R2=metrics.accuracy_score(y_valid,lgbm_pred)</span><br><span class="line"><span class="comment">#lgbm_rmse = np.sqrt(mean_squared_error(lgbm_pred,y_valid))</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;R2 : &#x27;</span>,lgbm_R2)</span><br><span class="line"><span class="comment">#print(&quot;RMSE : &quot;, lgbm_rmse)</span></span><br></pre></td></tr></table></figure>
+
+<pre><code>R2 :  0.78076
+</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(<span class="built_in">len</span>(X_train.columns))</span><br><span class="line"><span class="built_in">print</span>(X_train.columns)</span><br></pre></td></tr></table></figure>
+
+<pre><code>17
+Index([&#39;Age&#39;, &#39;SibSp&#39;, &#39;Fare&#39;, &#39;Name&#39;, &#39;Ticket&#39;, &#39;Sex&#39;, &#39;Pclass&#39;, &#39;Embarked&#39;,
+       &#39;Cabin_A&#39;, &#39;Cabin_B&#39;, &#39;Cabin_C&#39;, &#39;Cabin_D&#39;, &#39;Cabin_E&#39;, &#39;Cabin_F&#39;,
+       &#39;Cabin_G&#39;, &#39;Cabin_T&#39;, &#39;Cabin_X&#39;],
+      dtype=&#39;object&#39;)
+</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">cal_adjust_r2</span>(<span class="params">r2</span>):</span></span><br><span class="line">    n=<span class="number">80000</span></span><br><span class="line">    k= <span class="built_in">len</span>(X_train.columns)</span><br><span class="line">    temp=(<span class="number">1</span>-r2)*(n-<span class="number">1</span>)</span><br><span class="line">    temp2=n-k-<span class="number">1</span></span><br><span class="line">    ad_r2=<span class="number">1</span>-(temp/temp2)</span><br><span class="line">    <span class="keyword">return</span> ad_r2</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ad_r2_lgbm=cal_adjust_r2(lgbm_R2)</span><br><span class="line"><span class="built_in">print</span>(ad_r2_lgbm)</span><br></pre></td></tr></table></figure>
+
+<pre><code>0.7807134010152285
+</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#NOT Pseudo</span></span><br><span class="line">train_kf_feature=train.drop(drop_list,axis=<span class="number">1</span>)</span><br><span class="line">train_kf_label=train.loc[:,<span class="string">&#x27;Survived&#x27;</span>]</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#Pseudo</span></span><br><span class="line"><span class="comment"># train_kf_feature=all_df.drop(drop_list,axis=1)</span></span><br><span class="line"><span class="comment"># train_kf_label=all_df.loc[:,&#x27;Survived&#x27;]</span></span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">lgbm_temp = lgbm_model.booster_</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line">n_iter=<span class="number">0</span></span><br><span class="line">kfold=StratifiedKFold(n_splits=<span class="number">5</span>)</span><br><span class="line">cv_accuracy=[]</span><br><span class="line">feature_importances = pd.DataFrame()</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> train_idx, test_idx <span class="keyword">in</span> kfold.split(train_kf_feature,train_kf_label):</span><br><span class="line"></span><br><span class="line">    X_train=train_kf_feature.iloc[train_idx]</span><br><span class="line">    X_test=train_kf_feature.iloc[test_idx]</span><br><span class="line">    y_train,y_test=train_kf_label.iloc[train_idx],train_kf_label.iloc[test_idx]</span><br><span class="line">    <span class="comment">#학습 진행</span></span><br><span class="line">    lgbm_model.fit(X_train,y_train)</span><br><span class="line">    <span class="comment">#예측</span></span><br><span class="line">    fold_pred=lgbm_model.predict(X_test)</span><br><span class="line">    </span><br><span class="line">    <span class="comment">#정확도</span></span><br><span class="line">    n_iter+=<span class="number">1</span></span><br><span class="line">    fold_accuracy=metrics.accuracy_score(y_test,fold_pred)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;\n &#123;&#125;번째  교차 검증 정확도 : &#123;&#125; , 학습 데이터 크기:&#123;&#125;, 검증 데이터 크기 :&#123;&#125; &quot;</span>.</span><br><span class="line">          <span class="built_in">format</span>(n_iter,fold_accuracy,X_train.shape[<span class="number">0</span>],X_test.shape[<span class="number">0</span>]))</span><br><span class="line">    cv_accuracy.append(fold_accuracy)</span><br><span class="line">    </span><br><span class="line">    <span class="comment">#중요도 </span></span><br><span class="line">    fi_tmp = pd.DataFrame()</span><br><span class="line">    fi_tmp[<span class="string">&quot;feature&quot;</span>] = lgbm_temp.feature_name()</span><br><span class="line">    fi_tmp[<span class="string">&quot;importance&quot;</span>] = lgbm_model.feature_importances_</span><br><span class="line">    feature_importances = feature_importances.append(fi_tmp)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;\n 평균 검증 정확도 : &#x27;</span>,np.mean(cv_accuracy))</span><br><span class="line">    </span><br></pre></td></tr></table></figure>
+
+<pre><code> 1번째  교차 검증 정확도 : 0.78015 , 학습 데이터 크기:80000, 검증 데이터 크기 :20000 
+
+ 2번째  교차 검증 정확도 : 0.7824 , 학습 데이터 크기:80000, 검증 데이터 크기 :20000 
+
+ 3번째  교차 검증 정확도 : 0.78185 , 학습 데이터 크기:80000, 검증 데이터 크기 :20000 
+
+ 4번째  교차 검증 정확도 : 0.7816 , 학습 데이터 크기:80000, 검증 데이터 크기 :20000 
+
+ 5번째  교차 검증 정확도 : 0.7809 , 학습 데이터 크기:80000, 검증 데이터 크기 :20000 
+
+ 평균 검증 정확도 :  0.78138
+</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">order = <span class="built_in">list</span>(feature_importances.groupby(<span class="string">&quot;feature&quot;</span>).</span><br><span class="line">             mean().sort_values(<span class="string">&quot;importance&quot;</span>, ascending=<span class="literal">False</span>).index)</span><br><span class="line">plt.figure(figsize=(<span class="number">10</span>, <span class="number">10</span>))</span><br><span class="line">sns.barplot(x=<span class="string">&quot;importance&quot;</span>, y=<span class="string">&quot;feature&quot;</span>, data=feature_importances, order=order)</span><br><span class="line">plt.title(<span class="string">&quot;&#123;&#125; importance&quot;</span>.<span class="built_in">format</span>(<span class="string">&quot;LGBMRegressor&quot;</span>))</span><br><span class="line">plt.tight_layout()</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="output_46/output_46_0.png" alt="png"></p>
+<h3 id="CATBoost"><a href="#CATBoost" class="headerlink" title="CATBoost"></a>CATBoost</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">params_cat = &#123;</span><br><span class="line">    <span class="string">&#x27;bootstrap_type&#x27;</span>: <span class="string">&#x27;Poisson&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;loss_function&#x27;</span>: <span class="string">&#x27;Logloss&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;eval_metric&#x27;</span>: <span class="string">&#x27;Logloss&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;random_seed&#x27;</span>: SEED,</span><br><span class="line">    <span class="string">&#x27;task_type&#x27;</span>: <span class="string">&#x27;GPU&#x27;</span>,</span><br><span class="line">    <span class="string">&#x27;max_depth&#x27;</span>: <span class="number">8</span>,</span><br><span class="line">    <span class="string">&#x27;learning_rate&#x27;</span>: <span class="number">0.01</span>,</span><br><span class="line">    <span class="string">&#x27;n_estimators&#x27;</span>: N_ESTIMATORS,</span><br><span class="line">    <span class="string">&#x27;max_bin&#x27;</span>: <span class="number">280</span>,</span><br><span class="line">    <span class="string">&#x27;min_data_in_leaf&#x27;</span>: <span class="number">64</span>,</span><br><span class="line">    <span class="string">&#x27;l2_leaf_reg&#x27;</span>: <span class="number">0.01</span>,</span><br><span class="line">    <span class="string">&#x27;subsample&#x27;</span>: <span class="number">0.8</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#새로운 트레인 valid 셋</span></span><br><span class="line">X_train, X_valid, y_train, y_valid = train_test_split(X,y,test_size=<span class="number">0.25</span>, random_state=<span class="number">21</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">cat_model=ctb.CatBoostClassifier(**params_cat)</span><br><span class="line">cat_model.fit(X_train, y_train,verbose=<span class="number">300</span>)</span><br><span class="line">cat_pred=cat_model.predict(X_valid)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;\n정확도: &quot;</span>, metrics.accuracy_score(y_valid, cat_pred))</span><br><span class="line">cat_R2=metrics.accuracy_score(y_valid,cat_pred)</span><br><span class="line"><span class="comment">#lgbm_rmse = np.sqrt(mean_squared_error(lgbm_pred,y_valid))</span></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;R2 : &#x27;</span>,cat_R2)</span><br></pre></td></tr></table></figure>
+
+<pre><code>0:    learn: 0.6881875    total: 18ms    remaining: 18s
+300:    learn: 0.4671082    total: 3.33s    remaining: 7.73s
+600:    learn: 0.4580212    total: 6.44s    remaining: 4.28s
+900:    learn: 0.4512272    total: 9.49s    remaining: 1.04s
+999:    learn: 0.4491741    total: 10.5s    remaining: 0us
+
+정확도:  0.78044
+R2 :  0.78044
+</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line">cv_accuracy=[]</span><br><span class="line">feature_importances = pd.DataFrame()</span><br><span class="line"></span><br><span class="line"><span class="keyword">for</span> train_idx, test_idx <span class="keyword">in</span> kfold.split(train_kf_feature,train_kf_label):</span><br><span class="line"></span><br><span class="line">    X_train=train_kf_feature.iloc[train_idx]</span><br><span class="line">    X_test=train_kf_feature.iloc[test_idx]</span><br><span class="line">    y_train,y_test=train_kf_label.iloc[train_idx],train_kf_label.iloc[test_idx]</span><br><span class="line">    <span class="comment">#학습 진행</span></span><br><span class="line">    cat_model.fit(X_train,y_train,verbose=<span class="number">500</span>)</span><br><span class="line">    <span class="comment">#예측</span></span><br><span class="line">    fold_pred=cat_model.predict(X_test)</span><br><span class="line">    </span><br><span class="line">    <span class="comment">#정확도</span></span><br><span class="line">    n_iter+=<span class="number">1</span></span><br><span class="line">    fold_accuracy=metrics.accuracy_score(y_test,fold_pred)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;\n &#123;&#125;번째  교차 검증 정확도 : &#123;&#125; , 학습 데이터 크기:&#123;&#125;, 검증 데이터 크기 :&#123;&#125; &quot;</span>.</span><br><span class="line">          <span class="built_in">format</span>(n_iter,fold_accuracy,X_train.shape[<span class="number">0</span>],X_test.shape[<span class="number">0</span>]))</span><br><span class="line">    cv_accuracy.append(fold_accuracy)</span><br><span class="line">    </span><br><span class="line">    <span class="comment">#중요도 . lgbm이랑 명령어가 다르다.</span></span><br><span class="line">    fi_tmp = pd.DataFrame()</span><br><span class="line">    fi_tmp[<span class="string">&quot;feature&quot;</span>] = X_test.columns.to_list()</span><br><span class="line">    fi_tmp[<span class="string">&quot;importance&quot;</span>] = cat_model.get_feature_importance()</span><br><span class="line">    feature_importances = feature_importances.append(fi_tmp)</span><br><span class="line"></span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;\n 평균 검증 정확도 : &#x27;</span>,np.mean(cv_accuracy))</span><br></pre></td></tr></table></figure>
+
+<pre><code>0:    learn: 0.6881430    total: 11.2ms    remaining: 11.2s
+500:    learn: 0.4620724    total: 5.17s    remaining: 5.15s
+999:    learn: 0.4513527    total: 10.2s    remaining: 0us
+
+ 6번째  교차 검증 정확도 : 0.77945 , 학습 데이터 크기:80000, 검증 데이터 크기 :20000 
+0:    learn: 0.6881914    total: 12.4ms    remaining: 12.3s
+500:    learn: 0.4635447    total: 5.02s    remaining: 5s
+999:    learn: 0.4529141    total: 10.2s    remaining: 0us
+
+ 7번째  교차 검증 정확도 : 0.78335 , 학습 데이터 크기:80000, 검증 데이터 크기 :20000 
+0:    learn: 0.6881970    total: 13.6ms    remaining: 13.6s
+500:    learn: 0.4635994    total: 5.2s    remaining: 5.18s
+999:    learn: 0.4529137    total: 10.3s    remaining: 0us
+
+ 8번째  교차 검증 정확도 : 0.78265 , 학습 데이터 크기:80000, 검증 데이터 크기 :20000 
+0:    learn: 0.6882583    total: 11.2ms    remaining: 11.2s
+500:    learn: 0.4622575    total: 5.08s    remaining: 5.06s
+999:    learn: 0.4513804    total: 10.1s    remaining: 0us
+
+ 9번째  교차 검증 정확도 : 0.7821 , 학습 데이터 크기:80000, 검증 데이터 크기 :20000 
+0:    learn: 0.6882789    total: 15.4ms    remaining: 15.3s
+500:    learn: 0.4630108    total: 5.1s    remaining: 5.08s
+999:    learn: 0.4522854    total: 10.1s    remaining: 0us
+
+ 10번째  교차 검증 정확도 : 0.7802 , 학습 데이터 크기:80000, 검증 데이터 크기 :20000 
+
+ 평균 검증 정확도 :  0.78155
+</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># just to get ideas to improve</span></span><br><span class="line">order = <span class="built_in">list</span>(feature_importances.groupby(<span class="string">&quot;feature&quot;</span>).mean().sort_values(<span class="string">&quot;importance&quot;</span>, ascending=<span class="literal">False</span>).index)</span><br><span class="line">plt.figure(figsize=(<span class="number">10</span>, <span class="number">10</span>))</span><br><span class="line">sns.barplot(x=<span class="string">&quot;importance&quot;</span>, y=<span class="string">&quot;feature&quot;</span>, data=feature_importances, order=order)</span><br><span class="line">plt.title(<span class="string">&quot;&#123;&#125; importance&quot;</span>.<span class="built_in">format</span>(<span class="string">&quot;CatBoostClassifier&quot;</span>))</span><br><span class="line">plt.tight_layout()</span><br></pre></td></tr></table></figure>
+
+
+<p><img src="output_46/output_52_0.png" alt="png"></p>
+<h2 id="Submission"><a href="#Submission" class="headerlink" title="Submission"></a>Submission</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">create_submission</span>(<span class="params">model, test, test_passenger_id, model_name</span>):</span></span><br><span class="line">    y_pred_test = model.predict_proba(test)[:, <span class="number">1</span>]</span><br><span class="line">    submission = pd.DataFrame(</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="string">&#x27;PassengerId&#x27;</span>: test_passenger_id, </span><br><span class="line">            <span class="string">&#x27;Survived&#x27;</span>: (y_pred_test &gt;= <span class="number">0.5</span>).astype(<span class="built_in">int</span>),</span><br><span class="line">        &#125;</span><br><span class="line">    )</span><br><span class="line">    submission.to_csv(<span class="string">f&quot;submission_<span class="subst">&#123;model_name&#125;</span>.csv&quot;</span>, index=<span class="literal">False</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> y_pred_test</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">test_df.head()</span><br></pre></td></tr></table></figure>
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+<pre><code>.dataframe tbody tr th &#123;
+    vertical-align: top;
+&#125;
+
+.dataframe thead th &#123;
+    text-align: right;
+&#125;
+</code></pre>
+<p></style></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>PassengerId</th>
+      <th>Pclass</th>
+      <th>Name</th>
+      <th>Sex</th>
+      <th>Age</th>
+      <th>SibSp</th>
+      <th>Parch</th>
+      <th>Ticket</th>
+      <th>Fare</th>
+      <th>Cabin</th>
+      <th>Embarked</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>0</th>
+      <td>100000</td>
+      <td>3</td>
+      <td>Holliday, Daniel</td>
+      <td>male</td>
+      <td>19.0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>24745</td>
+      <td>63.01</td>
+      <td>NaN</td>
+      <td>S</td>
+    </tr>
+    <tr>
+      <th>1</th>
+      <td>100001</td>
+      <td>3</td>
+      <td>Nguyen, Lorraine</td>
+      <td>female</td>
+      <td>53.0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>13264</td>
+      <td>5.81</td>
+      <td>NaN</td>
+      <td>S</td>
+    </tr>
+    <tr>
+      <th>2</th>
+      <td>100002</td>
+      <td>1</td>
+      <td>Harris, Heather</td>
+      <td>female</td>
+      <td>19.0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>25990</td>
+      <td>38.91</td>
+      <td>B15315</td>
+      <td>C</td>
+    </tr>
+    <tr>
+      <th>3</th>
+      <td>100003</td>
+      <td>2</td>
+      <td>Larsen, Eric</td>
+      <td>male</td>
+      <td>25.0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>314011</td>
+      <td>12.93</td>
+      <td>NaN</td>
+      <td>S</td>
+    </tr>
+    <tr>
+      <th>4</th>
+      <td>100004</td>
+      <td>1</td>
+      <td>Cleary, Sarah</td>
+      <td>female</td>
+      <td>17.0</td>
+      <td>0</td>
+      <td>2</td>
+      <td>26203</td>
+      <td>26.89</td>
+      <td>B22515</td>
+      <td>C</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#X_test=test.drop(&#x27;Pclass&#x27;,axis=1)</span></span><br><span class="line">test = all_df.iloc[<span class="number">100000</span>:, :] <span class="comment">#100000개~ </span></span><br><span class="line">X_test=test.drop(drop_list,axis=<span class="number">1</span>)</span><br><span class="line">X_test.head()</span><br></pre></td></tr></table></figure>
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+<pre><code>.dataframe tbody tr th &#123;
+    vertical-align: top;
+&#125;
+
+.dataframe thead th &#123;
+    text-align: right;
+&#125;
+</code></pre>
+<p></style></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Age</th>
+      <th>SibSp</th>
+      <th>Fare</th>
+      <th>Name</th>
+      <th>Ticket</th>
+      <th>Sex</th>
+      <th>Pclass</th>
+      <th>Embarked</th>
+      <th>Cabin_A</th>
+      <th>Cabin_B</th>
+      <th>Cabin_C</th>
+      <th>Cabin_D</th>
+      <th>Cabin_E</th>
+      <th>Cabin_F</th>
+      <th>Cabin_G</th>
+      <th>Cabin_T</th>
+      <th>Cabin_X</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>100000</th>
+      <td>-0.937422</td>
+      <td>-0.539572</td>
+      <td>0.949786</td>
+      <td>10830</td>
+      <td>49</td>
+      <td>1</td>
+      <td>2</td>
+      <td>2</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>100001</th>
+      <td>1.123570</td>
+      <td>-0.539572</td>
+      <td>-1.273379</td>
+      <td>17134</td>
+      <td>49</td>
+      <td>0</td>
+      <td>2</td>
+      <td>2</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>100002</th>
+      <td>-0.937422</td>
+      <td>-0.539572</td>
+      <td>0.481059</td>
+      <td>9978</td>
+      <td>49</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>100003</th>
+      <td>-0.573717</td>
+      <td>-0.539572</td>
+      <td>-0.563310</td>
+      <td>13303</td>
+      <td>49</td>
+      <td>1</td>
+      <td>1</td>
+      <td>2</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>100004</th>
+      <td>-1.058657</td>
+      <td>-0.539572</td>
+      <td>0.125497</td>
+      <td>4406</td>
+      <td>49</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">test_pred_lightgbm = create_submission(</span><br><span class="line">    lgbm_model, X_test, test_df[<span class="string">&quot;PassengerId&quot;</span>], <span class="string">&quot;lightgbm&quot;</span></span><br><span class="line">)</span><br><span class="line">test_pred_catboost = create_submission(</span><br><span class="line">    cat_model, X_test, test_df[<span class="string">&quot;PassengerId&quot;</span>], <span class="string">&quot;catboost&quot;</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">test_pred_merged = (</span><br><span class="line"></span><br><span class="line">    test_pred_lightgbm + </span><br><span class="line">    test_pred_catboost </span><br><span class="line">)</span><br><span class="line">test_pred_merged = np.<span class="built_in">round</span>(test_pred_merged / <span class="number">2</span>)</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">submission = pd.DataFrame(</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="string">&#x27;PassengerId&#x27;</span>: test_df[<span class="string">&quot;PassengerId&quot;</span>], </span><br><span class="line">        <span class="string">&#x27;Survived&#x27;</span>: test_pred_merged.astype(<span class="built_in">int</span>),</span><br><span class="line">    &#125;</span><br><span class="line">)</span><br><span class="line">submission.to_csv(<span class="string">f&quot;submission_merged3.csv&quot;</span>, index=<span class="literal">False</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="score"><a href="#score" class="headerlink" title="score"></a>score</h2><p>kaggle public score : <em>0.80354</em></p>
+</p>
+      <div class="post-button"><a class="btn" href="/2021/04/27/kaggle_playground_featureengineering_study2/" rel="noopener"><i class="fa fa-angle-double-right fa-fw"></i>Read More</a></div>
+    </div>
+  </div>
+  <div class="lx-entry padding">
+    <div>
       <h2 class="title"><a href="/2021/04/16/210416%EB%B0%9C%ED%91%9C/">210416발표</a></h2>
       <span class="lx-post-detail"><i class="fa fa-calendar-o"></i> 2021-04-16</span>
       <p><h1 id="발표-및-정리"><a href="#발표-및-정리" class="headerlink" title="발표 및 정리"></a>발표 및 정리</h1><p> 선생님 피드백  : </p>
@@ -35269,44 +35976,6 @@ formatter = FuncFormatter(major_formatter)</code></pre>
 <p>#유의확률이 1, 즉 귀무가설을 기각할 수 없다, result$after의 평균 점수가 result$before의 평균 점수보다 크다. </p>
 </p>
       <div class="post-button"><a class="btn" href="/2021/03/29/0329_KORIT/" rel="noopener"><i class="fa fa-angle-double-right fa-fw"></i>Read More</a></div>
-    </div>
-  </div>
-  <div class="lx-entry padding">
-    <div>
-      <h2 class="title"><a href="/2021/03/23/%EB%B9%85%EB%8D%B0%EC%9D%B4%ED%84%B0_%EC%8B%9C%EA%B0%81%ED%99%94_0323_%EC%9D%B4%ED%98%84%EC%A0%95/">빅데이터 시각화 0323</a></h2>
-      <span class="lx-post-detail"><i class="fa fa-calendar-o"></i> 2021-03-23</span>
-      <p><h2 id="문제-1-패키지-설치-방법-MD"><a href="#문제-1-패키지-설치-방법-MD" class="headerlink" title="문제 1. 패키지 설치 방법 MD"></a>문제 1. 패키지 설치 방법 MD</h2><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">library(ggplot2)</span><br><span class="line">library(dplyr)</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">## </span><br><span class="line">## Attaching package: &#39;dplyr&#39;</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">## The following objects are masked from &#39;package:stats&#39;:</span><br><span class="line">## </span><br><span class="line">##     filter, lag</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">## The following objects are masked from &#39;package:base&#39;:</span><br><span class="line">## </span><br><span class="line">##     intersect, setdiff, setequal, union</span><br></pre></td></tr></table></figure>
-
-<h2 id="문제-2-질적-변수와-양적-병수의-차이에-대해-설명하시오"><a href="#문제-2-질적-변수와-양적-병수의-차이에-대해-설명하시오" class="headerlink" title="문제 2. 질적 변수와 양적 병수의 차이에 대해 설명하시오"></a>문제 2. 질적 변수와 양적 병수의 차이에 대해 설명하시오</h2><p>질적 변수는 어떠한 카테고리내에서 다양하게 모이는 변수이고, 양적 변수는 크기를 숫자로 나타내어 유의미한 가치를 가지는 변수입니다.  </p>
-<h2 id="문제-3-엑셀-데이터를-불러오세요"><a href="#문제-3-엑셀-데이터를-불러오세요" class="headerlink" title="문제 3. 엑셀 데이터를 불러오세요"></a>문제 3. 엑셀 데이터를 불러오세요</h2><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">library(dplyr)</span><br><span class="line">counties&lt;-readxl::read_xlsx(<span class="string">&quot;1_day/docs/counties.xslx&quot;</span>,sheet=<span class="number">1</span>)</span><br><span class="line">glimpse(counties)</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">## Rows: 3,138</span><br><span class="line">## Columns: 40</span><br><span class="line">## $ census_id          &lt;chr&gt; &quot;1001&quot;, &quot;1003&quot;, &quot;1005&quot;, &quot;1007&quot;, &quot;1009&quot;, &quot;1011&quot;, &quot;10~</span><br><span class="line">## $ state              &lt;chr&gt; &quot;Alabama&quot;, &quot;Alabama&quot;, &quot;Alabama&quot;, &quot;Alabama&quot;, &quot;Alabam~</span><br><span class="line">## $ county             &lt;chr&gt; &quot;Autauga&quot;, &quot;Baldwin&quot;, &quot;Barbour&quot;, &quot;Bibb&quot;, &quot;Blount&quot;, ~</span><br><span class="line">## $ region             &lt;chr&gt; &quot;South&quot;, &quot;South&quot;, &quot;South&quot;, &quot;South&quot;, &quot;South&quot;, &quot;South~</span><br><span class="line">## $ metro              &lt;chr&gt; &quot;Metro&quot;, &quot;Metro&quot;, &quot;Nonmetro&quot;, &quot;Metro&quot;, &quot;Metro&quot;, &quot;No~</span><br><span class="line">## $ population         &lt;dbl&gt; 55221, 195121, 26932, 22604, 57710, 10678, 20354, 1~</span><br><span class="line">## $ men                &lt;dbl&gt; 26745, 95314, 14497, 12073, 28512, 5660, 9502, 5627~</span><br><span class="line">## $ women              &lt;dbl&gt; 28476, 99807, 12435, 10531, 29198, 5018, 10852, 603~</span><br><span class="line">## $ hispanic           &lt;dbl&gt; 2.6, 4.5, 4.6, 2.2, 8.6, 4.4, 1.2, 3.5, 0.4, 1.5, 7~</span><br><span class="line">## $ white              &lt;dbl&gt; 75.8, 83.1, 46.2, 74.5, 87.9, 22.2, 53.3, 73.0, 57.~</span><br><span class="line">## $ black              &lt;dbl&gt; 18.5, 9.5, 46.7, 21.4, 1.5, 70.7, 43.8, 20.3, 40.3,~</span><br><span class="line">## $ native             &lt;dbl&gt; 0.4, 0.6, 0.2, 0.4, 0.3, 1.2, 0.1, 0.2, 0.2, 0.6, 0~</span><br><span class="line">## $ asian              &lt;dbl&gt; 1.0, 0.7, 0.4, 0.1, 0.1, 0.2, 0.4, 0.9, 0.8, 0.3, 0~</span><br><span class="line">## $ pacific            &lt;dbl&gt; 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0~</span><br><span class="line">## $ citizens           &lt;dbl&gt; 40725, 147695, 20714, 17495, 42345, 8057, 15581, 88~</span><br><span class="line">## $ income             &lt;dbl&gt; 51281, 50254, 32964, 38678, 45813, 31938, 32229, 41~</span><br><span class="line">## $ income_err         &lt;dbl&gt; 2391, 1263, 2973, 3995, 3141, 5884, 1793, 925, 2949~</span><br><span class="line">## $ income_per_cap     &lt;dbl&gt; 24974, 27317, 16824, 18431, 20532, 17580, 18390, 21~</span><br><span class="line">## $ income_per_cap_err &lt;dbl&gt; 1080, 711, 798, 1618, 708, 2055, 714, 489, 1366, 15~</span><br><span class="line">## $ poverty            &lt;dbl&gt; 12.9, 13.4, 26.7, 16.8, 16.7, 24.6, 25.4, 20.5, 21.~</span><br><span class="line">## $ child_poverty      &lt;dbl&gt; 18.6, 19.2, 45.3, 27.9, 27.2, 38.4, 39.2, 31.6, 37.~</span><br><span class="line">## $ professional       &lt;dbl&gt; 33.2, 33.1, 26.8, 21.5, 28.5, 18.8, 27.5, 27.3, 23.~</span><br><span class="line">## $ service            &lt;dbl&gt; 17.0, 17.7, 16.1, 17.9, 14.1, 15.0, 16.6, 17.7, 14.~</span><br><span class="line">## $ office             &lt;dbl&gt; 24.2, 27.1, 23.1, 17.8, 23.9, 19.7, 21.9, 24.2, 26.~</span><br><span class="line">## $ construction       &lt;dbl&gt; 8.6, 10.8, 10.8, 19.0, 13.5, 20.1, 10.3, 10.5, 11.5~</span><br><span class="line">## $ production         &lt;dbl&gt; 17.1, 11.2, 23.1, 23.7, 19.9, 26.4, 23.7, 20.4, 24.~</span><br><span class="line">## $ drive              &lt;dbl&gt; 87.5, 84.7, 83.8, 83.2, 84.9, 74.9, 84.5, 85.3, 85.~</span><br><span class="line">## $ carpool            &lt;dbl&gt; 8.8, 8.8, 10.9, 13.5, 11.2, 14.9, 12.4, 9.4, 11.9, ~</span><br><span class="line">## $ transit            &lt;dbl&gt; 0.1, 0.1, 0.4, 0.5, 0.4, 0.7, 0.0, 0.2, 0.2, 0.2, 0~</span><br><span class="line">## $ walk               &lt;dbl&gt; 0.5, 1.0, 1.8, 0.6, 0.9, 5.0, 0.8, 1.2, 0.3, 0.6, 1~</span><br><span class="line">## $ other_transp       &lt;dbl&gt; 1.3, 1.4, 1.5, 1.5, 0.4, 1.7, 0.6, 1.2, 0.4, 0.7, 1~</span><br><span class="line">## $ work_at_home       &lt;dbl&gt; 1.8, 3.9, 1.6, 0.7, 2.3, 2.8, 1.7, 2.7, 2.1, 2.5, 1~</span><br><span class="line">## $ mean_commute       &lt;dbl&gt; 26.5, 26.4, 24.1, 28.8, 34.9, 27.5, 24.6, 24.1, 25.~</span><br><span class="line">## $ employed           &lt;dbl&gt; 23986, 85953, 8597, 8294, 22189, 3865, 7813, 47401,~</span><br><span class="line">## $ private_work       &lt;dbl&gt; 73.6, 81.5, 71.8, 76.8, 82.0, 79.5, 77.4, 74.1, 85.~</span><br><span class="line">## $ public_work        &lt;dbl&gt; 20.9, 12.3, 20.8, 16.1, 13.5, 15.1, 16.2, 20.8, 12.~</span><br><span class="line">## $ self_employed      &lt;dbl&gt; 5.5, 5.8, 7.3, 6.7, 4.2, 5.4, 6.2, 5.0, 2.8, 7.9, 4~</span><br><span class="line">## $ family_work        &lt;dbl&gt; 0.0, 0.4, 0.1, 0.4, 0.4, 0.0, 0.2, 0.1, 0.0, 0.5, 0~</span><br><span class="line">## $ unemployment       &lt;dbl&gt; 7.6, 7.5, 17.6, 8.3, 7.7, 18.0, 10.9, 12.3, 8.9, 7.~</span><br><span class="line">## $ land_area          &lt;dbl&gt; 594.44, 1589.78, 884.88, 622.58, 644.78, 622.81, 77~</span><br></pre></td></tr></table></figure>
-
-<h2 id="문제-4-private-work-unemployment를-활용하여-산점도를-작성하세요"><a href="#문제-4-private-work-unemployment를-활용하여-산점도를-작성하세요" class="headerlink" title="문제 4. private_work, unemployment를 활용하여 산점도를 작성하세요."></a>문제 4. private_work, unemployment를 활용하여 산점도를 작성하세요.</h2><figure class="highlight r"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">library(dplyr)</span><br><span class="line">counties&lt;-readxl::read_xlsx(<span class="string">&quot;1_day/docs/counties.xslx&quot;</span>,sheet=<span class="number">1</span>)</span><br><span class="line"></span><br><span class="line">library(ggplot2)</span><br><span class="line">ggplot(counties,aes(x=private_work,y=unemployment))+geom_point(aes(colour=region))-&gt;g1</span><br><span class="line"></span><br><span class="line">plot(g1)</span><br></pre></td></tr></table></figure>
-
-<p><img src="%EB%B9%85%EB%8D%B0%EC%9D%B4%ED%84%B0_%EC%8B%9C%EA%B0%81%ED%99%94_0323_%EC%9D%B4%ED%98%84%EC%A0%95_files/figure-html/unnamed-chunk-3-1.png"><!-- --></p>
-<h2 id="문제-5-dplyr-함수를-활용하여-아래-데이터를-요약하세요"><a href="#문제-5-dplyr-함수를-활용하여-아래-데이터를-요약하세요" class="headerlink" title="문제 5. dplyr 함수를 활용하여, 아래 데이터를 요약하세요."></a>문제 5. dplyr 함수를 활용하여, 아래 데이터를 요약하세요.</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">## Rows: 3,138</span><br><span class="line">## Columns: 40</span><br><span class="line">## $ census_id          &lt;chr&gt; &quot;1001&quot;, &quot;1003&quot;, &quot;1005&quot;, &quot;1007&quot;, &quot;1009&quot;, &quot;1011&quot;, &quot;10~</span><br><span class="line">## $ state              &lt;chr&gt; &quot;Alabama&quot;, &quot;Alabama&quot;, &quot;Alabama&quot;, &quot;Alabama&quot;, &quot;Alabam~</span><br><span class="line">## $ county             &lt;chr&gt; &quot;Autauga&quot;, &quot;Baldwin&quot;, &quot;Barbour&quot;, &quot;Bibb&quot;, &quot;Blount&quot;, ~</span><br><span class="line">## $ region             &lt;chr&gt; &quot;South&quot;, &quot;South&quot;, &quot;South&quot;, &quot;South&quot;, &quot;South&quot;, &quot;South~</span><br><span class="line">## $ metro              &lt;chr&gt; &quot;Metro&quot;, &quot;Metro&quot;, &quot;Nonmetro&quot;, &quot;Metro&quot;, &quot;Metro&quot;, &quot;No~</span><br><span class="line">## $ population         &lt;dbl&gt; 55221, 195121, 26932, 22604, 57710, 10678, 20354, 1~</span><br><span class="line">## $ men                &lt;dbl&gt; 26745, 95314, 14497, 12073, 28512, 5660, 9502, 5627~</span><br><span class="line">## $ women              &lt;dbl&gt; 28476, 99807, 12435, 10531, 29198, 5018, 10852, 603~</span><br><span class="line">## $ hispanic           &lt;dbl&gt; 2.6, 4.5, 4.6, 2.2, 8.6, 4.4, 1.2, 3.5, 0.4, 1.5, 7~</span><br><span class="line">## $ white              &lt;dbl&gt; 75.8, 83.1, 46.2, 74.5, 87.9, 22.2, 53.3, 73.0, 57.~</span><br><span class="line">## $ black              &lt;dbl&gt; 18.5, 9.5, 46.7, 21.4, 1.5, 70.7, 43.8, 20.3, 40.3,~</span><br><span class="line">## $ native             &lt;dbl&gt; 0.4, 0.6, 0.2, 0.4, 0.3, 1.2, 0.1, 0.2, 0.2, 0.6, 0~</span><br><span class="line">## $ asian              &lt;dbl&gt; 1.0, 0.7, 0.4, 0.1, 0.1, 0.2, 0.4, 0.9, 0.8, 0.3, 0~</span><br><span class="line">## $ pacific            &lt;dbl&gt; 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0~</span><br><span class="line">## $ citizens           &lt;dbl&gt; 40725, 147695, 20714, 17495, 42345, 8057, 15581, 88~</span><br><span class="line">## $ income             &lt;dbl&gt; 51281, 50254, 32964, 38678, 45813, 31938, 32229, 41~</span><br><span class="line">## $ income_err         &lt;dbl&gt; 2391, 1263, 2973, 3995, 3141, 5884, 1793, 925, 2949~</span><br><span class="line">## $ income_per_cap     &lt;dbl&gt; 24974, 27317, 16824, 18431, 20532, 17580, 18390, 21~</span><br><span class="line">## $ income_per_cap_err &lt;dbl&gt; 1080, 711, 798, 1618, 708, 2055, 714, 489, 1366, 15~</span><br><span class="line">## $ poverty            &lt;dbl&gt; 12.9, 13.4, 26.7, 16.8, 16.7, 24.6, 25.4, 20.5, 21.~</span><br><span class="line">## $ child_poverty      &lt;dbl&gt; 18.6, 19.2, 45.3, 27.9, 27.2, 38.4, 39.2, 31.6, 37.~</span><br><span class="line">## $ professional       &lt;dbl&gt; 33.2, 33.1, 26.8, 21.5, 28.5, 18.8, 27.5, 27.3, 23.~</span><br><span class="line">## $ service            &lt;dbl&gt; 17.0, 17.7, 16.1, 17.9, 14.1, 15.0, 16.6, 17.7, 14.~</span><br><span class="line">## $ office             &lt;dbl&gt; 24.2, 27.1, 23.1, 17.8, 23.9, 19.7, 21.9, 24.2, 26.~</span><br><span class="line">## $ construction       &lt;dbl&gt; 8.6, 10.8, 10.8, 19.0, 13.5, 20.1, 10.3, 10.5, 11.5~</span><br><span class="line">## $ production         &lt;dbl&gt; 17.1, 11.2, 23.1, 23.7, 19.9, 26.4, 23.7, 20.4, 24.~</span><br><span class="line">## $ drive              &lt;dbl&gt; 87.5, 84.7, 83.8, 83.2, 84.9, 74.9, 84.5, 85.3, 85.~</span><br><span class="line">## $ carpool            &lt;dbl&gt; 8.8, 8.8, 10.9, 13.5, 11.2, 14.9, 12.4, 9.4, 11.9, ~</span><br><span class="line">## $ transit            &lt;dbl&gt; 0.1, 0.1, 0.4, 0.5, 0.4, 0.7, 0.0, 0.2, 0.2, 0.2, 0~</span><br><span class="line">## $ walk               &lt;dbl&gt; 0.5, 1.0, 1.8, 0.6, 0.9, 5.0, 0.8, 1.2, 0.3, 0.6, 1~</span><br><span class="line">## $ other_transp       &lt;dbl&gt; 1.3, 1.4, 1.5, 1.5, 0.4, 1.7, 0.6, 1.2, 0.4, 0.7, 1~</span><br><span class="line">## $ work_at_home       &lt;dbl&gt; 1.8, 3.9, 1.6, 0.7, 2.3, 2.8, 1.7, 2.7, 2.1, 2.5, 1~</span><br><span class="line">## $ mean_commute       &lt;dbl&gt; 26.5, 26.4, 24.1, 28.8, 34.9, 27.5, 24.6, 24.1, 25.~</span><br><span class="line">## $ employed           &lt;dbl&gt; 23986, 85953, 8597, 8294, 22189, 3865, 7813, 47401,~</span><br><span class="line">## $ private_work       &lt;dbl&gt; 73.6, 81.5, 71.8, 76.8, 82.0, 79.5, 77.4, 74.1, 85.~</span><br><span class="line">## $ public_work        &lt;dbl&gt; 20.9, 12.3, 20.8, 16.1, 13.5, 15.1, 16.2, 20.8, 12.~</span><br><span class="line">## $ self_employed      &lt;dbl&gt; 5.5, 5.8, 7.3, 6.7, 4.2, 5.4, 6.2, 5.0, 2.8, 7.9, 4~</span><br><span class="line">## $ family_work        &lt;dbl&gt; 0.0, 0.4, 0.1, 0.4, 0.4, 0.0, 0.2, 0.1, 0.0, 0.5, 0~</span><br><span class="line">## $ unemployment       &lt;dbl&gt; 7.6, 7.5, 17.6, 8.3, 7.7, 18.0, 10.9, 12.3, 8.9, 7.~</span><br><span class="line">## $ land_area          &lt;dbl&gt; 594.44, 1589.78, 884.88, 622.58, 644.78, 622.81, 77~</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">## &#96;summarise()&#96; has grouped output by &#39;region&#39;. You can override using the &#96;.groups&#96; argument.</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">## Rows: 50</span><br><span class="line">## Columns: 4</span><br><span class="line">## Groups: region [4]</span><br><span class="line">## $ region    &lt;chr&gt; &quot;North Central&quot;, &quot;North Central&quot;, &quot;North Central&quot;, &quot;North Ce~</span><br><span class="line">## $ state     &lt;chr&gt; &quot;Illinois&quot;, &quot;Indiana&quot;, &quot;Iowa&quot;, &quot;Kansas&quot;, &quot;Michigan&quot;, &quot;Minnes~</span><br><span class="line">## $ sum_men   &lt;dbl&gt; 6316899, 3235263, 1534595, 1439862, 4861973, 2692166, 296400~</span><br><span class="line">## $ sum_women &lt;dbl&gt; 6556862, 3333382, 1558931, 1453125, 5038598, 2727005, 308144~</span><br></pre></td></tr></table></figure>
-
-<h2 id="문제-6-final-df를-기준으로-막대-그래프를-그립니다"><a href="#문제-6-final-df를-기준으로-막대-그래프를-그립니다" class="headerlink" title="문제 6. final_df를 기준으로 막대 그래프를 그립니다."></a>문제 6. final_df를 기준으로 막대 그래프를 그립니다.</h2><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line">## Rows: 3,138</span><br><span class="line">## Columns: 40</span><br><span class="line">## $ census_id          &lt;chr&gt; &quot;1001&quot;, &quot;1003&quot;, &quot;1005&quot;, &quot;1007&quot;, &quot;1009&quot;, &quot;1011&quot;, &quot;10~</span><br><span class="line">## $ state              &lt;chr&gt; &quot;Alabama&quot;, &quot;Alabama&quot;, &quot;Alabama&quot;, &quot;Alabama&quot;, &quot;Alabam~</span><br><span class="line">## $ county             &lt;chr&gt; &quot;Autauga&quot;, &quot;Baldwin&quot;, &quot;Barbour&quot;, &quot;Bibb&quot;, &quot;Blount&quot;, ~</span><br><span class="line">## $ region             &lt;chr&gt; &quot;South&quot;, &quot;South&quot;, &quot;South&quot;, &quot;South&quot;, &quot;South&quot;, &quot;South~</span><br><span class="line">## $ metro              &lt;chr&gt; &quot;Metro&quot;, &quot;Metro&quot;, &quot;Nonmetro&quot;, &quot;Metro&quot;, &quot;Metro&quot;, &quot;No~</span><br><span class="line">## $ population         &lt;dbl&gt; 55221, 195121, 26932, 22604, 57710, 10678, 20354, 1~</span><br><span class="line">## $ men                &lt;dbl&gt; 26745, 95314, 14497, 12073, 28512, 5660, 9502, 5627~</span><br><span class="line">## $ women              &lt;dbl&gt; 28476, 99807, 12435, 10531, 29198, 5018, 10852, 603~</span><br><span class="line">## $ hispanic           &lt;dbl&gt; 2.6, 4.5, 4.6, 2.2, 8.6, 4.4, 1.2, 3.5, 0.4, 1.5, 7~</span><br><span class="line">## $ white              &lt;dbl&gt; 75.8, 83.1, 46.2, 74.5, 87.9, 22.2, 53.3, 73.0, 57.~</span><br><span class="line">## $ black              &lt;dbl&gt; 18.5, 9.5, 46.7, 21.4, 1.5, 70.7, 43.8, 20.3, 40.3,~</span><br><span class="line">## $ native             &lt;dbl&gt; 0.4, 0.6, 0.2, 0.4, 0.3, 1.2, 0.1, 0.2, 0.2, 0.6, 0~</span><br><span class="line">## $ asian              &lt;dbl&gt; 1.0, 0.7, 0.4, 0.1, 0.1, 0.2, 0.4, 0.9, 0.8, 0.3, 0~</span><br><span class="line">## $ pacific            &lt;dbl&gt; 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0~</span><br><span class="line">## $ citizens           &lt;dbl&gt; 40725, 147695, 20714, 17495, 42345, 8057, 15581, 88~</span><br><span class="line">## $ income             &lt;dbl&gt; 51281, 50254, 32964, 38678, 45813, 31938, 32229, 41~</span><br><span class="line">## $ income_err         &lt;dbl&gt; 2391, 1263, 2973, 3995, 3141, 5884, 1793, 925, 2949~</span><br><span class="line">## $ income_per_cap     &lt;dbl&gt; 24974, 27317, 16824, 18431, 20532, 17580, 18390, 21~</span><br><span class="line">## $ income_per_cap_err &lt;dbl&gt; 1080, 711, 798, 1618, 708, 2055, 714, 489, 1366, 15~</span><br><span class="line">## $ poverty            &lt;dbl&gt; 12.9, 13.4, 26.7, 16.8, 16.7, 24.6, 25.4, 20.5, 21.~</span><br><span class="line">## $ child_poverty      &lt;dbl&gt; 18.6, 19.2, 45.3, 27.9, 27.2, 38.4, 39.2, 31.6, 37.~</span><br><span class="line">## $ professional       &lt;dbl&gt; 33.2, 33.1, 26.8, 21.5, 28.5, 18.8, 27.5, 27.3, 23.~</span><br><span class="line">## $ service            &lt;dbl&gt; 17.0, 17.7, 16.1, 17.9, 14.1, 15.0, 16.6, 17.7, 14.~</span><br><span class="line">## $ office             &lt;dbl&gt; 24.2, 27.1, 23.1, 17.8, 23.9, 19.7, 21.9, 24.2, 26.~</span><br><span class="line">## $ construction       &lt;dbl&gt; 8.6, 10.8, 10.8, 19.0, 13.5, 20.1, 10.3, 10.5, 11.5~</span><br><span class="line">## $ production         &lt;dbl&gt; 17.1, 11.2, 23.1, 23.7, 19.9, 26.4, 23.7, 20.4, 24.~</span><br><span class="line">## $ drive              &lt;dbl&gt; 87.5, 84.7, 83.8, 83.2, 84.9, 74.9, 84.5, 85.3, 85.~</span><br><span class="line">## $ carpool            &lt;dbl&gt; 8.8, 8.8, 10.9, 13.5, 11.2, 14.9, 12.4, 9.4, 11.9, ~</span><br><span class="line">## $ transit            &lt;dbl&gt; 0.1, 0.1, 0.4, 0.5, 0.4, 0.7, 0.0, 0.2, 0.2, 0.2, 0~</span><br><span class="line">## $ walk               &lt;dbl&gt; 0.5, 1.0, 1.8, 0.6, 0.9, 5.0, 0.8, 1.2, 0.3, 0.6, 1~</span><br><span class="line">## $ other_transp       &lt;dbl&gt; 1.3, 1.4, 1.5, 1.5, 0.4, 1.7, 0.6, 1.2, 0.4, 0.7, 1~</span><br><span class="line">## $ work_at_home       &lt;dbl&gt; 1.8, 3.9, 1.6, 0.7, 2.3, 2.8, 1.7, 2.7, 2.1, 2.5, 1~</span><br><span class="line">## $ mean_commute       &lt;dbl&gt; 26.5, 26.4, 24.1, 28.8, 34.9, 27.5, 24.6, 24.1, 25.~</span><br><span class="line">## $ employed           &lt;dbl&gt; 23986, 85953, 8597, 8294, 22189, 3865, 7813, 47401,~</span><br><span class="line">## $ private_work       &lt;dbl&gt; 73.6, 81.5, 71.8, 76.8, 82.0, 79.5, 77.4, 74.1, 85.~</span><br><span class="line">## $ public_work        &lt;dbl&gt; 20.9, 12.3, 20.8, 16.1, 13.5, 15.1, 16.2, 20.8, 12.~</span><br><span class="line">## $ self_employed      &lt;dbl&gt; 5.5, 5.8, 7.3, 6.7, 4.2, 5.4, 6.2, 5.0, 2.8, 7.9, 4~</span><br><span class="line">## $ family_work        &lt;dbl&gt; 0.0, 0.4, 0.1, 0.4, 0.4, 0.0, 0.2, 0.1, 0.0, 0.5, 0~</span><br><span class="line">## $ unemployment       &lt;dbl&gt; 7.6, 7.5, 17.6, 8.3, 7.7, 18.0, 10.9, 12.3, 8.9, 7.~</span><br><span class="line">## $ land_area          &lt;dbl&gt; 594.44, 1589.78, 884.88, 622.58, 644.78, 622.81, 77~</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">## &#96;summarise()&#96; has grouped output by &#39;region&#39;. You can override using the &#96;.groups&#96; argument.</span><br></pre></td></tr></table></figure>
-
-<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">## Rows: 12</span><br><span class="line">## Columns: 3</span><br><span class="line">## Groups: region [1]</span><br><span class="line">## $ region  &lt;chr&gt; &quot;North Central&quot;, &quot;North Central&quot;, &quot;North Central&quot;, &quot;North Cent~</span><br><span class="line">## $ state   &lt;chr&gt; &quot;Illinois&quot;, &quot;Indiana&quot;, &quot;Iowa&quot;, &quot;Kansas&quot;, &quot;Michigan&quot;, &quot;Minnesot~</span><br><span class="line">## $ sum_pop &lt;dbl&gt; 12873761, 6568645, 3093526, 2892987, 9900571, 5419171, 6045448~</span><br></pre></td></tr></table></figure>
-
-<p><img src="%EB%B9%85%EB%8D%B0%EC%9D%B4%ED%84%B0_%EC%8B%9C%EA%B0%81%ED%99%94_0323_%EC%9D%B4%ED%98%84%EC%A0%95_files/figure-html/unnamed-chunk-5-1.png"><!-- --></p>
-<p>Note that the <code>echo = FALSE</code> parameter was added to the code chunk to prevent printing of the R code that generated the plot.</p>
-</p>
-      <div class="post-button"><a class="btn" href="/2021/03/23/%EB%B9%85%EB%8D%B0%EC%9D%B4%ED%84%B0_%EC%8B%9C%EA%B0%81%ED%99%94_0323_%EC%9D%B4%ED%98%84%EC%A0%95/" rel="noopener"><i class="fa fa-angle-double-right fa-fw"></i>Read More</a></div>
     </div>
   </div>
 
