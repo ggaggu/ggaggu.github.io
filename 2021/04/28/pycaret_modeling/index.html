@@ -1,0 +1,1926 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1"><meta><title>Pycaret을 사용한 모델링 - 이현정의 블로그</title><link rel="manifest" href="/manifest.json"><meta name="application-name" content="이현정의 블로그"><meta name="msapplication-TileImage" content="/img/favicon.svg"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="이현정의 블로그"><meta name="apple-mobile-web-app-status-bar-style" content="default"><meta name="description" content="Pycaret을 사용한 모델링! 이 노트의 목적그 전까지는 사이킷런으로 lightGBM, Catboost 모델링 한 것을 kaggle에 summit 했었다.하지만 pycaret을 사용하여 lightGBM과 Catboost를 자동으로 하이퍼 파라미터 튜닝 하여 기존의 점수와 비교해보려 한다.  -결과*사이킷런으로 스스로 하이퍼파라미터 튜닝한 것 보다, pyc"><meta property="og:type" content="blog"><meta property="og:title" content="Pycaret을 사용한 모델링"><meta property="og:url" content="https://ggaggu.github.io/2021/04/28/pycaret_modeling/"><meta property="og:site_name" content="이현정의 블로그"><meta property="og:description" content="Pycaret을 사용한 모델링! 이 노트의 목적그 전까지는 사이킷런으로 lightGBM, Catboost 모델링 한 것을 kaggle에 summit 했었다.하지만 pycaret을 사용하여 lightGBM과 Catboost를 자동으로 하이퍼 파라미터 튜닝 하여 기존의 점수와 비교해보려 한다.  -결과*사이킷런으로 스스로 하이퍼파라미터 튜닝한 것 보다, pyc"><meta property="og:locale" content="en_US"><meta property="og:image" content="https://ggaggu.github.io/img/og_image.png"><meta property="article:published_time" content="2021-04-27T15:00:00.000Z"><meta property="article:modified_time" content="2021-04-27T23:55:38.569Z"><meta property="article:author" content="lhj"><meta property="twitter:card" content="summary"><meta property="twitter:image" content="/img/og_image.png"><script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","mainEntityOfPage":{"@type":"WebPage","@id":"https://ggaggu.github.io/2021/04/28/pycaret_modeling/"},"headline":"이현정의 블로그","image":["https://ggaggu.github.io/img/og_image.png"],"datePublished":"2021-04-27T15:00:00.000Z","dateModified":"2021-04-27T23:55:38.569Z","author":{"@type":"Person","name":"lhj"},"description":"Pycaret을 사용한 모델링! 이 노트의 목적그 전까지는 사이킷런으로 lightGBM, Catboost 모델링 한 것을 kaggle에 summit 했었다.하지만 pycaret을 사용하여 lightGBM과 Catboost를 자동으로 하이퍼 파라미터 튜닝 하여 기존의 점수와 비교해보려 한다.  -결과*사이킷런으로 스스로 하이퍼파라미터 튜닝한 것 보다, pyc"}</script><link rel="canonical" href="https://ggaggu.github.io/2021/04/28/pycaret_modeling/"><link rel="icon" href="/img/favicon.svg"><link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.12.0/css/all.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@9.12.0/styles/atom-one-light.css"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;600&amp;family=Source+Code+Pro"><link rel="stylesheet" href="/css/default.css"><style>body>.footer,body>.navbar,body>.section{opacity:0}</style><!--!--><!--!--><!--!--><!--!--><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/css/lightgallery.min.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/css/justifiedGallery.min.css"><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script><!--!--><!--!--><meta name="generator" content="Hexo 5.4.0"></head><body class="is-2-column"><nav class="navbar navbar-main"><div class="container"><div class="navbar-brand justify-content-center"><a class="navbar-item navbar-logo" href="/"><img src="/img/logo.svg" alt="이현정의 블로그" height="28"></a></div><div class="navbar-menu"><div class="navbar-start"><a class="navbar-item" href="/">Home</a><a class="navbar-item" href="/archives">Archives</a><a class="navbar-item" href="/categories">Categories</a><a class="navbar-item" href="/tags">Tags</a><a class="navbar-item" href="/about">About</a></div><div class="navbar-end"><a class="navbar-item" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus"><i class="fab fa-github"></i></a><a class="navbar-item search" title="Search" href="javascript:;"><i class="fas fa-search"></i></a></div></div></div></nav><section class="section"><div class="container"><div class="columns"><div class="column order-2 column-main is-8-tablet is-8-desktop is-8-widescreen"><div class="card"><article class="card-content article" role="article"><div class="article-meta is-size-7 is-uppercase level is-mobile"><div class="level-left"><span class="level-item">Posted&nbsp;<time dateTime="2021-04-27T15:00:00.000Z" title="2021. 4. 28. 오전 12:00:00">2021-04-28</time></span><span class="level-item">Updated&nbsp;<time dateTime="2021-04-27T23:55:38.569Z" title="2021. 4. 28. 오전 8:55:38">2021-04-28</time></span><span class="level-item">43 minutes read (About 6523 words)</span></div></div><h1 class="title is-3 is-size-4-mobile">Pycaret을 사용한 모델링</h1><div class="content"><h1 id="Pycaret을-사용한-모델링"><a href="#Pycaret을-사용한-모델링" class="headerlink" title="Pycaret을 사용한 모델링!"></a>Pycaret을 사용한 모델링!</h1><ul>
+<li>이 노트의 목적<br>그 전까지는 사이킷런으로 lightGBM, Catboost 모델링 한 것을 kaggle에 summit 했었다.<br>하지만 pycaret을 사용하여 lightGBM과 Catboost를 자동으로 하이퍼 파라미터 튜닝 하여 기존의 점수와 비교해보려 한다.</li>
+</ul>
+<p>-결과<br>*사이킷런으로 스스로 하이퍼파라미터 튜닝한 것 보다, pycaret tune_model로 하이퍼 파라미터 튜닝한 것이 kaggle 점수가 높게 나왔다. *</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># This Python 3 environment comes with many helpful analytics libraries installed</span></span><br><span class="line"><span class="comment"># It is defined by the kaggle/python Docker image: https://github.com/kaggle/docker-python</span></span><br><span class="line"><span class="comment"># For example, here&#x27;s several helpful packages to load</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np <span class="comment"># linear algebra</span></span><br><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd <span class="comment"># data processing, CSV file I/O (e.g. pd.read_csv)</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Input data files are available in the read-only &quot;../input/&quot; directory</span></span><br><span class="line"><span class="comment"># For example, running this (by clicking run or pressing Shift+Enter) will list all files under the input directory</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">for</span> dirname, _, filenames <span class="keyword">in</span> os.walk(<span class="string">&#x27;/kaggle/input&#x27;</span>):</span><br><span class="line">    <span class="keyword">for</span> filename <span class="keyword">in</span> filenames:</span><br><span class="line">        <span class="built_in">print</span>(os.path.join(dirname, filename))</span><br><span class="line"></span><br><span class="line"><span class="comment"># You can write up to 20GB to the current directory (/kaggle/working/) that gets preserved as output when you create a version using &quot;Save &amp; Run All&quot; </span></span><br><span class="line"><span class="comment"># You can also write temporary files to /kaggle/temp/, but they won&#x27;t be saved outside of the current session</span></span><br></pre></td></tr></table></figure>
+
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">!pip install scikit-learn==<span class="number">0.23</span><span class="number">.2</span></span><br></pre></td></tr></table></figure>
+
+<pre><code>Collecting scikit-learn==0.23.2
+  Downloading scikit_learn-0.23.2-cp37-cp37m-manylinux1_x86_64.whl (6.8 MB)
+[K     |████████████████████████████████| 6.8 MB 5.4 MB/s 
+[?25hRequirement already satisfied: scipy&gt;=0.19.1 in /opt/conda/lib/python3.7/site-packages (from scikit-learn==0.23.2) (1.5.4)
+Requirement already satisfied: threadpoolctl&gt;=2.0.0 in /opt/conda/lib/python3.7/site-packages (from scikit-learn==0.23.2) (2.1.0)
+Requirement already satisfied: joblib&gt;=0.11 in /opt/conda/lib/python3.7/site-packages (from scikit-learn==0.23.2) (1.0.1)
+Requirement already satisfied: numpy&gt;=1.13.3 in /opt/conda/lib/python3.7/site-packages (from scikit-learn==0.23.2) (1.19.5)
+Installing collected packages: scikit-learn
+  Attempting uninstall: scikit-learn
+    Found existing installation: scikit-learn 0.24.1
+    Uninstalling scikit-learn-0.24.1:
+      Successfully uninstalled scikit-learn-0.24.1
+[31mERROR: pip&#39;s dependency resolver does not currently take into account all the packages that are installed. This behaviour is the source of the following dependency conflicts.
+pyldavis 3.3.1 requires numpy&gt;=1.20.0, but you have numpy 1.19.5 which is incompatible.
+pdpbox 0.2.1 requires matplotlib==3.1.1, but you have matplotlib 3.4.0 which is incompatible.
+imbalanced-learn 0.8.0 requires scikit-learn&gt;=0.24, but you have scikit-learn 0.23.2 which is incompatible.[0m
+Successfully installed scikit-learn-0.23.2
+</code></pre>
+<p><a target="_blank" rel="noopener" href="https://www.kaggle.com/udbhavpangotra/tps-apr21-eda-model">https://www.kaggle.com/udbhavpangotra/tps-apr21-eda-model</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.kaggle.com/hiro5299834/tps-apr-2021-voting-pseudo-labeling">https://www.kaggle.com/hiro5299834/tps-apr-2021-voting-pseudo-labeling</a></p>
+<h1 id="KAGGLE-스터디"><a href="#KAGGLE-스터디" class="headerlink" title="KAGGLE 스터디"></a>KAGGLE 스터디</h1><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pandas <span class="keyword">as</span> pd</span><br><span class="line"><span class="keyword">import</span> numpy <span class="keyword">as</span> np</span><br><span class="line"><span class="keyword">import</span> random</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> sklearn.metrics <span class="keyword">import</span> accuracy_score</span><br><span class="line"><span class="keyword">from</span> sklearn.preprocessing <span class="keyword">import</span> LabelEncoder, StandardScaler</span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> train_test_split, KFold, StratifiedKFold</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lightgbm <span class="keyword">as</span> lgb</span><br><span class="line"><span class="keyword">import</span> catboost <span class="keyword">as</span> ctb</span><br><span class="line"><span class="keyword">from</span> sklearn.model_selection <span class="keyword">import</span> GridSearchCV</span><br><span class="line"><span class="keyword">from</span> sklearn.tree <span class="keyword">import</span> DecisionTreeClassifier, export_graphviz</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> graphviz</span><br><span class="line"><span class="keyword">import</span> matplotlib.pyplot <span class="keyword">as</span> plt</span><br><span class="line"><span class="keyword">import</span> seaborn <span class="keyword">as</span> sns</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> warnings</span><br><span class="line">warnings.simplefilter(<span class="string">&#x27;ignore&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+
+<style type='text/css'>
+.datatable table.frame { margin-bottom: 0; }
+.datatable table.frame thead { border-bottom: none; }
+.datatable table.frame tr.coltypes td {  color: #FFFFFF;  line-height: 6px;  padding: 0 0.5em;}
+.datatable .bool    { background: #DDDD99; }
+.datatable .object  { background: #565656; }
+.datatable .int     { background: #5D9E5D; }
+.datatable .float   { background: #4040CC; }
+.datatable .str     { background: #CC4040; }
+.datatable .row_index {  background: var(--jp-border-color3);  border-right: 1px solid var(--jp-border-color0);  color: var(--jp-ui-font-color3);  font-size: 9px;}
+.datatable .frame tr.coltypes .row_index {  background: var(--jp-border-color0);}
+.datatable th:nth-child(2) { padding-left: 12px; }
+.datatable .hellipsis {  color: var(--jp-cell-editor-border-color);}
+.datatable .vellipsis {  background: var(--jp-layout-color0);  color: var(--jp-cell-editor-border-color);}
+.datatable .na {  color: var(--jp-cell-editor-border-color);  font-size: 80%;}
+.datatable .footer { font-size: 9px; }
+.datatable .frame_dimensions {  background: var(--jp-border-color3);  border-top: 1px solid var(--jp-border-color0);  color: var(--jp-ui-font-color3);  display: inline-block;  opacity: 0.6;  padding: 1px 10px 1px 5px;}
+</style>
+
+
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">TARGET = <span class="string">&#x27;Survived&#x27;</span></span><br><span class="line"></span><br><span class="line">N_ESTIMATORS = <span class="number">1000</span></span><br><span class="line">N_SPLITS = <span class="number">10</span></span><br><span class="line">SEED = <span class="number">2021</span></span><br><span class="line">EARLY_STOPPING_ROUNDS = <span class="number">100</span></span><br><span class="line">VERBOSE = <span class="number">100</span></span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># #랜덤 시드 생성</span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">set_seed</span>(<span class="params">seed=<span class="number">42</span></span>):</span></span><br><span class="line">    random.seed(seed)</span><br><span class="line">    os.environ[<span class="string">&#x27;PYTHONHASHSEED&#x27;</span>] = <span class="built_in">str</span>(seed)</span><br><span class="line">    np.random.seed(seed)</span><br><span class="line">    </span><br><span class="line">set_seed(SEED)</span><br></pre></td></tr></table></figure>
+
+<h2 id="데이터-전처리"><a href="#데이터-전처리" class="headerlink" title="데이터 전처리"></a>데이터 전처리</h2><h3 id="lode-data"><a href="#lode-data" class="headerlink" title="lode data"></a>lode data</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">train_df = pd.read_csv(<span class="string">&#x27;../input/tabular-playground-series-apr-2021/train.csv&#x27;</span>)</span><br><span class="line">test_df = pd.read_csv(<span class="string">&#x27;../input/tabular-playground-series-apr-2021/test.csv&#x27;</span>)</span><br><span class="line">submission = pd.read_csv(<span class="string">&#x27;../input/tabular-playground-series-apr-2021/sample_submission.csv&#x27;</span>)</span><br><span class="line"><span class="comment">#test_df[&#x27;Survived&#x27;] = pd.read_csv(&quot;../input/submission-merged3/submission_merged3.csv&quot;)[&#x27;Survived&#x27;]</span></span><br><span class="line"></span><br><span class="line">all_df = pd.concat([train_df, test_df]).reset_index(drop=<span class="literal">True</span>)</span><br><span class="line"><span class="comment">#reset_index : 인덱스를 세팅한다. drop=True를 하면 인덱스를 세팅한걸 삭제함. </span></span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;Rows and Columns in train dataset:&#x27;</span>, train_df.shape)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;Rows and Columns in test dataset:&#x27;</span>, test_df.shape)</span><br></pre></td></tr></table></figure>
+
+<pre><code>Rows and Columns in train dataset: (100000, 12)
+Rows and Columns in test dataset: (100000, 11)
+</code></pre>
+<h3 id="결측치-갯수-출력"><a href="#결측치-갯수-출력" class="headerlink" title="결측치 갯수 출력"></a>결측치 갯수 출력</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;Missing values per columns in train dataset&#x27;</span>)</span><br><span class="line"><span class="keyword">for</span> col <span class="keyword">in</span> train_df.columns:</span><br><span class="line">    temp_col = train_df[col].isnull().<span class="built_in">sum</span>()</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&#x27;<span class="subst">&#123;col&#125;</span>: <span class="subst">&#123;temp_col&#125;</span>&#x27;</span>)</span><br><span class="line"><span class="built_in">print</span>()</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&#x27;Missing values per columns in test dataset&#x27;</span>)</span><br><span class="line"><span class="keyword">for</span> col <span class="keyword">in</span> test_df.columns:</span><br><span class="line">    temp_col = test_df[col].isnull().<span class="built_in">sum</span>()</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">f&#x27;<span class="subst">&#123;col&#125;</span>: <span class="subst">&#123;temp_col&#125;</span>&#x27;</span>)</span><br></pre></td></tr></table></figure>
+
+<pre><code>Missing values per columns in train dataset
+PassengerId: 0
+Survived: 0
+Pclass: 0
+Name: 0
+Sex: 0
+Age: 3292
+SibSp: 0
+Parch: 0
+Ticket: 4623
+Fare: 134
+Cabin: 67866
+Embarked: 250
+
+Missing values per columns in test dataset
+PassengerId: 0
+Pclass: 0
+Name: 0
+Sex: 0
+Age: 3487
+SibSp: 0
+Parch: 0
+Ticket: 5181
+Fare: 133
+Cabin: 70831
+Embarked: 277
+</code></pre>
+<h3 id="Filling-missing-values"><a href="#Filling-missing-values" class="headerlink" title="Filling missing values"></a>Filling missing values</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#나이는 나이의 평균치로 채운다.</span></span><br><span class="line">all_df[<span class="string">&#x27;Age&#x27;</span>] = all_df[<span class="string">&#x27;Age&#x27;</span>].fillna(all_df[<span class="string">&#x27;Age&#x27;</span>].mean())</span><br><span class="line"></span><br><span class="line"><span class="comment">#cabin은 문자열을 분할하고, 제일 첫번째 글자를 따와서 넣는다. 결측치엔 X를 넣는다.</span></span><br><span class="line"><span class="comment">#strip() : 양쪽 공백을 지운다. 여기서느 x[0]외엔 다 지우는듯. </span></span><br><span class="line">all_df[<span class="string">&#x27;Cabin&#x27;</span>] = all_df[<span class="string">&#x27;Cabin&#x27;</span>].fillna(<span class="string">&#x27;X&#x27;</span>).<span class="built_in">map</span>(<span class="keyword">lambda</span> x: x[<span class="number">0</span>].strip())</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#print(all_df[&#x27;Ticket&#x27;].head(10))</span></span><br><span class="line"><span class="comment">#Ticket, fillna with &#x27;X&#x27;, split string and take first split </span></span><br><span class="line"><span class="comment">#split() : 문자열 나누기. 디폴트는 &#x27; &#x27;이고, 문자를 가진 데이터들이 전부 띄워쓰기로 구분되어있기때문에 가능. </span></span><br><span class="line">all_df[<span class="string">&#x27;Ticket&#x27;</span>] = all_df[<span class="string">&#x27;Ticket&#x27;</span>].fillna(<span class="string">&#x27;X&#x27;</span>).<span class="built_in">map</span>(<span class="keyword">lambda</span> x:<span class="built_in">str</span>(x).split()[<span class="number">0</span>] <span class="keyword">if</span> <span class="built_in">len</span>(<span class="built_in">str</span>(x).split()) &gt; <span class="number">1</span> <span class="keyword">else</span> <span class="string">&#x27;X&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">#pclass에 따른 Fare의 평균을 구해서 dictionary형태로 만든다. </span></span><br><span class="line">fare_map = all_df[[<span class="string">&#x27;Fare&#x27;</span>, <span class="string">&#x27;Pclass&#x27;</span>]].dropna().groupby(<span class="string">&#x27;Pclass&#x27;</span>).median().to_dict()</span><br><span class="line"><span class="comment">#fare의 결측치에 본인 행의 pclass 값을 넣고, 그 값을 fare 평균에 맵핑시킨다.  </span></span><br><span class="line">all_df[<span class="string">&#x27;Fare&#x27;</span>] = all_df[<span class="string">&#x27;Fare&#x27;</span>].fillna(all_df[<span class="string">&#x27;Pclass&#x27;</span>].<span class="built_in">map</span>(fare_map[<span class="string">&#x27;Fare&#x27;</span>]))</span><br><span class="line"><span class="comment">#유독 높은 가격이나 낮은 가격이 있기때문에, 이상치의 영향을 줄이기 위해서 Fare에 log를 취해준다.</span></span><br><span class="line">all_df[<span class="string">&#x27;Fare&#x27;</span>] = np.log1p(all_df[<span class="string">&#x27;Fare&#x27;</span>])</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="comment">#항구의 결측치를 X로 채운다. </span></span><br><span class="line">all_df[<span class="string">&#x27;Embarked&#x27;</span>] = all_df[<span class="string">&#x27;Embarked&#x27;</span>].fillna(<span class="string">&#x27;X&#x27;</span>)</span><br><span class="line"></span><br><span class="line"><span class="comment">#이름은 성만 사용한다.</span></span><br><span class="line">all_df[<span class="string">&#x27;Name&#x27;</span>] = all_df[<span class="string">&#x27;Name&#x27;</span>].<span class="built_in">map</span>(<span class="keyword">lambda</span> x: x.split(<span class="string">&#x27;,&#x27;</span>)[<span class="number">0</span>])</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">data_1=all_df.loc[all_df[<span class="string">&#x27;Pclass&#x27;</span>]==<span class="number">1</span>].groupby(<span class="string">&#x27;Ticket&#x27;</span>)[<span class="string">&#x27;Ticket&#x27;</span>].count().sort_values(ascending=<span class="literal">False</span>)</span><br><span class="line"><span class="built_in">print</span>(data_1)</span><br><span class="line"><span class="built_in">print</span>()</span><br><span class="line">data_2=all_df.loc[all_df[<span class="string">&#x27;Pclass&#x27;</span>]==<span class="number">2</span>].groupby(<span class="string">&#x27;Ticket&#x27;</span>)[<span class="string">&#x27;Ticket&#x27;</span>].count().sort_values(ascending=<span class="literal">False</span>)</span><br><span class="line"><span class="built_in">print</span>(data_2)</span><br><span class="line"><span class="built_in">print</span>()</span><br><span class="line">data_3=all_df.loc[all_df[<span class="string">&#x27;Pclass&#x27;</span>]==<span class="number">3</span>].groupby(<span class="string">&#x27;Ticket&#x27;</span>)[<span class="string">&#x27;Ticket&#x27;</span>].count().sort_values(ascending=<span class="literal">False</span>)</span><br><span class="line"><span class="built_in">print</span>(data_3)</span><br><span class="line"><span class="built_in">print</span>()</span><br></pre></td></tr></table></figure>
+
+<pre><code>Ticket
+X             36336
+PC            16814
+C.A.            338
+SC/Paris        334
+SC/PARIS        260
+W./C.           206
+S.O.C.          192
+S.C./PARIS      191
+PP              186
+F.C.            183
+SC/AH           178
+F.C.C.          167
+STON/O          163
+CA.             161
+SOTON/O.Q.      123
+A/4             115
+A/5.            108
+W.E.P.           94
+WE/P             92
+SOTON/OQ         87
+CA               81
+STON/O2.         81
+A/5              70
+C                67
+A/4.             66
+P/PP             66
+SC               59
+SOTON/O2         48
+A./5.            46
+S.O./P.P.        40
+A.5.             33
+AQ/4             27
+A/S              23
+SCO/W            19
+S.P.             17
+SC/A4            16
+SW/PP            16
+SC/A.3           15
+S.O.P.           15
+C.A./SOTON       14
+A.               14
+SO/C             14
+S.C./A.4.        14
+STON/OQ.         13
+W/C              13
+LP               11
+S.W./PP          11
+AQ/3.             8
+Fa                7
+A4.               6
+Name: Ticket, dtype: int64
+
+Ticket
+X             31337
+A.              997
+C.A.            717
+SC/PARIS        470
+STON/O          387
+PC              330
+S.O.C.          313
+PP              308
+SC/AH           284
+W./C.           259
+SOTON/O.Q.      219
+F.C.C.          203
+A/5.            200
+A/4             152
+SC/Paris        135
+S.C./PARIS      119
+SOTON/O2        112
+CA.             107
+STON/O2.        106
+C               104
+F.C.            100
+WE/P             92
+SOTON/OQ         86
+A/5              82
+CA               66
+W.E.P.           60
+A./5.            60
+S.O./P.P.        54
+P/PP             50
+A/4.             46
+SCO/W            36
+SC               33
+A.5.             29
+AQ/4             29
+LP               25
+SC/A.3           20
+C.A./SOTON       19
+A/S              19
+SC/A4            17
+Fa               15
+S.W./PP          13
+SO/C             13
+S.C./A.4.        13
+STON/OQ.         12
+W/C              11
+S.P.             10
+SW/PP             9
+S.O.P.            9
+A4.               7
+AQ/3.             6
+Name: Ticket, dtype: int64
+
+Ticket
+X             84781
+A.             6420
+C.A.           2615
+STON/O         1508
+A/5.            918
+SOTON/O.Q.      719
+PP              679
+SC/PARIS        642
+W./C.           623
+PC              595
+F.C.C.          541
+A/5             420
+CA.             368
+STON/O2.        363
+SC/AH           331
+A/4             268
+SOTON/O2        264
+S.O.C.          231
+C               227
+SC/Paris        177
+S.O./P.P.       177
+SOTON/OQ        172
+CA              172
+W.E.P.          154
+F.C.            131
+S.C./PARIS      127
+A./5.           122
+WE/P            121
+SC              106
+A/4.            104
+SCO/W            74
+A.5.             72
+P/PP             68
+SC/A4            67
+AQ/4             56
+LP               41
+Fa               37
+STON/OQ.         37
+S.W./PP          32
+SC/A.3           31
+C.A./SOTON       31
+SW/PP            30
+A/S              28
+SO/C             28
+AQ/3.            26
+S.P.             24
+S.C./A.4.        23
+S.O.P.           21
+W/C              20
+A4.              20
+Name: Ticket, dtype: int64
+</code></pre>
+<h2 id="인코딩"><a href="#인코딩" class="headerlink" title="인코딩"></a>인코딩</h2><p>변수별로 인코딩을 다르게 해준다. </p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">label_cols = [<span class="string">&#x27;Name&#x27;</span>, <span class="string">&#x27;Ticket&#x27;</span>, <span class="string">&#x27;Sex&#x27;</span>,<span class="string">&#x27;Pclass&#x27;</span>,<span class="string">&#x27;Embarked&#x27;</span>]</span><br><span class="line">onehot_cols = [ <span class="string">&#x27;Cabin&#x27;</span>,]</span><br><span class="line">numerical_cols = [ <span class="string">&#x27;Age&#x27;</span>, <span class="string">&#x27;SibSp&#x27;</span>, <span class="string">&#x27;Parch&#x27;</span>, <span class="string">&#x27;Fare&#x27;</span>]</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#라벨 인코딩 함수. c라는 매개변수를 받아서 맞게 트렌스폼 해준다. </span></span><br><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">label_encoder</span>(<span class="params">c</span>):</span></span><br><span class="line">    le = LabelEncoder()</span><br><span class="line">    <span class="keyword">return</span> le.fit_transform(c)</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"><span class="comment">#StandardScaler(): 평균을 제거하고 데이터를 단위 분산으로 조정한다. </span></span><br><span class="line"><span class="comment">#그러나 이상치가 있다면 평균과 표준편차에 영향을 미쳐 변환된 데이터의 확산은 매우 달라지게 되는 함수</span></span><br><span class="line">scaler = StandardScaler()</span><br><span class="line"></span><br><span class="line">onehot_encoded_df = pd.get_dummies(all_df[onehot_cols])</span><br><span class="line">label_encoded_df = all_df[label_cols].apply(label_encoder)</span><br><span class="line">numerical_df = pd.DataFrame(scaler.fit_transform(all_df[numerical_cols]), columns=numerical_cols)</span><br><span class="line">target_df = all_df[TARGET]</span><br><span class="line"></span><br><span class="line">all_df = pd.concat([numerical_df, label_encoded_df,onehot_encoded_df, target_df], axis=<span class="number">1</span>)</span><br><span class="line"><span class="comment">#all_df = pd.concat([numerical_df, label_encoded_df, target_df], axis=1)</span></span><br></pre></td></tr></table></figure>
+
+<h2 id="모델링"><a href="#모델링" class="headerlink" title="모델링"></a>모델링</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">drop_list=[<span class="string">&#x27;Survived&#x27;</span>,<span class="string">&#x27;Parch&#x27;</span>]</span><br></pre></td></tr></table></figure>
+
+<h2 id="not-pseudo"><a href="#not-pseudo" class="headerlink" title="not pseudo"></a>not pseudo</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">train = all_df.iloc[:<span class="number">100000</span>, :]<span class="comment">#0개~100000개</span></span><br><span class="line">test = all_df.iloc[<span class="number">100000</span>:, :] <span class="comment">#100000개~ </span></span><br><span class="line"><span class="comment">#iloc은 정수형 인덱싱</span></span><br><span class="line">test = test.drop(<span class="string">&#x27;Survived&#x27;</span>, axis=<span class="number">1</span>) <span class="comment">#test에서 종속변수를 드랍한다. </span></span><br><span class="line">model_results = pd.DataFrame()</span><br><span class="line">folds = <span class="number">5</span></span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">y= train.loc[:,<span class="string">&#x27;Survived&#x27;</span>]</span><br><span class="line">X= train.drop(drop_list,axis=<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+
+<h2 id="pycarot"><a href="#pycarot" class="headerlink" title="pycarot"></a>pycarot</h2><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">caret_train=train.drop(<span class="string">&#x27;Parch&#x27;</span>,axis=<span class="number">1</span>)</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line">!pip install pycaret==<span class="number">2.2</span><span class="number">.3</span></span><br></pre></td></tr></table></figure>
+
+<pre><code>Collecting pycaret==2.2.3
+  Downloading pycaret-2.2.3-py3-none-any.whl (249 kB)
+[K     |████████████████████████████████| 249 kB 867 kB/s 
+[?25hRequirement already satisfied: scikit-plot in /opt/conda/lib/python3.7/site-packages (from pycaret==2.2.3) (0.3.7)
+Requirement already satisfied: xgboost&gt;=1.1.0 in /opt/conda/lib/python3.7/site-packages (from pycaret==2.2.3) (1.3.3)
+Requirement already satisfied: scikit-learn==0.23.2 in /opt/conda/lib/python3.7/site-packages (from pycaret==2.2.3) (0.23.2)
+Requirement already satisfied: textblob in /opt/conda/lib/python3.7/site-packages (from pycaret==2.2.3) (0.15.3)
+Requirement already satisfied: wordcloud in /opt/conda/lib/python3.7/site-packages (from pycaret==2.2.3) (1.8.1)
+Requirement already satisfied: pyLDAvis in /opt/conda/lib/python3.7/site-packages (from pycaret==2.2.3) (3.3.1)
+Requirement already satisfied: joblib in /opt/conda/lib/python3.7/site-packages (from pycaret==2.2.3) (1.0.1)
+Requirement already satisfied: numpy&gt;=1.17 in /opt/conda/lib/python3.7/site-packages (from pycaret==2.2.3) (1.19.5)
+Requirement already satisfied: plotly&gt;=4.4.1 in /opt/conda/lib/python3.7/site-packages (from pycaret==2.2.3) (4.14.3)
+Requirement already satisfied: mlxtend in /opt/conda/lib/python3.7/site-packages (from pycaret==2.2.3) (0.18.0)
+Requirement already satisfied: IPython in /opt/conda/lib/python3.7/site-packages (from pycaret==2.2.3) (7.20.0)
+Requirement already satisfied: gensim in /opt/conda/lib/python3.7/site-packages (from pycaret==2.2.3) (4.0.0)
+Requirement already satisfied: ipywidgets in /opt/conda/lib/python3.7/site-packages (from pycaret==2.2.3) (7.6.3)
+Requirement already satisfied: imbalanced-learn&gt;=0.7.0 in /opt/conda/lib/python3.7/site-packages (from pycaret==2.2.3) (0.8.0)
+Requirement already satisfied: nltk in /opt/conda/lib/python3.7/site-packages (from pycaret==2.2.3) (3.2.4)
+Requirement already satisfied: catboost&gt;=0.23.2 in /opt/conda/lib/python3.7/site-packages (from pycaret==2.2.3) (0.25)
+Requirement already satisfied: pandas-profiling&gt;=2.8.0 in /opt/conda/lib/python3.7/site-packages (from pycaret==2.2.3) (2.8.0)
+Requirement already satisfied: cufflinks&gt;=0.17.0 in /opt/conda/lib/python3.7/site-packages (from pycaret==2.2.3) (0.17.3)
+Requirement already satisfied: matplotlib in /opt/conda/lib/python3.7/site-packages (from pycaret==2.2.3) (3.4.0)
+Requirement already satisfied: umap-learn in /opt/conda/lib/python3.7/site-packages (from pycaret==2.2.3) (0.5.1)
+Collecting pyod
+  Downloading pyod-0.8.8.tar.gz (102 kB)
+[K     |████████████████████████████████| 102 kB 4.0 MB/s 
+[?25hRequirement already satisfied: kmodes&gt;=0.10.1 in /opt/conda/lib/python3.7/site-packages (from pycaret==2.2.3) (0.11.0)
+Collecting mlflow
+  Downloading mlflow-1.16.0-py3-none-any.whl (14.2 MB)
+[K     |████████████████████████████████| 14.2 MB 7.2 MB/s 
+[?25hRequirement already satisfied: seaborn in /opt/conda/lib/python3.7/site-packages (from pycaret==2.2.3) (0.11.1)
+Requirement already satisfied: pandas in /opt/conda/lib/python3.7/site-packages (from pycaret==2.2.3) (1.2.2)
+Requirement already satisfied: yellowbrick&gt;=1.0.1 in /opt/conda/lib/python3.7/site-packages (from pycaret==2.2.3) (1.3.post1)
+Requirement already satisfied: spacy in /opt/conda/lib/python3.7/site-packages (from pycaret==2.2.3) (2.3.5)
+Requirement already satisfied: lightgbm&gt;=2.3.1 in /opt/conda/lib/python3.7/site-packages (from pycaret==2.2.3) (3.1.1)
+Requirement already satisfied: threadpoolctl&gt;=2.0.0 in /opt/conda/lib/python3.7/site-packages (from scikit-learn==0.23.2-&gt;pycaret==2.2.3) (2.1.0)
+Requirement already satisfied: scipy&gt;=0.19.1 in /opt/conda/lib/python3.7/site-packages (from scikit-learn==0.23.2-&gt;pycaret==2.2.3) (1.5.4)
+Requirement already satisfied: graphviz in /opt/conda/lib/python3.7/site-packages (from catboost&gt;=0.23.2-&gt;pycaret==2.2.3) (0.8.4)
+Requirement already satisfied: six in /opt/conda/lib/python3.7/site-packages (from catboost&gt;=0.23.2-&gt;pycaret==2.2.3) (1.15.0)
+Requirement already satisfied: setuptools&gt;=34.4.1 in /opt/conda/lib/python3.7/site-packages (from cufflinks&gt;=0.17.0-&gt;pycaret==2.2.3) (49.6.0.post20210108)
+Requirement already satisfied: colorlover&gt;=0.2.1 in /opt/conda/lib/python3.7/site-packages (from cufflinks&gt;=0.17.0-&gt;pycaret==2.2.3) (0.3.0)
+Collecting imbalanced-learn&gt;=0.7.0
+  Downloading imbalanced_learn-0.7.0-py3-none-any.whl (167 kB)
+[K     |████████████████████████████████| 167 kB 14.9 MB/s 
+[?25hRequirement already satisfied: pickleshare in /opt/conda/lib/python3.7/site-packages (from IPython-&gt;pycaret==2.2.3) (0.7.5)
+Requirement already satisfied: pygments in /opt/conda/lib/python3.7/site-packages (from IPython-&gt;pycaret==2.2.3) (2.8.0)
+Requirement already satisfied: decorator in /opt/conda/lib/python3.7/site-packages (from IPython-&gt;pycaret==2.2.3) (4.4.2)
+Requirement already satisfied: prompt-toolkit!=3.0.0,!=3.0.1,&lt;3.1.0,&gt;=2.0.0 in /opt/conda/lib/python3.7/site-packages (from IPython-&gt;pycaret==2.2.3) (3.0.16)
+Requirement already satisfied: backcall in /opt/conda/lib/python3.7/site-packages (from IPython-&gt;pycaret==2.2.3) (0.2.0)
+Requirement already satisfied: traitlets&gt;=4.2 in /opt/conda/lib/python3.7/site-packages (from IPython-&gt;pycaret==2.2.3) (5.0.5)
+Requirement already satisfied: pexpect&gt;4.3 in /opt/conda/lib/python3.7/site-packages (from IPython-&gt;pycaret==2.2.3) (4.8.0)
+Requirement already satisfied: jedi&gt;=0.16 in /opt/conda/lib/python3.7/site-packages (from IPython-&gt;pycaret==2.2.3) (0.17.2)
+Requirement already satisfied: jupyterlab-widgets&gt;=1.0.0 in /opt/conda/lib/python3.7/site-packages (from ipywidgets-&gt;pycaret==2.2.3) (1.0.0)
+Requirement already satisfied: widgetsnbextension~=3.5.0 in /opt/conda/lib/python3.7/site-packages (from ipywidgets-&gt;pycaret==2.2.3) (3.5.1)
+Requirement already satisfied: ipykernel&gt;=4.5.1 in /opt/conda/lib/python3.7/site-packages (from ipywidgets-&gt;pycaret==2.2.3) (5.1.1)
+Requirement already satisfied: nbformat&gt;=4.2.0 in /opt/conda/lib/python3.7/site-packages (from ipywidgets-&gt;pycaret==2.2.3) (5.1.2)
+Requirement already satisfied: jupyter-client in /opt/conda/lib/python3.7/site-packages (from ipykernel&gt;=4.5.1-&gt;ipywidgets-&gt;pycaret==2.2.3) (6.1.11)
+Requirement already satisfied: tornado&gt;=4.2 in /opt/conda/lib/python3.7/site-packages (from ipykernel&gt;=4.5.1-&gt;ipywidgets-&gt;pycaret==2.2.3) (5.0.2)
+Requirement already satisfied: parso&lt;0.8.0,&gt;=0.7.0 in /opt/conda/lib/python3.7/site-packages (from jedi&gt;=0.16-&gt;IPython-&gt;pycaret==2.2.3) (0.7.1)
+Requirement already satisfied: wheel in /opt/conda/lib/python3.7/site-packages (from lightgbm&gt;=2.3.1-&gt;pycaret==2.2.3) (0.36.2)
+Requirement already satisfied: ipython-genutils in /opt/conda/lib/python3.7/site-packages (from nbformat&gt;=4.2.0-&gt;ipywidgets-&gt;pycaret==2.2.3) (0.2.0)
+Requirement already satisfied: jsonschema!=2.5.0,&gt;=2.4 in /opt/conda/lib/python3.7/site-packages (from nbformat&gt;=4.2.0-&gt;ipywidgets-&gt;pycaret==2.2.3) (3.2.0)
+Requirement already satisfied: jupyter-core in /opt/conda/lib/python3.7/site-packages (from nbformat&gt;=4.2.0-&gt;ipywidgets-&gt;pycaret==2.2.3) (4.7.1)
+Requirement already satisfied: pyrsistent&gt;=0.14.0 in /opt/conda/lib/python3.7/site-packages (from jsonschema!=2.5.0,&gt;=2.4-&gt;nbformat&gt;=4.2.0-&gt;ipywidgets-&gt;pycaret==2.2.3) (0.17.3)
+Requirement already satisfied: importlib-metadata in /opt/conda/lib/python3.7/site-packages (from jsonschema!=2.5.0,&gt;=2.4-&gt;nbformat&gt;=4.2.0-&gt;ipywidgets-&gt;pycaret==2.2.3) (3.4.0)
+Requirement already satisfied: attrs&gt;=17.4.0 in /opt/conda/lib/python3.7/site-packages (from jsonschema!=2.5.0,&gt;=2.4-&gt;nbformat&gt;=4.2.0-&gt;ipywidgets-&gt;pycaret==2.2.3) (20.3.0)
+Requirement already satisfied: python-dateutil&gt;=2.7.3 in /opt/conda/lib/python3.7/site-packages (from pandas-&gt;pycaret==2.2.3) (2.8.1)
+Requirement already satisfied: pytz&gt;=2017.3 in /opt/conda/lib/python3.7/site-packages (from pandas-&gt;pycaret==2.2.3) (2021.1)
+Requirement already satisfied: visions[type_image_path]==0.4.4 in /opt/conda/lib/python3.7/site-packages (from pandas-profiling&gt;=2.8.0-&gt;pycaret==2.2.3) (0.4.4)
+Requirement already satisfied: astropy&gt;=4.0 in /opt/conda/lib/python3.7/site-packages (from pandas-profiling&gt;=2.8.0-&gt;pycaret==2.2.3) (4.2)
+Requirement already satisfied: tqdm&gt;=4.43.0 in /opt/conda/lib/python3.7/site-packages (from pandas-profiling&gt;=2.8.0-&gt;pycaret==2.2.3) (4.56.2)
+Requirement already satisfied: confuse&gt;=1.0.0 in /opt/conda/lib/python3.7/site-packages (from pandas-profiling&gt;=2.8.0-&gt;pycaret==2.2.3) (1.4.0)
+Requirement already satisfied: htmlmin&gt;=0.1.12 in /opt/conda/lib/python3.7/site-packages (from pandas-profiling&gt;=2.8.0-&gt;pycaret==2.2.3) (0.1.12)
+Requirement already satisfied: jinja2&gt;=2.11.1 in /opt/conda/lib/python3.7/site-packages (from pandas-profiling&gt;=2.8.0-&gt;pycaret==2.2.3) (2.11.3)
+Requirement already satisfied: missingno&gt;=0.4.2 in /opt/conda/lib/python3.7/site-packages (from pandas-profiling&gt;=2.8.0-&gt;pycaret==2.2.3) (0.4.2)
+Requirement already satisfied: requests&gt;=2.23.0 in /opt/conda/lib/python3.7/site-packages (from pandas-profiling&gt;=2.8.0-&gt;pycaret==2.2.3) (2.25.1)
+Requirement already satisfied: phik&gt;=0.9.10 in /opt/conda/lib/python3.7/site-packages (from pandas-profiling&gt;=2.8.0-&gt;pycaret==2.2.3) (0.10.0)
+Requirement already satisfied: tangled-up-in-unicode&gt;=0.0.6 in /opt/conda/lib/python3.7/site-packages (from pandas-profiling&gt;=2.8.0-&gt;pycaret==2.2.3) (0.0.6)
+Requirement already satisfied: networkx&gt;=2.4 in /opt/conda/lib/python3.7/site-packages (from visions[type_image_path]==0.4.4-&gt;pandas-profiling&gt;=2.8.0-&gt;pycaret==2.2.3) (2.5)
+Requirement already satisfied: imagehash in /opt/conda/lib/python3.7/site-packages (from visions[type_image_path]==0.4.4-&gt;pandas-profiling&gt;=2.8.0-&gt;pycaret==2.2.3) (4.2.0)
+Requirement already satisfied: Pillow in /opt/conda/lib/python3.7/site-packages (from visions[type_image_path]==0.4.4-&gt;pandas-profiling&gt;=2.8.0-&gt;pycaret==2.2.3) (7.2.0)
+Requirement already satisfied: pyerfa in /opt/conda/lib/python3.7/site-packages (from astropy&gt;=4.0-&gt;pandas-profiling&gt;=2.8.0-&gt;pycaret==2.2.3) (1.7.1.1)
+Requirement already satisfied: pyyaml in /opt/conda/lib/python3.7/site-packages (from confuse&gt;=1.0.0-&gt;pandas-profiling&gt;=2.8.0-&gt;pycaret==2.2.3) (5.3.1)
+Requirement already satisfied: MarkupSafe&gt;=0.23 in /opt/conda/lib/python3.7/site-packages (from jinja2&gt;=2.11.1-&gt;pandas-profiling&gt;=2.8.0-&gt;pycaret==2.2.3) (1.1.1)
+Requirement already satisfied: pyparsing&gt;=2.2.1 in /opt/conda/lib/python3.7/site-packages (from matplotlib-&gt;pycaret==2.2.3) (2.4.7)
+Requirement already satisfied: cycler&gt;=0.10 in /opt/conda/lib/python3.7/site-packages (from matplotlib-&gt;pycaret==2.2.3) (0.10.0)
+Requirement already satisfied: kiwisolver&gt;=1.0.1 in /opt/conda/lib/python3.7/site-packages (from matplotlib-&gt;pycaret==2.2.3) (1.3.1)
+Requirement already satisfied: ptyprocess&gt;=0.5 in /opt/conda/lib/python3.7/site-packages (from pexpect&gt;4.3-&gt;IPython-&gt;pycaret==2.2.3) (0.7.0)
+Requirement already satisfied: numba&gt;=0.38.1 in /opt/conda/lib/python3.7/site-packages (from phik&gt;=0.9.10-&gt;pandas-profiling&gt;=2.8.0-&gt;pycaret==2.2.3) (0.52.0)
+Requirement already satisfied: llvmlite&lt;0.36,&gt;=0.35.0 in /opt/conda/lib/python3.7/site-packages (from numba&gt;=0.38.1-&gt;phik&gt;=0.9.10-&gt;pandas-profiling&gt;=2.8.0-&gt;pycaret==2.2.3) (0.35.0)
+Requirement already satisfied: retrying&gt;=1.3.3 in /opt/conda/lib/python3.7/site-packages (from plotly&gt;=4.4.1-&gt;pycaret==2.2.3) (1.3.3)
+Requirement already satisfied: wcwidth in /opt/conda/lib/python3.7/site-packages (from prompt-toolkit!=3.0.0,!=3.0.1,&lt;3.1.0,&gt;=2.0.0-&gt;IPython-&gt;pycaret==2.2.3) (0.2.5)
+Requirement already satisfied: idna&lt;3,&gt;=2.5 in /opt/conda/lib/python3.7/site-packages (from requests&gt;=2.23.0-&gt;pandas-profiling&gt;=2.8.0-&gt;pycaret==2.2.3) (2.10)
+Requirement already satisfied: certifi&gt;=2017.4.17 in /opt/conda/lib/python3.7/site-packages (from requests&gt;=2.23.0-&gt;pandas-profiling&gt;=2.8.0-&gt;pycaret==2.2.3) (2020.12.5)
+Requirement already satisfied: urllib3&lt;1.27,&gt;=1.21.1 in /opt/conda/lib/python3.7/site-packages (from requests&gt;=2.23.0-&gt;pandas-profiling&gt;=2.8.0-&gt;pycaret==2.2.3) (1.26.3)
+Requirement already satisfied: chardet&lt;5,&gt;=3.0.2 in /opt/conda/lib/python3.7/site-packages (from requests&gt;=2.23.0-&gt;pandas-profiling&gt;=2.8.0-&gt;pycaret==2.2.3) (3.0.4)
+Requirement already satisfied: notebook&gt;=4.4.1 in /opt/conda/lib/python3.7/site-packages (from widgetsnbextension~=3.5.0-&gt;ipywidgets-&gt;pycaret==2.2.3) (5.5.0)
+Requirement already satisfied: pyzmq&gt;=17 in /opt/conda/lib/python3.7/site-packages (from notebook&gt;=4.4.1-&gt;widgetsnbextension~=3.5.0-&gt;ipywidgets-&gt;pycaret==2.2.3) (22.0.3)
+Requirement already satisfied: terminado&gt;=0.8.1 in /opt/conda/lib/python3.7/site-packages (from notebook&gt;=4.4.1-&gt;widgetsnbextension~=3.5.0-&gt;ipywidgets-&gt;pycaret==2.2.3) (0.9.2)
+Requirement already satisfied: nbconvert in /opt/conda/lib/python3.7/site-packages (from notebook&gt;=4.4.1-&gt;widgetsnbextension~=3.5.0-&gt;ipywidgets-&gt;pycaret==2.2.3) (6.0.7)
+Requirement already satisfied: Send2Trash in /opt/conda/lib/python3.7/site-packages (from notebook&gt;=4.4.1-&gt;widgetsnbextension~=3.5.0-&gt;ipywidgets-&gt;pycaret==2.2.3) (1.5.0)
+Requirement already satisfied: smart-open&gt;=1.8.1 in /opt/conda/lib/python3.7/site-packages (from gensim-&gt;pycaret==2.2.3) (5.0.0)
+Requirement already satisfied: PyWavelets in /opt/conda/lib/python3.7/site-packages (from imagehash-&gt;visions[type_image_path]==0.4.4-&gt;pandas-profiling&gt;=2.8.0-&gt;pycaret==2.2.3) (1.1.1)
+Requirement already satisfied: zipp&gt;=0.5 in /opt/conda/lib/python3.7/site-packages (from importlib-metadata-&gt;jsonschema!=2.5.0,&gt;=2.4-&gt;nbformat&gt;=4.2.0-&gt;ipywidgets-&gt;pycaret==2.2.3) (3.4.0)
+Requirement already satisfied: typing-extensions&gt;=3.6.4 in /opt/conda/lib/python3.7/site-packages (from importlib-metadata-&gt;jsonschema!=2.5.0,&gt;=2.4-&gt;nbformat&gt;=4.2.0-&gt;ipywidgets-&gt;pycaret==2.2.3) (3.7.4.3)
+Requirement already satisfied: sqlparse&gt;=0.3.1 in /opt/conda/lib/python3.7/site-packages (from mlflow-&gt;pycaret==2.2.3) (0.4.1)
+Collecting databricks-cli&gt;=0.8.7
+  Downloading databricks-cli-0.14.3.tar.gz (54 kB)
+[K     |████████████████████████████████| 54 kB 1.7 MB/s 
+[?25hRequirement already satisfied: sqlalchemy in /opt/conda/lib/python3.7/site-packages (from mlflow-&gt;pycaret==2.2.3) (1.3.23)
+Requirement already satisfied: click&gt;=7.0 in /opt/conda/lib/python3.7/site-packages (from mlflow-&gt;pycaret==2.2.3) (7.1.2)
+Requirement already satisfied: cloudpickle in /opt/conda/lib/python3.7/site-packages (from mlflow-&gt;pycaret==2.2.3) (1.6.0)
+Requirement already satisfied: entrypoints in /opt/conda/lib/python3.7/site-packages (from mlflow-&gt;pycaret==2.2.3) (0.3)
+Requirement already satisfied: gitpython&gt;=2.1.0 in /opt/conda/lib/python3.7/site-packages (from mlflow-&gt;pycaret==2.2.3) (3.1.13)
+Collecting querystring-parser
+  Downloading querystring_parser-1.2.4-py2.py3-none-any.whl (7.9 kB)
+Collecting gunicorn
+  Downloading gunicorn-20.1.0.tar.gz (370 kB)
+[K     |████████████████████████████████| 370 kB 14.5 MB/s 
+[?25hRequirement already satisfied: Flask in /opt/conda/lib/python3.7/site-packages (from mlflow-&gt;pycaret==2.2.3) (1.1.2)
+Collecting alembic&lt;=1.4.1
+  Downloading alembic-1.4.1.tar.gz (1.1 MB)
+[K     |████████████████████████████████| 1.1 MB 15.3 MB/s 
+[?25hRequirement already satisfied: protobuf&gt;=3.6.0 in /opt/conda/lib/python3.7/site-packages (from mlflow-&gt;pycaret==2.2.3) (3.15.6)
+Requirement already satisfied: docker&gt;=4.0.0 in /opt/conda/lib/python3.7/site-packages (from mlflow-&gt;pycaret==2.2.3) (4.4.1)
+Collecting prometheus-flask-exporter
+  Downloading prometheus_flask_exporter-0.18.1.tar.gz (21 kB)
+Requirement already satisfied: Mako in /opt/conda/lib/python3.7/site-packages (from alembic&lt;=1.4.1-&gt;mlflow-&gt;pycaret==2.2.3) (1.1.4)
+Requirement already satisfied: python-editor&gt;=0.3 in /opt/conda/lib/python3.7/site-packages (from alembic&lt;=1.4.1-&gt;mlflow-&gt;pycaret==2.2.3) (1.0.4)
+Requirement already satisfied: tabulate&gt;=0.7.7 in /opt/conda/lib/python3.7/site-packages (from databricks-cli&gt;=0.8.7-&gt;mlflow-&gt;pycaret==2.2.3) (0.8.9)
+Requirement already satisfied: websocket-client&gt;=0.32.0 in /opt/conda/lib/python3.7/site-packages (from docker&gt;=4.0.0-&gt;mlflow-&gt;pycaret==2.2.3) (0.57.0)
+Requirement already satisfied: gitdb&lt;5,&gt;=4.0.1 in /opt/conda/lib/python3.7/site-packages (from gitpython&gt;=2.1.0-&gt;mlflow-&gt;pycaret==2.2.3) (4.0.5)
+Requirement already satisfied: smmap&lt;4,&gt;=3.0.1 in /opt/conda/lib/python3.7/site-packages (from gitdb&lt;5,&gt;=4.0.1-&gt;gitpython&gt;=2.1.0-&gt;mlflow-&gt;pycaret==2.2.3) (3.0.5)
+Requirement already satisfied: Werkzeug&gt;=0.15 in /opt/conda/lib/python3.7/site-packages (from Flask-&gt;mlflow-&gt;pycaret==2.2.3) (1.0.1)
+Requirement already satisfied: itsdangerous&gt;=0.24 in /opt/conda/lib/python3.7/site-packages (from Flask-&gt;mlflow-&gt;pycaret==2.2.3) (1.1.0)
+Requirement already satisfied: defusedxml in /opt/conda/lib/python3.7/site-packages (from nbconvert-&gt;notebook&gt;=4.4.1-&gt;widgetsnbextension~=3.5.0-&gt;ipywidgets-&gt;pycaret==2.2.3) (0.6.0)
+Requirement already satisfied: pandocfilters&gt;=1.4.1 in /opt/conda/lib/python3.7/site-packages (from nbconvert-&gt;notebook&gt;=4.4.1-&gt;widgetsnbextension~=3.5.0-&gt;ipywidgets-&gt;pycaret==2.2.3) (1.4.2)
+Requirement already satisfied: bleach in /opt/conda/lib/python3.7/site-packages (from nbconvert-&gt;notebook&gt;=4.4.1-&gt;widgetsnbextension~=3.5.0-&gt;ipywidgets-&gt;pycaret==2.2.3) (3.3.0)
+Requirement already satisfied: jupyterlab-pygments in /opt/conda/lib/python3.7/site-packages (from nbconvert-&gt;notebook&gt;=4.4.1-&gt;widgetsnbextension~=3.5.0-&gt;ipywidgets-&gt;pycaret==2.2.3) (0.1.2)
+Requirement already satisfied: mistune&lt;2,&gt;=0.8.1 in /opt/conda/lib/python3.7/site-packages (from nbconvert-&gt;notebook&gt;=4.4.1-&gt;widgetsnbextension~=3.5.0-&gt;ipywidgets-&gt;pycaret==2.2.3) (0.8.4)
+Requirement already satisfied: nbclient&lt;0.6.0,&gt;=0.5.0 in /opt/conda/lib/python3.7/site-packages (from nbconvert-&gt;notebook&gt;=4.4.1-&gt;widgetsnbextension~=3.5.0-&gt;ipywidgets-&gt;pycaret==2.2.3) (0.5.2)
+Requirement already satisfied: testpath in /opt/conda/lib/python3.7/site-packages (from nbconvert-&gt;notebook&gt;=4.4.1-&gt;widgetsnbextension~=3.5.0-&gt;ipywidgets-&gt;pycaret==2.2.3) (0.4.4)
+Requirement already satisfied: nest-asyncio in /opt/conda/lib/python3.7/site-packages (from nbclient&lt;0.6.0,&gt;=0.5.0-&gt;nbconvert-&gt;notebook&gt;=4.4.1-&gt;widgetsnbextension~=3.5.0-&gt;ipywidgets-&gt;pycaret==2.2.3) (1.4.3)
+Requirement already satisfied: async-generator in /opt/conda/lib/python3.7/site-packages (from nbclient&lt;0.6.0,&gt;=0.5.0-&gt;nbconvert-&gt;notebook&gt;=4.4.1-&gt;widgetsnbextension~=3.5.0-&gt;ipywidgets-&gt;pycaret==2.2.3) (1.10)
+Requirement already satisfied: webencodings in /opt/conda/lib/python3.7/site-packages (from bleach-&gt;nbconvert-&gt;notebook&gt;=4.4.1-&gt;widgetsnbextension~=3.5.0-&gt;ipywidgets-&gt;pycaret==2.2.3) (0.5.1)
+Requirement already satisfied: packaging in /opt/conda/lib/python3.7/site-packages (from bleach-&gt;nbconvert-&gt;notebook&gt;=4.4.1-&gt;widgetsnbextension~=3.5.0-&gt;ipywidgets-&gt;pycaret==2.2.3) (20.9)
+Requirement already satisfied: prometheus_client in /opt/conda/lib/python3.7/site-packages (from prometheus-flask-exporter-&gt;mlflow-&gt;pycaret==2.2.3) (0.9.0)
+Requirement already satisfied: future in /opt/conda/lib/python3.7/site-packages (from pyLDAvis-&gt;pycaret==2.2.3) (0.18.2)
+Requirement already satisfied: funcy in /opt/conda/lib/python3.7/site-packages (from pyLDAvis-&gt;pycaret==2.2.3) (1.15)
+Requirement already satisfied: numexpr in /opt/conda/lib/python3.7/site-packages (from pyLDAvis-&gt;pycaret==2.2.3) (2.7.3)
+Requirement already satisfied: sklearn in /opt/conda/lib/python3.7/site-packages (from pyLDAvis-&gt;pycaret==2.2.3) (0.0)
+Collecting pyLDAvis
+  Downloading pyLDAvis-3.3.0.tar.gz (1.7 MB)
+[K     |████████████████████████████████| 1.7 MB 18.5 MB/s 
+[?25h  Installing build dependencies ... [?25ldone
+[?25h  Getting requirements to build wheel ... [?25ldone
+[?25h  Installing backend dependencies ... [?25ldone
+[?25h    Preparing wheel metadata ... [?25ldone
+[?25h  Downloading pyLDAvis-3.2.2.tar.gz (1.7 MB)
+[K     |████████████████████████████████| 1.7 MB 18.5 MB/s 
+[?25hRequirement already satisfied: statsmodels in /opt/conda/lib/python3.7/site-packages (from pyod-&gt;pycaret==2.2.3) (0.12.2)
+Requirement already satisfied: catalogue&lt;1.1.0,&gt;=0.0.7 in /opt/conda/lib/python3.7/site-packages (from spacy-&gt;pycaret==2.2.3) (1.0.0)
+Requirement already satisfied: plac&lt;1.2.0,&gt;=0.9.6 in /opt/conda/lib/python3.7/site-packages (from spacy-&gt;pycaret==2.2.3) (1.1.3)
+Requirement already satisfied: cymem&lt;2.1.0,&gt;=2.0.2 in /opt/conda/lib/python3.7/site-packages (from spacy-&gt;pycaret==2.2.3) (2.0.5)
+Requirement already satisfied: blis&lt;0.8.0,&gt;=0.4.0 in /opt/conda/lib/python3.7/site-packages (from spacy-&gt;pycaret==2.2.3) (0.7.4)
+Requirement already satisfied: murmurhash&lt;1.1.0,&gt;=0.28.0 in /opt/conda/lib/python3.7/site-packages (from spacy-&gt;pycaret==2.2.3) (1.0.5)
+Requirement already satisfied: wasabi&lt;1.1.0,&gt;=0.4.0 in /opt/conda/lib/python3.7/site-packages (from spacy-&gt;pycaret==2.2.3) (0.8.2)
+Requirement already satisfied: thinc&lt;7.5.0,&gt;=7.4.1 in /opt/conda/lib/python3.7/site-packages (from spacy-&gt;pycaret==2.2.3) (7.4.5)
+Requirement already satisfied: srsly&lt;1.1.0,&gt;=1.0.2 in /opt/conda/lib/python3.7/site-packages (from spacy-&gt;pycaret==2.2.3) (1.0.5)
+Requirement already satisfied: preshed&lt;3.1.0,&gt;=3.0.2 in /opt/conda/lib/python3.7/site-packages (from spacy-&gt;pycaret==2.2.3) (3.0.5)
+Requirement already satisfied: patsy&gt;=0.5 in /opt/conda/lib/python3.7/site-packages (from statsmodels-&gt;pyod-&gt;pycaret==2.2.3) (0.5.1)
+Requirement already satisfied: pynndescent&gt;=0.5 in /opt/conda/lib/python3.7/site-packages (from umap-learn-&gt;pycaret==2.2.3) (0.5.2)
+Building wheels for collected packages: alembic, databricks-cli, gunicorn, prometheus-flask-exporter, pyLDAvis, pyod
+  Building wheel for alembic (setup.py) ... [?25ldone
+[?25h  Created wheel for alembic: filename=alembic-1.4.1-py2.py3-none-any.whl size=158155 sha256=d8f392ff192a5f199c46190c11c01ebd9ee89c41e962f8c53ca200a8f722820d
+  Stored in directory: /root/.cache/pip/wheels/be/5d/0a/9e13f53f4f5dfb67cd8d245bb7cdffe12f135846f491a283e3
+  Building wheel for databricks-cli (setup.py) ... [?25ldone
+[?25h  Created wheel for databricks-cli: filename=databricks_cli-0.14.3-py3-none-any.whl size=100555 sha256=9a7dcf0f0828c4d66f92d9a9aa6a9648bf13c7e106e6f2a319b7f4e0f8b869d3
+  Stored in directory: /root/.cache/pip/wheels/3b/60/14/6930445b08959fbdf4e3029bac7e1f2cccb2e94df8afa00b29
+  Building wheel for gunicorn (setup.py) ... [?25ldone
+[?25h  Created wheel for gunicorn: filename=gunicorn-20.1.0-py3-none-any.whl size=78917 sha256=27823621640949d8ef7678db5b24d401299123365598476d18f7734668b6a362
+  Stored in directory: /root/.cache/pip/wheels/48/64/50/67e9a3524590218acb6a0c0f94038c0d60815866c52a667d57
+  Building wheel for prometheus-flask-exporter (setup.py) ... [?25ldone
+[?25h  Created wheel for prometheus-flask-exporter: filename=prometheus_flask_exporter-0.18.1-py3-none-any.whl size=17158 sha256=b30adb8b36411d5ac696a62d1f72fd5f3f0a6071d76737d1901d929229e1120e
+  Stored in directory: /root/.cache/pip/wheels/c4/b6/b5/e76659f3b2a3a226565e27f0a7eb7a3ac93c3f4d68acfbe617
+  Building wheel for pyLDAvis (setup.py) ... [?25ldone
+[?25h  Created wheel for pyLDAvis: filename=pyLDAvis-3.2.2-py2.py3-none-any.whl size=135593 sha256=f2c6a61232597db4377bb34194186a0c15694c4ec4bf0451684c68495c1ac812
+  Stored in directory: /root/.cache/pip/wheels/f8/b1/9b/560ac1931796b7303f7b517b949d2d31a4fbc512aad3b9f284
+  Building wheel for pyod (setup.py) ... [?25ldone
+[?25h  Created wheel for pyod: filename=pyod-0.8.8-py3-none-any.whl size=116965 sha256=4bff0abc63f27aaf26ccb9c6f4ee9af5c336d94730dd88558cd8bc79aadc58af
+  Stored in directory: /root/.cache/pip/wheels/77/59/4c/18e7ef198e2c737674b0bd8b6fa0fb1163c83ecc4e622fbda4
+Successfully built alembic databricks-cli gunicorn prometheus-flask-exporter pyLDAvis pyod
+Installing collected packages: querystring-parser, prometheus-flask-exporter, gunicorn, databricks-cli, alembic, pyod, pyLDAvis, mlflow, imbalanced-learn, pycaret
+  Attempting uninstall: alembic
+    Found existing installation: alembic 1.5.8
+    Uninstalling alembic-1.5.8:
+      Successfully uninstalled alembic-1.5.8
+  Attempting uninstall: pyLDAvis
+    Found existing installation: pyLDAvis 3.3.1
+    Uninstalling pyLDAvis-3.3.1:
+      Successfully uninstalled pyLDAvis-3.3.1
+  Attempting uninstall: imbalanced-learn
+    Found existing installation: imbalanced-learn 0.8.0
+    Uninstalling imbalanced-learn-0.8.0:
+      Successfully uninstalled imbalanced-learn-0.8.0
+Successfully installed alembic-1.4.1 databricks-cli-0.14.3 gunicorn-20.1.0 imbalanced-learn-0.7.0 mlflow-1.16.0 prometheus-flask-exporter-0.18.1 pyLDAvis-3.2.2 pycaret-2.2.3 pyod-0.8.8 querystring-parser-1.2.4
+</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">from</span> pycaret.utils <span class="keyword">import</span> version</span><br><span class="line"><span class="keyword">import</span> sklearn</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;pycaret version:&quot;</span>, version())</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;sklearn version:&quot;</span>, sklearn.__version__)</span><br></pre></td></tr></table></figure>
+
+<pre><code>pycaret version: 2.2.3
+sklearn version: 0.23.2
+</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> pycaret.classification </span><br><span class="line"><span class="comment"># from pycaret.regression import *</span></span><br><span class="line"><span class="comment"># reg1 = setup(data = train,target = &#x27;Survived&#x27;)</span></span><br><span class="line"><span class="keyword">from</span> pycaret.classification <span class="keyword">import</span> *</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">caret_train.loc[:,<span class="string">&#x27;Embarked&#x27;</span>].unique()</span><br><span class="line">caret_train.loc[:,<span class="string">&#x27;Pclass&#x27;</span>].unique()</span><br><span class="line">caret_train.loc[:,<span class="string">&#x27;Sex&#x27;</span>].unique()</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+
+
+<pre><code>array([1, 0])
+</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">category_caret=&#123;<span class="string">&#x27;Sex&#x27;</span>:[<span class="string">&#x27;0&#x27;</span>,<span class="string">&#x27;1&#x27;</span>],<span class="string">&#x27;Pclass&#x27;</span>:[<span class="string">&#x27;0&#x27;</span>,<span class="string">&#x27;1&#x27;</span>,<span class="string">&#x27;2&#x27;</span>], <span class="string">&#x27;Embarked&#x27;</span>:[<span class="string">&#x27;0&#x27;</span>,<span class="string">&#x27;1&#x27;</span>,<span class="string">&#x27;2&#x27;</span>,<span class="string">&#x27;3&#x27;</span>]&#125;</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">setup(data = caret_train, </span><br><span class="line">      target = <span class="string">&#x27;Survived&#x27;</span>,</span><br><span class="line">      ordinal_features= category_caret,</span><br><span class="line">      <span class="comment">#numeric_imputation = &#x27;Age&#x27;,&#x27;SibSp&#x27;,&#x27;Name&#x27;,&#x27;Ticket&#x27;,&#x27;Fare&#x27;,</span></span><br><span class="line">      fold=<span class="number">5</span>,</span><br><span class="line">      silent = <span class="literal">True</span>,</span><br><span class="line">      session_id=<span class="number">1</span>,</span><br><span class="line">      <span class="comment">#data_split_shuffle=True</span></span><br><span class="line">      fold_shuffle=<span class="literal">True</span></span><br><span class="line"></span><br><span class="line">     )</span><br></pre></td></tr></table></figure>
+
+
+<style  type="text/css" >
+#T_4e1bb_row0_col1,#T_4e1bb_row8_col1{
+            background-color:  lightgreen;
+        }</style><table id="T_4e1bb_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >Description</th>        <th class="col_heading level0 col1" >Value</th>    </tr></thead><tbody>
+<pre><code>            &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row0&quot; class=&quot;row_heading level0 row0&quot; &gt;0&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row0_col0&quot; class=&quot;data row0 col0&quot; &gt;session_id&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row0_col1&quot; class=&quot;data row0 col1&quot; &gt;1&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row1&quot; class=&quot;row_heading level0 row1&quot; &gt;1&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row1_col0&quot; class=&quot;data row1 col0&quot; &gt;Target&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row1_col1&quot; class=&quot;data row1 col1&quot; &gt;Survived&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row2&quot; class=&quot;row_heading level0 row2&quot; &gt;2&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row2_col0&quot; class=&quot;data row2 col0&quot; &gt;Target Type&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row2_col1&quot; class=&quot;data row2 col1&quot; &gt;Binary&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row3&quot; class=&quot;row_heading level0 row3&quot; &gt;3&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row3_col0&quot; class=&quot;data row3 col0&quot; &gt;Label Encoded&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row3_col1&quot; class=&quot;data row3 col1&quot; &gt;0.0: 0, 1.0: 1&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row4&quot; class=&quot;row_heading level0 row4&quot; &gt;4&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row4_col0&quot; class=&quot;data row4 col0&quot; &gt;Original Data&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row4_col1&quot; class=&quot;data row4 col1&quot; &gt;(100000, 18)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row5&quot; class=&quot;row_heading level0 row5&quot; &gt;5&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row5_col0&quot; class=&quot;data row5 col0&quot; &gt;Missing Values&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row5_col1&quot; class=&quot;data row5 col1&quot; &gt;False&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row6&quot; class=&quot;row_heading level0 row6&quot; &gt;6&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row6_col0&quot; class=&quot;data row6 col0&quot; &gt;Numeric Features&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row6_col1&quot; class=&quot;data row6 col1&quot; &gt;14&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row7&quot; class=&quot;row_heading level0 row7&quot; &gt;7&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row7_col0&quot; class=&quot;data row7 col0&quot; &gt;Categorical Features&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row7_col1&quot; class=&quot;data row7 col1&quot; &gt;3&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row8&quot; class=&quot;row_heading level0 row8&quot; &gt;8&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row8_col0&quot; class=&quot;data row8 col0&quot; &gt;Ordinal Features&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row8_col1&quot; class=&quot;data row8 col1&quot; &gt;True&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row9&quot; class=&quot;row_heading level0 row9&quot; &gt;9&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row9_col0&quot; class=&quot;data row9 col0&quot; &gt;High Cardinality Features&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row9_col1&quot; class=&quot;data row9 col1&quot; &gt;False&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row10&quot; class=&quot;row_heading level0 row10&quot; &gt;10&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row10_col0&quot; class=&quot;data row10 col0&quot; &gt;High Cardinality Method&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row10_col1&quot; class=&quot;data row10 col1&quot; &gt;None&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row11&quot; class=&quot;row_heading level0 row11&quot; &gt;11&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row11_col0&quot; class=&quot;data row11 col0&quot; &gt;Transformed Train Set&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row11_col1&quot; class=&quot;data row11 col1&quot; &gt;(69999, 17)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row12&quot; class=&quot;row_heading level0 row12&quot; &gt;12&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row12_col0&quot; class=&quot;data row12 col0&quot; &gt;Transformed Test Set&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row12_col1&quot; class=&quot;data row12 col1&quot; &gt;(30001, 17)&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row13&quot; class=&quot;row_heading level0 row13&quot; &gt;13&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row13_col0&quot; class=&quot;data row13 col0&quot; &gt;Shuffle Train-Test&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row13_col1&quot; class=&quot;data row13 col1&quot; &gt;True&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row14&quot; class=&quot;row_heading level0 row14&quot; &gt;14&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row14_col0&quot; class=&quot;data row14 col0&quot; &gt;Stratify Train-Test&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row14_col1&quot; class=&quot;data row14 col1&quot; &gt;False&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row15&quot; class=&quot;row_heading level0 row15&quot; &gt;15&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row15_col0&quot; class=&quot;data row15 col0&quot; &gt;Fold Generator&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row15_col1&quot; class=&quot;data row15 col1&quot; &gt;StratifiedKFold&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row16&quot; class=&quot;row_heading level0 row16&quot; &gt;16&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row16_col0&quot; class=&quot;data row16 col0&quot; &gt;Fold Number&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row16_col1&quot; class=&quot;data row16 col1&quot; &gt;5&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row17&quot; class=&quot;row_heading level0 row17&quot; &gt;17&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row17_col0&quot; class=&quot;data row17 col0&quot; &gt;CPU Jobs&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row17_col1&quot; class=&quot;data row17 col1&quot; &gt;-1&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row18&quot; class=&quot;row_heading level0 row18&quot; &gt;18&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row18_col0&quot; class=&quot;data row18 col0&quot; &gt;Use GPU&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row18_col1&quot; class=&quot;data row18 col1&quot; &gt;False&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row19&quot; class=&quot;row_heading level0 row19&quot; &gt;19&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row19_col0&quot; class=&quot;data row19 col0&quot; &gt;Log Experiment&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row19_col1&quot; class=&quot;data row19 col1&quot; &gt;False&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row20&quot; class=&quot;row_heading level0 row20&quot; &gt;20&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row20_col0&quot; class=&quot;data row20 col0&quot; &gt;Experiment Name&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row20_col1&quot; class=&quot;data row20 col1&quot; &gt;clf-default-name&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row21&quot; class=&quot;row_heading level0 row21&quot; &gt;21&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row21_col0&quot; class=&quot;data row21 col0&quot; &gt;USI&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row21_col1&quot; class=&quot;data row21 col1&quot; &gt;9220&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row22&quot; class=&quot;row_heading level0 row22&quot; &gt;22&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row22_col0&quot; class=&quot;data row22 col0&quot; &gt;Imputation Type&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row22_col1&quot; class=&quot;data row22 col1&quot; &gt;simple&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row23&quot; class=&quot;row_heading level0 row23&quot; &gt;23&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row23_col0&quot; class=&quot;data row23 col0&quot; &gt;Iterative Imputation Iteration&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row23_col1&quot; class=&quot;data row23 col1&quot; &gt;None&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row24&quot; class=&quot;row_heading level0 row24&quot; &gt;24&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row24_col0&quot; class=&quot;data row24 col0&quot; &gt;Numeric Imputer&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row24_col1&quot; class=&quot;data row24 col1&quot; &gt;mean&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row25&quot; class=&quot;row_heading level0 row25&quot; &gt;25&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row25_col0&quot; class=&quot;data row25 col0&quot; &gt;Iterative Imputation Numeric Model&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row25_col1&quot; class=&quot;data row25 col1&quot; &gt;None&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row26&quot; class=&quot;row_heading level0 row26&quot; &gt;26&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row26_col0&quot; class=&quot;data row26 col0&quot; &gt;Categorical Imputer&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row26_col1&quot; class=&quot;data row26 col1&quot; &gt;constant&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row27&quot; class=&quot;row_heading level0 row27&quot; &gt;27&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row27_col0&quot; class=&quot;data row27 col0&quot; &gt;Iterative Imputation Categorical Model&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row27_col1&quot; class=&quot;data row27 col1&quot; &gt;None&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row28&quot; class=&quot;row_heading level0 row28&quot; &gt;28&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row28_col0&quot; class=&quot;data row28 col0&quot; &gt;Unknown Categoricals Handling&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row28_col1&quot; class=&quot;data row28 col1&quot; &gt;least_frequent&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row29&quot; class=&quot;row_heading level0 row29&quot; &gt;29&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row29_col0&quot; class=&quot;data row29 col0&quot; &gt;Normalize&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row29_col1&quot; class=&quot;data row29 col1&quot; &gt;False&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row30&quot; class=&quot;row_heading level0 row30&quot; &gt;30&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row30_col0&quot; class=&quot;data row30 col0&quot; &gt;Normalize Method&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row30_col1&quot; class=&quot;data row30 col1&quot; &gt;None&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row31&quot; class=&quot;row_heading level0 row31&quot; &gt;31&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row31_col0&quot; class=&quot;data row31 col0&quot; &gt;Transformation&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row31_col1&quot; class=&quot;data row31 col1&quot; &gt;False&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row32&quot; class=&quot;row_heading level0 row32&quot; &gt;32&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row32_col0&quot; class=&quot;data row32 col0&quot; &gt;Transformation Method&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row32_col1&quot; class=&quot;data row32 col1&quot; &gt;None&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row33&quot; class=&quot;row_heading level0 row33&quot; &gt;33&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row33_col0&quot; class=&quot;data row33 col0&quot; &gt;PCA&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row33_col1&quot; class=&quot;data row33 col1&quot; &gt;False&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row34&quot; class=&quot;row_heading level0 row34&quot; &gt;34&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row34_col0&quot; class=&quot;data row34 col0&quot; &gt;PCA Method&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row34_col1&quot; class=&quot;data row34 col1&quot; &gt;None&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row35&quot; class=&quot;row_heading level0 row35&quot; &gt;35&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row35_col0&quot; class=&quot;data row35 col0&quot; &gt;PCA Components&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row35_col1&quot; class=&quot;data row35 col1&quot; &gt;None&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row36&quot; class=&quot;row_heading level0 row36&quot; &gt;36&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row36_col0&quot; class=&quot;data row36 col0&quot; &gt;Ignore Low Variance&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row36_col1&quot; class=&quot;data row36 col1&quot; &gt;False&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row37&quot; class=&quot;row_heading level0 row37&quot; &gt;37&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row37_col0&quot; class=&quot;data row37 col0&quot; &gt;Combine Rare Levels&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row37_col1&quot; class=&quot;data row37 col1&quot; &gt;False&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row38&quot; class=&quot;row_heading level0 row38&quot; &gt;38&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row38_col0&quot; class=&quot;data row38 col0&quot; &gt;Rare Level Threshold&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row38_col1&quot; class=&quot;data row38 col1&quot; &gt;None&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row39&quot; class=&quot;row_heading level0 row39&quot; &gt;39&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row39_col0&quot; class=&quot;data row39 col0&quot; &gt;Numeric Binning&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row39_col1&quot; class=&quot;data row39 col1&quot; &gt;False&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row40&quot; class=&quot;row_heading level0 row40&quot; &gt;40&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row40_col0&quot; class=&quot;data row40 col0&quot; &gt;Remove Outliers&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row40_col1&quot; class=&quot;data row40 col1&quot; &gt;False&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row41&quot; class=&quot;row_heading level0 row41&quot; &gt;41&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row41_col0&quot; class=&quot;data row41 col0&quot; &gt;Outliers Threshold&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row41_col1&quot; class=&quot;data row41 col1&quot; &gt;None&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row42&quot; class=&quot;row_heading level0 row42&quot; &gt;42&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row42_col0&quot; class=&quot;data row42 col0&quot; &gt;Remove Multicollinearity&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row42_col1&quot; class=&quot;data row42 col1&quot; &gt;False&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row43&quot; class=&quot;row_heading level0 row43&quot; &gt;43&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row43_col0&quot; class=&quot;data row43 col0&quot; &gt;Multicollinearity Threshold&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row43_col1&quot; class=&quot;data row43 col1&quot; &gt;None&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row44&quot; class=&quot;row_heading level0 row44&quot; &gt;44&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row44_col0&quot; class=&quot;data row44 col0&quot; &gt;Clustering&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row44_col1&quot; class=&quot;data row44 col1&quot; &gt;False&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row45&quot; class=&quot;row_heading level0 row45&quot; &gt;45&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row45_col0&quot; class=&quot;data row45 col0&quot; &gt;Clustering Iteration&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row45_col1&quot; class=&quot;data row45 col1&quot; &gt;None&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row46&quot; class=&quot;row_heading level0 row46&quot; &gt;46&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row46_col0&quot; class=&quot;data row46 col0&quot; &gt;Polynomial Features&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row46_col1&quot; class=&quot;data row46 col1&quot; &gt;False&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row47&quot; class=&quot;row_heading level0 row47&quot; &gt;47&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row47_col0&quot; class=&quot;data row47 col0&quot; &gt;Polynomial Degree&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row47_col1&quot; class=&quot;data row47 col1&quot; &gt;None&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row48&quot; class=&quot;row_heading level0 row48&quot; &gt;48&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row48_col0&quot; class=&quot;data row48 col0&quot; &gt;Trignometry Features&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row48_col1&quot; class=&quot;data row48 col1&quot; &gt;False&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row49&quot; class=&quot;row_heading level0 row49&quot; &gt;49&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row49_col0&quot; class=&quot;data row49 col0&quot; &gt;Polynomial Threshold&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row49_col1&quot; class=&quot;data row49 col1&quot; &gt;None&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row50&quot; class=&quot;row_heading level0 row50&quot; &gt;50&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row50_col0&quot; class=&quot;data row50 col0&quot; &gt;Group Features&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row50_col1&quot; class=&quot;data row50 col1&quot; &gt;False&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row51&quot; class=&quot;row_heading level0 row51&quot; &gt;51&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row51_col0&quot; class=&quot;data row51 col0&quot; &gt;Feature Selection&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row51_col1&quot; class=&quot;data row51 col1&quot; &gt;False&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row52&quot; class=&quot;row_heading level0 row52&quot; &gt;52&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row52_col0&quot; class=&quot;data row52 col0&quot; &gt;Features Selection Threshold&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row52_col1&quot; class=&quot;data row52 col1&quot; &gt;None&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row53&quot; class=&quot;row_heading level0 row53&quot; &gt;53&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row53_col0&quot; class=&quot;data row53 col0&quot; &gt;Feature Interaction&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row53_col1&quot; class=&quot;data row53 col1&quot; &gt;False&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row54&quot; class=&quot;row_heading level0 row54&quot; &gt;54&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row54_col0&quot; class=&quot;data row54 col0&quot; &gt;Feature Ratio&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row54_col1&quot; class=&quot;data row54 col1&quot; &gt;False&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row55&quot; class=&quot;row_heading level0 row55&quot; &gt;55&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row55_col0&quot; class=&quot;data row55 col0&quot; &gt;Interaction Threshold&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row55_col1&quot; class=&quot;data row55 col1&quot; &gt;None&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row56&quot; class=&quot;row_heading level0 row56&quot; &gt;56&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row56_col0&quot; class=&quot;data row56 col0&quot; &gt;Fix Imbalance&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row56_col1&quot; class=&quot;data row56 col1&quot; &gt;False&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_4e1bb_level0_row57&quot; class=&quot;row_heading level0 row57&quot; &gt;57&lt;/th&gt;
+                    &lt;td id=&quot;T_4e1bb_row57_col0&quot; class=&quot;data row57 col0&quot; &gt;Fix Imbalance Method&lt;/td&gt;
+                    &lt;td id=&quot;T_4e1bb_row57_col1&quot; class=&quot;data row57 col1&quot; &gt;SMOTE&lt;/td&gt;
+        &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;
+
+
+
+
+
+(1,
+ &#123;&#39;lr&#39;: &lt;pycaret.containers.models.classification.LogisticRegressionClassifierContainer at 0x7fdbc0f458d0&gt;,
+  &#39;knn&#39;: &lt;pycaret.containers.models.classification.KNeighborsClassifierContainer at 0x7fdbc0f45950&gt;,
+  &#39;nb&#39;: &lt;pycaret.containers.models.classification.GaussianNBClassifierContainer at 0x7fdbc0f45750&gt;,
+  &#39;dt&#39;: &lt;pycaret.containers.models.classification.DecisionTreeClassifierContainer at 0x7fdbc0f45790&gt;,
+  &#39;svm&#39;: &lt;pycaret.containers.models.classification.SGDClassifierContainer at 0x7fdbd7c5a2d0&gt;,
+  &#39;rbfsvm&#39;: &lt;pycaret.containers.models.classification.SVCClassifierContainer at 0x7fdbc188d650&gt;,
+  &#39;gpc&#39;: &lt;pycaret.containers.models.classification.GaussianProcessClassifierContainer at 0x7fdbc188d8d0&gt;,
+  &#39;mlp&#39;: &lt;pycaret.containers.models.classification.MLPClassifierContainer at 0x7fdbc188d490&gt;,
+  &#39;ridge&#39;: &lt;pycaret.containers.models.classification.RidgeClassifierContainer at 0x7fdbc188d810&gt;,
+  &#39;rf&#39;: &lt;pycaret.containers.models.classification.RandomForestClassifierContainer at 0x7fdbc0f45c90&gt;,
+  &#39;qda&#39;: &lt;pycaret.containers.models.classification.QuadraticDiscriminantAnalysisContainer at 0x7fdbc0857350&gt;,
+  &#39;ada&#39;: &lt;pycaret.containers.models.classification.AdaBoostClassifierContainer at 0x7fdbc0857410&gt;,
+  &#39;gbc&#39;: &lt;pycaret.containers.models.classification.GradientBoostingClassifierContainer at 0x7fdbc076e2d0&gt;,
+  &#39;lda&#39;: &lt;pycaret.containers.models.classification.LinearDiscriminantAnalysisContainer at 0x7fdbc076e250&gt;,
+  &#39;et&#39;: &lt;pycaret.containers.models.classification.ExtraTreesClassifierContainer at 0x7fdbc07621d0&gt;,
+  &#39;xgboost&#39;: &lt;pycaret.containers.models.classification.XGBClassifierContainer at 0x7fdbc07620d0&gt;,
+  &#39;lightgbm&#39;: &lt;pycaret.containers.models.classification.LGBMClassifierContainer at 0x7fdbc0762850&gt;,
+  &#39;catboost&#39;: &lt;pycaret.containers.models.classification.CatBoostClassifierContainer at 0x7fdbc0762890&gt;&#125;,
+ False,
+ False,
+ &#39;clf-default-name&#39;,
+ True,
+ [&lt;pandas.io.formats.style.Styler at 0x7fdbc0f33cd0&gt;],
+ &#123;&#39;acc&#39;: &lt;pycaret.containers.metrics.classification.AccuracyMetricContainer at 0x7fdbc0f33590&gt;,
+  &#39;auc&#39;: &lt;pycaret.containers.metrics.classification.ROCAUCMetricContainer at 0x7fdbc0f335d0&gt;,
+  &#39;recall&#39;: &lt;pycaret.containers.metrics.classification.RecallMetricContainer at 0x7fdbc0f33650&gt;,
+  &#39;precision&#39;: &lt;pycaret.containers.metrics.classification.PrecisionMetricContainer at 0x7fdbc0f337d0&gt;,
+  &#39;f1&#39;: &lt;pycaret.containers.metrics.classification.F1MetricContainer at 0x7fdbc0f33950&gt;,
+  &#39;kappa&#39;: &lt;pycaret.containers.metrics.classification.KappaMetricContainer at 0x7fdbc0f33b10&gt;,
+  &#39;mcc&#39;: &lt;pycaret.containers.metrics.classification.MCCMetricContainer at 0x7fdbc0f33b90&gt;&#125;,
+ StratifiedKFold(n_splits=5, random_state=1, shuffle=True),
+ &#123;&#39;USI&#39;,
+  &#39;X&#39;,
+  &#39;X_test&#39;,
+  &#39;X_train&#39;,
+  &#39;_all_metrics&#39;,
+  &#39;_all_models&#39;,
+  &#39;_all_models_internal&#39;,
+  &#39;_available_plots&#39;,
+  &#39;_gpu_n_jobs_param&#39;,
+  &#39;_internal_pipeline&#39;,
+  &#39;_ml_usecase&#39;,
+  &#39;create_model_container&#39;,
+  &#39;data_before_preprocess&#39;,
+  &#39;display_container&#39;,
+  &#39;exp_name_log&#39;,
+  &#39;experiment__&#39;,
+  &#39;fix_imbalance_method_param&#39;,
+  &#39;fix_imbalance_param&#39;,
+  &#39;fold_generator&#39;,
+  &#39;fold_groups_param&#39;,
+  &#39;fold_param&#39;,
+  &#39;fold_shuffle_param&#39;,
+  &#39;gpu_param&#39;,
+  &#39;html_param&#39;,
+  &#39;imputation_classifier&#39;,
+  &#39;imputation_regressor&#39;,
+  &#39;iterative_imputation_iters_param&#39;,
+  &#39;log_plots_param&#39;,
+  &#39;logging_param&#39;,
+  &#39;master_model_container&#39;,
+  &#39;n_jobs_param&#39;,
+  &#39;prep_pipe&#39;,
+  &#39;pycaret_globals&#39;,
+  &#39;seed&#39;,
+  &#39;stratify_param&#39;,
+  &#39;target_param&#39;,
+  &#39;transform_target_method_param&#39;,
+  &#39;transform_target_param&#39;,
+  &#39;y&#39;,
+  &#39;y_test&#39;,
+  &#39;y_train&#39;&#125;,
+ &#39;Survived&#39;,
+ True,
+ -1,
+             Age     SibSp      Fare     Name  Ticket  Sex  Pclass  Embarked  \
+ 62017 -1.786066 -0.539572 -0.425227  23058.0    38.0  0.0     1.0       2.0   
+ 5005   0.274926 -0.539572  0.041264   9979.0    49.0  1.0     1.0       2.0   
+ 56849 -1.361744 -0.539572  0.215883  14486.0    49.0  0.0     1.0       2.0   
+ 42434  1.426657 -0.539572  1.209948   8350.0    21.0  0.0     0.0       0.0   
+ 54712 -1.725448 -0.539572 -0.906172  18642.0     0.0  0.0     2.0       2.0   
+ ...         ...       ...       ...      ...     ...  ...     ...       ...   
+ 50057  1.608510 -0.539572  1.938114   4224.0    49.0  1.0     0.0       2.0   
+ 98047 -0.149396  0.680848 -0.914255  21294.0    49.0  1.0     2.0       2.0   
+ 5192  -0.634335 -0.539572 -1.037225  24329.0    49.0  1.0     1.0       2.0   
+ 77708  0.820483 -0.539572  2.156857   5150.0    49.0  0.0     0.0       0.0   
+ 98539  0.396161 -0.539572  2.729733  25222.0    49.0  1.0     0.0       1.0   
+ 
+        Cabin_A  Cabin_B  Cabin_C  Cabin_D  Cabin_E  Cabin_F  Cabin_G  Cabin_T  \
+ 62017        0        0        0        0        0        0        0        0   
+ 5005         0        0        0        0        0        0        0        0   
+ 56849        0        0        0        0        0        0        0        0   
+ 42434        0        0        1        0        0        0        0        0   
+ 54712        0        0        0        0        0        0        0        0   
+ ...        ...      ...      ...      ...      ...      ...      ...      ...   
+ 50057        1        0        0        0        0        0        0        0   
+ 98047        0        0        0        0        0        0        0        0   
+ 5192         0        0        0        0        0        0        0        0   
+ 77708        0        1        0        0        0        0        0        0   
+ 98539        1        0        0        0        0        0        0        0   
+ 
+        Cabin_X  
+ 62017        1  
+ 5005         1  
+ 56849        1  
+ 42434        0  
+ 54712        1  
+ ...        ...  
+ 50057        0  
+ 98047        1  
+ 5192         1  
+ 77708        0  
+ 98539        0  
+ 
+ [69999 rows x 17 columns],
+ Pipeline(memory=None, steps=[(&#39;empty_step&#39;, &#39;passthrough&#39;)], verbose=False),
+ &#39;lightgbm&#39;,
+ False,
+ Pipeline(memory=None,
+          steps=[(&#39;dtypes&#39;,
+                  DataTypes_Auto_infer(categorical_features=[],
+                                       display_types=False, features_todrop=[],
+                                       id_columns=[],
+                                       ml_usecase=&#39;classification&#39;,
+                                       numerical_features=[], target=&#39;Survived&#39;,
+                                       time_features=[])),
+                 (&#39;imputer&#39;,
+                  Simple_Imputer(categorical_strategy=&#39;not_available&#39;,
+                                 fill_value_categorical=None,
+                                 fill_value_numerical=None,
+                                 numeric_st...
+                 (&#39;scaling&#39;, &#39;passthrough&#39;), (&#39;P_transform&#39;, &#39;passthrough&#39;),
+                 (&#39;binn&#39;, &#39;passthrough&#39;), (&#39;rem_outliers&#39;, &#39;passthrough&#39;),
+                 (&#39;cluster_all&#39;, &#39;passthrough&#39;),
+                 (&#39;dummy&#39;, Dummify(target=&#39;Survived&#39;)),
+                 (&#39;fix_perfect&#39;, Remove_100(target=&#39;Survived&#39;)),
+                 (&#39;clean_names&#39;, Clean_Colum_Names()),
+                 (&#39;feature_select&#39;, &#39;passthrough&#39;), (&#39;fix_multi&#39;, &#39;passthrough&#39;),
+                 (&#39;dfs&#39;, &#39;passthrough&#39;), (&#39;pca&#39;, &#39;passthrough&#39;)],
+          verbose=False),
+ [],
+ &#39;9220&#39;,
+ 0        1
+ 1        0
+ 2        0
+ 3        0
+ 4        1
+         ..
+ 99995    1
+ 99996    0
+ 99997    0
+ 99998    0
+ 99999    0
+ Name: Survived, Length: 100000, dtype: int64,
+ False,
+ [],
+ &#39;box-cox&#39;,
+ &#123;&#39;lr&#39;: &lt;pycaret.containers.models.classification.LogisticRegressionClassifierContainer at 0x7fdbc078af90&gt;,
+  &#39;knn&#39;: &lt;pycaret.containers.models.classification.KNeighborsClassifierContainer at 0x7fdbc078ae50&gt;,
+  &#39;nb&#39;: &lt;pycaret.containers.models.classification.GaussianNBClassifierContainer at 0x7fdbc078ad10&gt;,
+  &#39;dt&#39;: &lt;pycaret.containers.models.classification.DecisionTreeClassifierContainer at 0x7fdbc078ae90&gt;,
+  &#39;svm&#39;: &lt;pycaret.containers.models.classification.SGDClassifierContainer at 0x7fdbc078aa10&gt;,
+  &#39;rbfsvm&#39;: &lt;pycaret.containers.models.classification.SVCClassifierContainer at 0x7fdbc078a710&gt;,
+  &#39;gpc&#39;: &lt;pycaret.containers.models.classification.GaussianProcessClassifierContainer at 0x7fdbc078a8d0&gt;,
+  &#39;mlp&#39;: &lt;pycaret.containers.models.classification.MLPClassifierContainer at 0x7fdbc078a550&gt;,
+  &#39;ridge&#39;: &lt;pycaret.containers.models.classification.RidgeClassifierContainer at 0x7fdbc078a2d0&gt;,
+  &#39;rf&#39;: &lt;pycaret.containers.models.classification.RandomForestClassifierContainer at 0x7fdbc078a990&gt;,
+  &#39;qda&#39;: &lt;pycaret.containers.models.classification.QuadraticDiscriminantAnalysisContainer at 0x7fdbc078b210&gt;,
+  &#39;ada&#39;: &lt;pycaret.containers.models.classification.AdaBoostClassifierContainer at 0x7fdbc078b250&gt;,
+  &#39;gbc&#39;: &lt;pycaret.containers.models.classification.GradientBoostingClassifierContainer at 0x7fdbc078b4d0&gt;,
+  &#39;lda&#39;: &lt;pycaret.containers.models.classification.LinearDiscriminantAnalysisContainer at 0x7fdbc078b7d0&gt;,
+  &#39;et&#39;: &lt;pycaret.containers.models.classification.ExtraTreesClassifierContainer at 0x7fdbc078b8d0&gt;,
+  &#39;xgboost&#39;: &lt;pycaret.containers.models.classification.XGBClassifierContainer at 0x7fdbc078bc10&gt;,
+  &#39;lightgbm&#39;: &lt;pycaret.containers.models.classification.LGBMClassifierContainer at 0x7fdbc0f33090&gt;,
+  &#39;catboost&#39;: &lt;pycaret.containers.models.classification.CatBoostClassifierContainer at 0x7fdbc078afd0&gt;,
+  &#39;Bagging&#39;: &lt;pycaret.containers.models.classification.BaggingClassifierContainer at 0x7fdbc0762ed0&gt;,
+  &#39;Stacking&#39;: &lt;pycaret.containers.models.classification.StackingClassifierContainer at 0x7fdbc0762f10&gt;,
+  &#39;Voting&#39;: &lt;pycaret.containers.models.classification.VotingClassifierContainer at 0x7fdbc0f33190&gt;,
+  &#39;CalibratedCV&#39;: &lt;pycaret.containers.models.classification.CalibratedClassifierCVContainer at 0x7fdbc0f334d0&gt;&#125;,
+                 Age     SibSp      Fare   Name  Ticket  Sex  Pclass  Embarked  \
+ 0     -8.614253e-16  1.901268  0.134351  17441      49    1       0         2   
+ 1     -8.614253e-16 -0.539572 -0.533837   3063      49    1       2         2   
+ 2     -2.069149e+00  0.680848  1.070483  17798      14    1       2         2   
+ 3     -9.374220e-01 -0.539572 -0.555506  12742       0    1       2         2   
+ 4     -5.737175e-01 -0.539572 -1.023540   2335      49    1       2         2   
+ ...             ...       ...       ...    ...     ...  ...     ...       ...   
+ 99995  1.669127e+00 -0.539572 -0.434567   1590      21    0       1         0   
+ 99996  1.911597e+00 -0.539572 -0.698959   2992      49    1       1         2   
+ 99997  1.536915e-01 -0.539572 -0.802137   4219      49    1       2         2   
+ 99998  1.002335e+00 -0.539572  0.259408   3941      49    1       2         2   
+ 99999  1.244805e+00 -0.539572 -0.492531   7055      49    1       2         2   
+ 
+        Cabin_A  Cabin_B  Cabin_C  Cabin_D  Cabin_E  Cabin_F  Cabin_G  Cabin_T  \
+ 0            0        0        1        0        0        0        0        0   
+ 1            0        0        0        0        0        0        0        0   
+ 2            0        0        0        0        0        0        0        0   
+ 3            0        0        0        0        0        0        0        0   
+ 4            0        0        0        0        0        0        0        0   
+ ...        ...      ...      ...      ...      ...      ...      ...      ...   
+ 99995        0        0        0        1        0        0        0        0   
+ 99996        0        0        0        0        0        0        0        0   
+ 99997        0        0        0        0        0        0        0        0   
+ 99998        0        0        0        0        0        0        0        0   
+ 99999        0        0        0        0        0        0        0        0   
+ 
+        Cabin_X  Survived  
+ 0            0       1.0  
+ 1            1       0.0  
+ 2            1       0.0  
+ 3            1       0.0  
+ 4            1       1.0  
+ ...        ...       ...  
+ 99995        0       1.0  
+ 99996        1       0.0  
+ 99997        1       0.0  
+ 99998        1       0.0  
+ 99999        1       0.0  
+ 
+ [100000 rows x 18 columns],
+ 5,
+ [(&#39;Setup Config&#39;,
+                                  Description             Value
+   0                               session_id                 1
+   1                                   Target          Survived
+   2                              Target Type            Binary
+   3                            Label Encoded    0.0: 0, 1.0: 1
+   4                            Original Data      (100000, 18)
+   5                           Missing Values             False
+   6                         Numeric Features                14
+   7                     Categorical Features                 3
+   8                         Ordinal Features              True
+   9                High Cardinality Features             False
+   10                 High Cardinality Method              None
+   11                   Transformed Train Set       (69999, 17)
+   12                    Transformed Test Set       (30001, 17)
+   13                      Shuffle Train-Test              True
+   14                     Stratify Train-Test             False
+   15                          Fold Generator   StratifiedKFold
+   16                             Fold Number                 5
+   17                                CPU Jobs                -1
+   18                                 Use GPU             False
+   19                          Log Experiment             False
+   20                         Experiment Name  clf-default-name
+   21                                     USI              9220
+   22                         Imputation Type            simple
+   23          Iterative Imputation Iteration              None
+   24                         Numeric Imputer              mean
+   25      Iterative Imputation Numeric Model              None
+   26                     Categorical Imputer          constant
+   27  Iterative Imputation Categorical Model              None
+   28           Unknown Categoricals Handling    least_frequent
+   29                               Normalize             False
+   30                        Normalize Method              None
+   31                          Transformation             False
+   32                   Transformation Method              None
+   33                                     PCA             False
+   34                              PCA Method              None
+   35                          PCA Components              None
+   36                     Ignore Low Variance             False
+   37                     Combine Rare Levels             False
+   38                    Rare Level Threshold              None
+   39                         Numeric Binning             False
+   40                         Remove Outliers             False
+   41                      Outliers Threshold              None
+   42                Remove Multicollinearity             False
+   43             Multicollinearity Threshold              None
+   44                              Clustering             False
+   45                    Clustering Iteration              None
+   46                     Polynomial Features             False
+   47                       Polynomial Degree              None
+   48                    Trignometry Features             False
+   49                    Polynomial Threshold              None
+   50                          Group Features             False
+   51                       Feature Selection             False
+   52            Features Selection Threshold              None
+   53                     Feature Interaction             False
+   54                           Feature Ratio             False
+   55                   Interaction Threshold              None
+   56                           Fix Imbalance             False
+   57                    Fix Imbalance Method             SMOTE),
+  (&#39;X_training Set&#39;,
+               Age     SibSp      Fare     Name  Ticket  Sex  Pclass  Embarked  \
+   62017 -1.786066 -0.539572 -0.425227  23058.0    38.0  0.0     1.0       2.0   
+   5005   0.274926 -0.539572  0.041264   9979.0    49.0  1.0     1.0       2.0   
+   56849 -1.361744 -0.539572  0.215883  14486.0    49.0  0.0     1.0       2.0   
+   42434  1.426657 -0.539572  1.209948   8350.0    21.0  0.0     0.0       0.0   
+   54712 -1.725448 -0.539572 -0.906172  18642.0     0.0  0.0     2.0       2.0   
+   ...         ...       ...       ...      ...     ...  ...     ...       ...   
+   50057  1.608510 -0.539572  1.938114   4224.0    49.0  1.0     0.0       2.0   
+   98047 -0.149396  0.680848 -0.914255  21294.0    49.0  1.0     2.0       2.0   
+   5192  -0.634335 -0.539572 -1.037225  24329.0    49.0  1.0     1.0       2.0   
+   77708  0.820483 -0.539572  2.156857   5150.0    49.0  0.0     0.0       0.0   
+   98539  0.396161 -0.539572  2.729733  25222.0    49.0  1.0     0.0       1.0   
+   
+          Cabin_A  Cabin_B  Cabin_C  Cabin_D  Cabin_E  Cabin_F  Cabin_G  Cabin_T  \
+   62017        0        0        0        0        0        0        0        0   
+   5005         0        0        0        0        0        0        0        0   
+   56849        0        0        0        0        0        0        0        0   
+   42434        0        0        1        0        0        0        0        0   
+   54712        0        0        0        0        0        0        0        0   
+   ...        ...      ...      ...      ...      ...      ...      ...      ...   
+   50057        1        0        0        0        0        0        0        0   
+   98047        0        0        0        0        0        0        0        0   
+   5192         0        0        0        0        0        0        0        0   
+   77708        0        1        0        0        0        0        0        0   
+   98539        1        0        0        0        0        0        0        0   
+   
+          Cabin_X  
+   62017        1  
+   5005         1  
+   56849        1  
+   42434        0  
+   54712        1  
+   ...        ...  
+   50057        0  
+   98047        1  
+   5192         1  
+   77708        0  
+   98539        0  
+   
+   [69999 rows x 17 columns]),
+  (&#39;y_training Set&#39;,
+   62017    0
+   5005     0
+   56849    1
+   42434    1
+   54712    0
+           ..
+   50057    1
+   98047    0
+   5192     0
+   77708    0
+   98539    1
+   Name: Survived, Length: 69999, dtype: int64),
+  (&#39;X_test Set&#39;,
+               Age     SibSp      Fare     Name  Ticket  Sex  Pclass  Embarked  \
+   43660  1.244805 -0.539572  0.820679  25313.0    49.0  0.0     0.0       2.0   
+   87278 -0.210013 -0.539572 -0.555506   3156.0    49.0  1.0     0.0       0.0   
+   14317  0.941718  0.680848  1.561942  11588.0    49.0  1.0     0.0       2.0   
+   81932  0.638631 -0.539572  0.050516  16175.0    21.0  1.0     0.0       0.0   
+   95321 -0.694952  0.680848  0.063476  10196.0    49.0  1.0     0.0       2.0   
+   ...         ...       ...       ...      ...     ...  ...     ...       ...   
+   42287 -1.179892 -0.539572 -0.463126  11629.0    49.0  1.0     2.0       2.0   
+   4967  -0.452483 -0.539572  0.265297   3394.0    49.0  1.0     1.0       0.0   
+   47725  1.244805 -0.539572 -0.364529  19040.0    49.0  1.0     1.0       2.0   
+   42348 -0.694952 -0.539572 -1.197666  15816.0    49.0  1.0     2.0       2.0   
+   80630 -0.452483 -0.539572 -0.900153  24505.0    49.0  1.0     2.0       2.0   
+   
+          Cabin_A  Cabin_B  Cabin_C  Cabin_D  Cabin_E  Cabin_F  Cabin_G  Cabin_T  \
+   43660        0        0        1        0        0        0        0        0   
+   87278        0        0        1        0        0        0        0        0   
+   14317        1        0        0        0        0        0        0        0   
+   81932        1        0        0        0        0        0        0        0   
+   95321        0        0        1        0        0        0        0        0   
+   ...        ...      ...      ...      ...      ...      ...      ...      ...   
+   42287        0        0        0        0        0        0        0        0   
+   4967         0        0        0        0        0        0        0        0   
+   47725        0        0        0        0        0        0        0        0   
+   42348        0        0        0        0        0        0        0        0   
+   80630        0        0        0        0        0        0        0        0   
+   
+          Cabin_X  
+   43660        0  
+   87278        0  
+   14317        0  
+   81932        0  
+   95321        0  
+   ...        ...  
+   42287        1  
+   4967         1  
+   47725        1  
+   42348        1  
+   80630        1  
+   
+   [30001 rows x 17 columns]),
+  (&#39;y_test Set&#39;,
+   43660    1
+   87278    0
+   14317    0
+   81932    1
+   95321    0
+           ..
+   42287    0
+   4967     1
+   47725    0
+   42348    0
+   80630    0
+   Name: Survived, Length: 30001, dtype: int64),
+  (&#39;Transformation Pipeline&#39;,
+   Pipeline(memory=None,
+            steps=[(&#39;dtypes&#39;,
+                    DataTypes_Auto_infer(categorical_features=[],
+                                         display_types=False, features_todrop=[],
+                                         id_columns=[],
+                                         ml_usecase=&#39;classification&#39;,
+                                         numerical_features=[], target=&#39;Survived&#39;,
+                                         time_features=[])),
+                   (&#39;imputer&#39;,
+                    Simple_Imputer(categorical_strategy=&#39;not_available&#39;,
+                                   fill_value_categorical=None,
+                                   fill_value_numerical=None,
+                                   numeric_st...
+                   (&#39;scaling&#39;, &#39;passthrough&#39;), (&#39;P_transform&#39;, &#39;passthrough&#39;),
+                   (&#39;binn&#39;, &#39;passthrough&#39;), (&#39;rem_outliers&#39;, &#39;passthrough&#39;),
+                   (&#39;cluster_all&#39;, &#39;passthrough&#39;),
+                   (&#39;dummy&#39;, Dummify(target=&#39;Survived&#39;)),
+                   (&#39;fix_perfect&#39;, Remove_100(target=&#39;Survived&#39;)),
+                   (&#39;clean_names&#39;, Clean_Colum_Names()),
+                   (&#39;feature_select&#39;, &#39;passthrough&#39;), (&#39;fix_multi&#39;, &#39;passthrough&#39;),
+                   (&#39;dfs&#39;, &#39;passthrough&#39;), (&#39;pca&#39;, &#39;passthrough&#39;)],
+            verbose=False))],
+ &#39;lightgbm&#39;,
+ False,
+             Age     SibSp      Fare     Name  Ticket  Sex  Pclass  Embarked  \
+ 43660  1.244805 -0.539572  0.820679  25313.0    49.0  0.0     0.0       2.0   
+ 87278 -0.210013 -0.539572 -0.555506   3156.0    49.0  1.0     0.0       0.0   
+ 14317  0.941718  0.680848  1.561942  11588.0    49.0  1.0     0.0       2.0   
+ 81932  0.638631 -0.539572  0.050516  16175.0    21.0  1.0     0.0       0.0   
+ 95321 -0.694952  0.680848  0.063476  10196.0    49.0  1.0     0.0       2.0   
+ ...         ...       ...       ...      ...     ...  ...     ...       ...   
+ 42287 -1.179892 -0.539572 -0.463126  11629.0    49.0  1.0     2.0       2.0   
+ 4967  -0.452483 -0.539572  0.265297   3394.0    49.0  1.0     1.0       0.0   
+ 47725  1.244805 -0.539572 -0.364529  19040.0    49.0  1.0     1.0       2.0   
+ 42348 -0.694952 -0.539572 -1.197666  15816.0    49.0  1.0     2.0       2.0   
+ 80630 -0.452483 -0.539572 -0.900153  24505.0    49.0  1.0     2.0       2.0   
+ 
+        Cabin_A  Cabin_B  Cabin_C  Cabin_D  Cabin_E  Cabin_F  Cabin_G  Cabin_T  \
+ 43660        0        0        1        0        0        0        0        0   
+ 87278        0        0        1        0        0        0        0        0   
+ 14317        1        0        0        0        0        0        0        0   
+ 81932        1        0        0        0        0        0        0        0   
+ 95321        0        0        1        0        0        0        0        0   
+ ...        ...      ...      ...      ...      ...      ...      ...      ...   
+ 42287        0        0        0        0        0        0        0        0   
+ 4967         0        0        0        0        0        0        0        0   
+ 47725        0        0        0        0        0        0        0        0   
+ 42348        0        0        0        0        0        0        0        0   
+ 80630        0        0        0        0        0        0        0        0   
+ 
+        Cabin_X  
+ 43660        0  
+ 87278        0  
+ 14317        0  
+ 81932        0  
+ 95321        0  
+ ...        ...  
+ 42287        1  
+ 4967         1  
+ 47725        1  
+ 42348        1  
+ 80630        1  
+ 
+ [30001 rows x 17 columns],
+ 62017    0
+ 5005     0
+ 56849    1
+ 42434    1
+ 54712    0
+         ..
+ 50057    1
+ 98047    0
+ 5192     0
+ 77708    0
+ 98539    1
+ Name: Survived, Length: 69999, dtype: int64,
+ &#123;&#39;parameter&#39;: &#39;Hyperparameters&#39;,
+  &#39;auc&#39;: &#39;AUC&#39;,
+  &#39;confusion_matrix&#39;: &#39;Confusion Matrix&#39;,
+  &#39;threshold&#39;: &#39;Threshold&#39;,
+  &#39;pr&#39;: &#39;Precision Recall&#39;,
+  &#39;error&#39;: &#39;Prediction Error&#39;,
+  &#39;class_report&#39;: &#39;Class Report&#39;,
+  &#39;rfe&#39;: &#39;Feature Selection&#39;,
+  &#39;learning&#39;: &#39;Learning Curve&#39;,
+  &#39;manifold&#39;: &#39;Manifold Learning&#39;,
+  &#39;calibration&#39;: &#39;Calibration Curve&#39;,
+  &#39;vc&#39;: &#39;Validation Curve&#39;,
+  &#39;dimension&#39;: &#39;Dimensions&#39;,
+  &#39;feature&#39;: &#39;Feature Importance&#39;,
+  &#39;feature_all&#39;: &#39;Feature Importance (All)&#39;,
+  &#39;boundary&#39;: &#39;Decision Boundary&#39;,
+  &#39;lift&#39;: &#39;Lift Chart&#39;,
+  &#39;gain&#39;: &#39;Gain Chart&#39;,
+  &#39;tree&#39;: &#39;Decision Tree&#39;&#125;,
+ None,
+ &lt;MLUsecase.CLASSIFICATION: 1&gt;,
+ -1,
+ 43660    1
+ 87278    0
+ 14317    0
+ 81932    1
+ 95321    0
+         ..
+ 42287    0
+ 4967     1
+ 47725    0
+ 42348    0
+ 80630    0
+ Name: Survived, Length: 30001, dtype: int64,
+                 Age     SibSp      Fare     Name  Ticket  Sex  Pclass  \
+ 0     -8.614253e-16  1.901268  0.134351  17441.0    49.0  1.0     0.0   
+ 1     -8.614253e-16 -0.539572 -0.533837   3063.0    49.0  1.0     2.0   
+ 2     -2.069149e+00  0.680848  1.070483  17798.0    14.0  1.0     2.0   
+ 3     -9.374220e-01 -0.539572 -0.555506  12742.0     0.0  1.0     2.0   
+ 4     -5.737175e-01 -0.539572 -1.023540   2335.0    49.0  1.0     2.0   
+ ...             ...       ...       ...      ...     ...  ...     ...   
+ 99995  1.669127e+00 -0.539572 -0.434567   1590.0    21.0  0.0     1.0   
+ 99996  1.911597e+00 -0.539572 -0.698959   2992.0    49.0  1.0     1.0   
+ 99997  1.536915e-01 -0.539572 -0.802137   4219.0    49.0  1.0     2.0   
+ 99998  1.002335e+00 -0.539572  0.259408   3941.0    49.0  1.0     2.0   
+ 99999  1.244805e+00 -0.539572 -0.492531   7055.0    49.0  1.0     2.0   
+ 
+        Embarked  Cabin_A  Cabin_B  Cabin_C  Cabin_D  Cabin_E  Cabin_F  \
+ 0           2.0        0        0        1        0        0        0   
+ 1           2.0        0        0        0        0        0        0   
+ 2           2.0        0        0        0        0        0        0   
+ 3           2.0        0        0        0        0        0        0   
+ 4           2.0        0        0        0        0        0        0   
+ ...         ...      ...      ...      ...      ...      ...      ...   
+ 99995       0.0        0        0        0        1        0        0   
+ 99996       2.0        0        0        0        0        0        0   
+ 99997       2.0        0        0        0        0        0        0   
+ 99998       2.0        0        0        0        0        0        0   
+ 99999       2.0        0        0        0        0        0        0   
+ 
+        Cabin_G  Cabin_T  Cabin_X  
+ 0            0        0        0  
+ 1            0        0        1  
+ 2            0        0        1  
+ 3            0        0        1  
+ 4            0        0        1  
+ ...        ...      ...      ...  
+ 99995        0        0        0  
+ 99996        0        0        1  
+ 99997        0        0        1  
+ 99998        0        0        1  
+ 99999        0        0        1  
+ 
+ [100000 rows x 17 columns],
+ 5,
+ None,
+ False)
+</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#best_model = compare_models(sort = &#x27;Accuracy&#x27;, n_select = 4)</span></span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># gbc=create_model(&#x27;gbc&#x27;)</span></span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># gbc=tune_model(gbc)</span></span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># print(gbc)</span></span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">lightgbm=create_model(<span class="string">&#x27;lightgbm&#x27;</span></span><br><span class="line"></span><br><span class="line">                     )</span><br></pre></td></tr></table></figure>
+
+
+<style  type="text/css" >
+#T_222f1_row5_col0,#T_222f1_row5_col1,#T_222f1_row5_col2,#T_222f1_row5_col3,#T_222f1_row5_col4,#T_222f1_row5_col5,#T_222f1_row5_col6{
+            background:  yellow;
+        }</style><table id="T_222f1_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >Accuracy</th>        <th class="col_heading level0 col1" >AUC</th>        <th class="col_heading level0 col2" >Recall</th>        <th class="col_heading level0 col3" >Prec.</th>        <th class="col_heading level0 col4" >F1</th>        <th class="col_heading level0 col5" >Kappa</th>        <th class="col_heading level0 col6" >MCC</th>    </tr></thead><tbody>
+<pre><code>            &lt;tr&gt;
+                    &lt;th id=&quot;T_222f1_level0_row0&quot; class=&quot;row_heading level0 row0&quot; &gt;0&lt;/th&gt;
+                    &lt;td id=&quot;T_222f1_row0_col0&quot; class=&quot;data row0 col0&quot; &gt;0.7825&lt;/td&gt;
+                    &lt;td id=&quot;T_222f1_row0_col1&quot; class=&quot;data row0 col1&quot; &gt;0.8494&lt;/td&gt;
+                    &lt;td id=&quot;T_222f1_row0_col2&quot; class=&quot;data row0 col2&quot; &gt;0.7359&lt;/td&gt;
+                    &lt;td id=&quot;T_222f1_row0_col3&quot; class=&quot;data row0 col3&quot; &gt;0.7513&lt;/td&gt;
+                    &lt;td id=&quot;T_222f1_row0_col4&quot; class=&quot;data row0 col4&quot; &gt;0.7435&lt;/td&gt;
+                    &lt;td id=&quot;T_222f1_row0_col5&quot; class=&quot;data row0 col5&quot; &gt;0.5547&lt;/td&gt;
+                    &lt;td id=&quot;T_222f1_row0_col6&quot; class=&quot;data row0 col6&quot; &gt;0.5548&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_222f1_level0_row1&quot; class=&quot;row_heading level0 row1&quot; &gt;1&lt;/th&gt;
+                    &lt;td id=&quot;T_222f1_row1_col0&quot; class=&quot;data row1 col0&quot; &gt;0.7801&lt;/td&gt;
+                    &lt;td id=&quot;T_222f1_row1_col1&quot; class=&quot;data row1 col1&quot; &gt;0.8490&lt;/td&gt;
+                    &lt;td id=&quot;T_222f1_row1_col2&quot; class=&quot;data row1 col2&quot; &gt;0.7437&lt;/td&gt;
+                    &lt;td id=&quot;T_222f1_row1_col3&quot; class=&quot;data row1 col3&quot; &gt;0.7431&lt;/td&gt;
+                    &lt;td id=&quot;T_222f1_row1_col4&quot; class=&quot;data row1 col4&quot; &gt;0.7434&lt;/td&gt;
+                    &lt;td id=&quot;T_222f1_row1_col5&quot; class=&quot;data row1 col5&quot; &gt;0.5510&lt;/td&gt;
+                    &lt;td id=&quot;T_222f1_row1_col6&quot; class=&quot;data row1 col6&quot; &gt;0.5510&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_222f1_level0_row2&quot; class=&quot;row_heading level0 row2&quot; &gt;2&lt;/th&gt;
+                    &lt;td id=&quot;T_222f1_row2_col0&quot; class=&quot;data row2 col0&quot; &gt;0.7863&lt;/td&gt;
+                    &lt;td id=&quot;T_222f1_row2_col1&quot; class=&quot;data row2 col1&quot; &gt;0.8547&lt;/td&gt;
+                    &lt;td id=&quot;T_222f1_row2_col2&quot; class=&quot;data row2 col2&quot; &gt;0.7467&lt;/td&gt;
+                    &lt;td id=&quot;T_222f1_row2_col3&quot; class=&quot;data row2 col3&quot; &gt;0.7525&lt;/td&gt;
+                    &lt;td id=&quot;T_222f1_row2_col4&quot; class=&quot;data row2 col4&quot; &gt;0.7496&lt;/td&gt;
+                    &lt;td id=&quot;T_222f1_row2_col5&quot; class=&quot;data row2 col5&quot; &gt;0.5632&lt;/td&gt;
+                    &lt;td id=&quot;T_222f1_row2_col6&quot; class=&quot;data row2 col6&quot; &gt;0.5632&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_222f1_level0_row3&quot; class=&quot;row_heading level0 row3&quot; &gt;3&lt;/th&gt;
+                    &lt;td id=&quot;T_222f1_row3_col0&quot; class=&quot;data row3 col0&quot; &gt;0.7796&lt;/td&gt;
+                    &lt;td id=&quot;T_222f1_row3_col1&quot; class=&quot;data row3 col1&quot; &gt;0.8490&lt;/td&gt;
+                    &lt;td id=&quot;T_222f1_row3_col2&quot; class=&quot;data row3 col2&quot; &gt;0.7391&lt;/td&gt;
+                    &lt;td id=&quot;T_222f1_row3_col3&quot; class=&quot;data row3 col3&quot; &gt;0.7447&lt;/td&gt;
+                    &lt;td id=&quot;T_222f1_row3_col4&quot; class=&quot;data row3 col4&quot; &gt;0.7419&lt;/td&gt;
+                    &lt;td id=&quot;T_222f1_row3_col5&quot; class=&quot;data row3 col5&quot; &gt;0.5496&lt;/td&gt;
+                    &lt;td id=&quot;T_222f1_row3_col6&quot; class=&quot;data row3 col6&quot; &gt;0.5497&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_222f1_level0_row4&quot; class=&quot;row_heading level0 row4&quot; &gt;4&lt;/th&gt;
+                    &lt;td id=&quot;T_222f1_row4_col0&quot; class=&quot;data row4 col0&quot; &gt;0.7833&lt;/td&gt;
+                    &lt;td id=&quot;T_222f1_row4_col1&quot; class=&quot;data row4 col1&quot; &gt;0.8502&lt;/td&gt;
+                    &lt;td id=&quot;T_222f1_row4_col2&quot; class=&quot;data row4 col2&quot; &gt;0.7475&lt;/td&gt;
+                    &lt;td id=&quot;T_222f1_row4_col3&quot; class=&quot;data row4 col3&quot; &gt;0.7469&lt;/td&gt;
+                    &lt;td id=&quot;T_222f1_row4_col4&quot; class=&quot;data row4 col4&quot; &gt;0.7472&lt;/td&gt;
+                    &lt;td id=&quot;T_222f1_row4_col5&quot; class=&quot;data row4 col5&quot; &gt;0.5577&lt;/td&gt;
+                    &lt;td id=&quot;T_222f1_row4_col6&quot; class=&quot;data row4 col6&quot; &gt;0.5577&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_222f1_level0_row5&quot; class=&quot;row_heading level0 row5&quot; &gt;Mean&lt;/th&gt;
+                    &lt;td id=&quot;T_222f1_row5_col0&quot; class=&quot;data row5 col0&quot; &gt;0.7824&lt;/td&gt;
+                    &lt;td id=&quot;T_222f1_row5_col1&quot; class=&quot;data row5 col1&quot; &gt;0.8505&lt;/td&gt;
+                    &lt;td id=&quot;T_222f1_row5_col2&quot; class=&quot;data row5 col2&quot; &gt;0.7426&lt;/td&gt;
+                    &lt;td id=&quot;T_222f1_row5_col3&quot; class=&quot;data row5 col3&quot; &gt;0.7477&lt;/td&gt;
+                    &lt;td id=&quot;T_222f1_row5_col4&quot; class=&quot;data row5 col4&quot; &gt;0.7451&lt;/td&gt;
+                    &lt;td id=&quot;T_222f1_row5_col5&quot; class=&quot;data row5 col5&quot; &gt;0.5552&lt;/td&gt;
+                    &lt;td id=&quot;T_222f1_row5_col6&quot; class=&quot;data row5 col6&quot; &gt;0.5553&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_222f1_level0_row6&quot; class=&quot;row_heading level0 row6&quot; &gt;SD&lt;/th&gt;
+                    &lt;td id=&quot;T_222f1_row6_col0&quot; class=&quot;data row6 col0&quot; &gt;0.0024&lt;/td&gt;
+                    &lt;td id=&quot;T_222f1_row6_col1&quot; class=&quot;data row6 col1&quot; &gt;0.0022&lt;/td&gt;
+                    &lt;td id=&quot;T_222f1_row6_col2&quot; class=&quot;data row6 col2&quot; &gt;0.0045&lt;/td&gt;
+                    &lt;td id=&quot;T_222f1_row6_col3&quot; class=&quot;data row6 col3&quot; &gt;0.0037&lt;/td&gt;
+                    &lt;td id=&quot;T_222f1_row6_col4&quot; class=&quot;data row6 col4&quot; &gt;0.0029&lt;/td&gt;
+                    &lt;td id=&quot;T_222f1_row6_col5&quot; class=&quot;data row6 col5&quot; &gt;0.0049&lt;/td&gt;
+                    &lt;td id=&quot;T_222f1_row6_col6&quot; class=&quot;data row6 col6&quot; &gt;0.0049&lt;/td&gt;
+        &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;
+</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">lightgbm = tune_model(lightgbm</span><br><span class="line">                     , optimize=<span class="string">&#x27;AUC&#x27;</span> </span><br><span class="line">                     )</span><br></pre></td></tr></table></figure>
+
+
+<style  type="text/css" >
+#T_9e81c_row5_col0,#T_9e81c_row5_col1,#T_9e81c_row5_col2,#T_9e81c_row5_col3,#T_9e81c_row5_col4,#T_9e81c_row5_col5,#T_9e81c_row5_col6{
+            background:  yellow;
+        }</style><table id="T_9e81c_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >Accuracy</th>        <th class="col_heading level0 col1" >AUC</th>        <th class="col_heading level0 col2" >Recall</th>        <th class="col_heading level0 col3" >Prec.</th>        <th class="col_heading level0 col4" >F1</th>        <th class="col_heading level0 col5" >Kappa</th>        <th class="col_heading level0 col6" >MCC</th>    </tr></thead><tbody>
+<pre><code>            &lt;tr&gt;
+                    &lt;th id=&quot;T_9e81c_level0_row0&quot; class=&quot;row_heading level0 row0&quot; &gt;0&lt;/th&gt;
+                    &lt;td id=&quot;T_9e81c_row0_col0&quot; class=&quot;data row0 col0&quot; &gt;0.7793&lt;/td&gt;
+                    &lt;td id=&quot;T_9e81c_row0_col1&quot; class=&quot;data row0 col1&quot; &gt;0.8496&lt;/td&gt;
+                    &lt;td id=&quot;T_9e81c_row0_col2&quot; class=&quot;data row0 col2&quot; &gt;0.7382&lt;/td&gt;
+                    &lt;td id=&quot;T_9e81c_row0_col3&quot; class=&quot;data row0 col3&quot; &gt;0.7444&lt;/td&gt;
+                    &lt;td id=&quot;T_9e81c_row0_col4&quot; class=&quot;data row0 col4&quot; &gt;0.7413&lt;/td&gt;
+                    &lt;td id=&quot;T_9e81c_row0_col5&quot; class=&quot;data row0 col5&quot; &gt;0.5488&lt;/td&gt;
+                    &lt;td id=&quot;T_9e81c_row0_col6&quot; class=&quot;data row0 col6&quot; &gt;0.5489&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_9e81c_level0_row1&quot; class=&quot;row_heading level0 row1&quot; &gt;1&lt;/th&gt;
+                    &lt;td id=&quot;T_9e81c_row1_col0&quot; class=&quot;data row1 col0&quot; &gt;0.7797&lt;/td&gt;
+                    &lt;td id=&quot;T_9e81c_row1_col1&quot; class=&quot;data row1 col1&quot; &gt;0.8492&lt;/td&gt;
+                    &lt;td id=&quot;T_9e81c_row1_col2&quot; class=&quot;data row1 col2&quot; &gt;0.7439&lt;/td&gt;
+                    &lt;td id=&quot;T_9e81c_row1_col3&quot; class=&quot;data row1 col3&quot; &gt;0.7424&lt;/td&gt;
+                    &lt;td id=&quot;T_9e81c_row1_col4&quot; class=&quot;data row1 col4&quot; &gt;0.7431&lt;/td&gt;
+                    &lt;td id=&quot;T_9e81c_row1_col5&quot; class=&quot;data row1 col5&quot; &gt;0.5503&lt;/td&gt;
+                    &lt;td id=&quot;T_9e81c_row1_col6&quot; class=&quot;data row1 col6&quot; &gt;0.5503&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_9e81c_level0_row2&quot; class=&quot;row_heading level0 row2&quot; &gt;2&lt;/th&gt;
+                    &lt;td id=&quot;T_9e81c_row2_col0&quot; class=&quot;data row2 col0&quot; &gt;0.7858&lt;/td&gt;
+                    &lt;td id=&quot;T_9e81c_row2_col1&quot; class=&quot;data row2 col1&quot; &gt;0.8547&lt;/td&gt;
+                    &lt;td id=&quot;T_9e81c_row2_col2&quot; class=&quot;data row2 col2&quot; &gt;0.7489&lt;/td&gt;
+                    &lt;td id=&quot;T_9e81c_row2_col3&quot; class=&quot;data row2 col3&quot; &gt;0.7505&lt;/td&gt;
+                    &lt;td id=&quot;T_9e81c_row2_col4&quot; class=&quot;data row2 col4&quot; &gt;0.7497&lt;/td&gt;
+                    &lt;td id=&quot;T_9e81c_row2_col5&quot; class=&quot;data row2 col5&quot; &gt;0.5625&lt;/td&gt;
+                    &lt;td id=&quot;T_9e81c_row2_col6&quot; class=&quot;data row2 col6&quot; &gt;0.5625&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_9e81c_level0_row3&quot; class=&quot;row_heading level0 row3&quot; &gt;3&lt;/th&gt;
+                    &lt;td id=&quot;T_9e81c_row3_col0&quot; class=&quot;data row3 col0&quot; &gt;0.7777&lt;/td&gt;
+                    &lt;td id=&quot;T_9e81c_row3_col1&quot; class=&quot;data row3 col1&quot; &gt;0.8493&lt;/td&gt;
+                    &lt;td id=&quot;T_9e81c_row3_col2&quot; class=&quot;data row3 col2&quot; &gt;0.7467&lt;/td&gt;
+                    &lt;td id=&quot;T_9e81c_row3_col3&quot; class=&quot;data row3 col3&quot; &gt;0.7376&lt;/td&gt;
+                    &lt;td id=&quot;T_9e81c_row3_col4&quot; class=&quot;data row3 col4&quot; &gt;0.7422&lt;/td&gt;
+                    &lt;td id=&quot;T_9e81c_row3_col5&quot; class=&quot;data row3 col5&quot; &gt;0.5468&lt;/td&gt;
+                    &lt;td id=&quot;T_9e81c_row3_col6&quot; class=&quot;data row3 col6&quot; &gt;0.5469&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_9e81c_level0_row4&quot; class=&quot;row_heading level0 row4&quot; &gt;4&lt;/th&gt;
+                    &lt;td id=&quot;T_9e81c_row4_col0&quot; class=&quot;data row4 col0&quot; &gt;0.7825&lt;/td&gt;
+                    &lt;td id=&quot;T_9e81c_row4_col1&quot; class=&quot;data row4 col1&quot; &gt;0.8508&lt;/td&gt;
+                    &lt;td id=&quot;T_9e81c_row4_col2&quot; class=&quot;data row4 col2&quot; &gt;0.7429&lt;/td&gt;
+                    &lt;td id=&quot;T_9e81c_row4_col3&quot; class=&quot;data row4 col3&quot; &gt;0.7477&lt;/td&gt;
+                    &lt;td id=&quot;T_9e81c_row4_col4&quot; class=&quot;data row4 col4&quot; &gt;0.7453&lt;/td&gt;
+                    &lt;td id=&quot;T_9e81c_row4_col5&quot; class=&quot;data row4 col5&quot; &gt;0.5555&lt;/td&gt;
+                    &lt;td id=&quot;T_9e81c_row4_col6&quot; class=&quot;data row4 col6&quot; &gt;0.5555&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_9e81c_level0_row5&quot; class=&quot;row_heading level0 row5&quot; &gt;Mean&lt;/th&gt;
+                    &lt;td id=&quot;T_9e81c_row5_col0&quot; class=&quot;data row5 col0&quot; &gt;0.7810&lt;/td&gt;
+                    &lt;td id=&quot;T_9e81c_row5_col1&quot; class=&quot;data row5 col1&quot; &gt;0.8507&lt;/td&gt;
+                    &lt;td id=&quot;T_9e81c_row5_col2&quot; class=&quot;data row5 col2&quot; &gt;0.7441&lt;/td&gt;
+                    &lt;td id=&quot;T_9e81c_row5_col3&quot; class=&quot;data row5 col3&quot; &gt;0.7445&lt;/td&gt;
+                    &lt;td id=&quot;T_9e81c_row5_col4&quot; class=&quot;data row5 col4&quot; &gt;0.7443&lt;/td&gt;
+                    &lt;td id=&quot;T_9e81c_row5_col5&quot; class=&quot;data row5 col5&quot; &gt;0.5528&lt;/td&gt;
+                    &lt;td id=&quot;T_9e81c_row5_col6&quot; class=&quot;data row5 col6&quot; &gt;0.5528&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_9e81c_level0_row6&quot; class=&quot;row_heading level0 row6&quot; &gt;SD&lt;/th&gt;
+                    &lt;td id=&quot;T_9e81c_row6_col0&quot; class=&quot;data row6 col0&quot; &gt;0.0028&lt;/td&gt;
+                    &lt;td id=&quot;T_9e81c_row6_col1&quot; class=&quot;data row6 col1&quot; &gt;0.0021&lt;/td&gt;
+                    &lt;td id=&quot;T_9e81c_row6_col2&quot; class=&quot;data row6 col2&quot; &gt;0.0036&lt;/td&gt;
+                    &lt;td id=&quot;T_9e81c_row6_col3&quot; class=&quot;data row6 col3&quot; &gt;0.0044&lt;/td&gt;
+                    &lt;td id=&quot;T_9e81c_row6_col4&quot; class=&quot;data row6 col4&quot; &gt;0.0030&lt;/td&gt;
+                    &lt;td id=&quot;T_9e81c_row6_col5&quot; class=&quot;data row6 col5&quot; &gt;0.0056&lt;/td&gt;
+                    &lt;td id=&quot;T_9e81c_row6_col6&quot; class=&quot;data row6 col6&quot; &gt;0.0056&lt;/td&gt;
+        &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;
+</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">print</span>(lightgbm)</span><br></pre></td></tr></table></figure>
+
+<pre><code>LGBMClassifier(bagging_fraction=0.8, bagging_freq=5, boosting_type=&#39;gbdt&#39;,
+               class_weight=None, colsample_bytree=1.0, feature_fraction=0.9,
+               importance_type=&#39;split&#39;, learning_rate=0.103, max_depth=-1,
+               min_child_samples=30, min_child_weight=0.001, min_split_gain=0.4,
+               n_estimators=40, n_jobs=-1, num_leaves=30, objective=None,
+               random_state=1, reg_alpha=2, reg_lambda=0.2, silent=True,
+               subsample=1.0, subsample_for_bin=200000, subsample_freq=0)
+</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">catboost=create_model(<span class="string">&#x27;catboost&#x27;</span></span><br><span class="line"></span><br><span class="line">                     )</span><br></pre></td></tr></table></figure>
+
+
+<style  type="text/css" >
+#T_cd7ef_row5_col0,#T_cd7ef_row5_col1,#T_cd7ef_row5_col2,#T_cd7ef_row5_col3,#T_cd7ef_row5_col4,#T_cd7ef_row5_col5,#T_cd7ef_row5_col6{
+            background:  yellow;
+        }</style><table id="T_cd7ef_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >Accuracy</th>        <th class="col_heading level0 col1" >AUC</th>        <th class="col_heading level0 col2" >Recall</th>        <th class="col_heading level0 col3" >Prec.</th>        <th class="col_heading level0 col4" >F1</th>        <th class="col_heading level0 col5" >Kappa</th>        <th class="col_heading level0 col6" >MCC</th>    </tr></thead><tbody>
+<pre><code>            &lt;tr&gt;
+                    &lt;th id=&quot;T_cd7ef_level0_row0&quot; class=&quot;row_heading level0 row0&quot; &gt;0&lt;/th&gt;
+                    &lt;td id=&quot;T_cd7ef_row0_col0&quot; class=&quot;data row0 col0&quot; &gt;0.7786&lt;/td&gt;
+                    &lt;td id=&quot;T_cd7ef_row0_col1&quot; class=&quot;data row0 col1&quot; &gt;0.8480&lt;/td&gt;
+                    &lt;td id=&quot;T_cd7ef_row0_col2&quot; class=&quot;data row0 col2&quot; &gt;0.7287&lt;/td&gt;
+                    &lt;td id=&quot;T_cd7ef_row0_col3&quot; class=&quot;data row0 col3&quot; &gt;0.7479&lt;/td&gt;
+                    &lt;td id=&quot;T_cd7ef_row0_col4&quot; class=&quot;data row0 col4&quot; &gt;0.7382&lt;/td&gt;
+                    &lt;td id=&quot;T_cd7ef_row0_col5&quot; class=&quot;data row0 col5&quot; &gt;0.5464&lt;/td&gt;
+                    &lt;td id=&quot;T_cd7ef_row0_col6&quot; class=&quot;data row0 col6&quot; &gt;0.5465&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_cd7ef_level0_row1&quot; class=&quot;row_heading level0 row1&quot; &gt;1&lt;/th&gt;
+                    &lt;td id=&quot;T_cd7ef_row1_col0&quot; class=&quot;data row1 col0&quot; &gt;0.7774&lt;/td&gt;
+                    &lt;td id=&quot;T_cd7ef_row1_col1&quot; class=&quot;data row1 col1&quot; &gt;0.8474&lt;/td&gt;
+                    &lt;td id=&quot;T_cd7ef_row1_col2&quot; class=&quot;data row1 col2&quot; &gt;0.7394&lt;/td&gt;
+                    &lt;td id=&quot;T_cd7ef_row1_col3&quot; class=&quot;data row1 col3&quot; &gt;0.7405&lt;/td&gt;
+                    &lt;td id=&quot;T_cd7ef_row1_col4&quot; class=&quot;data row1 col4&quot; &gt;0.7399&lt;/td&gt;
+                    &lt;td id=&quot;T_cd7ef_row1_col5&quot; class=&quot;data row1 col5&quot; &gt;0.5453&lt;/td&gt;
+                    &lt;td id=&quot;T_cd7ef_row1_col6&quot; class=&quot;data row1 col6&quot; &gt;0.5453&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_cd7ef_level0_row2&quot; class=&quot;row_heading level0 row2&quot; &gt;2&lt;/th&gt;
+                    &lt;td id=&quot;T_cd7ef_row2_col0&quot; class=&quot;data row2 col0&quot; &gt;0.7826&lt;/td&gt;
+                    &lt;td id=&quot;T_cd7ef_row2_col1&quot; class=&quot;data row2 col1&quot; &gt;0.8532&lt;/td&gt;
+                    &lt;td id=&quot;T_cd7ef_row2_col2&quot; class=&quot;data row2 col2&quot; &gt;0.7417&lt;/td&gt;
+                    &lt;td id=&quot;T_cd7ef_row2_col3&quot; class=&quot;data row2 col3&quot; &gt;0.7486&lt;/td&gt;
+                    &lt;td id=&quot;T_cd7ef_row2_col4&quot; class=&quot;data row2 col4&quot; &gt;0.7452&lt;/td&gt;
+                    &lt;td id=&quot;T_cd7ef_row2_col5&quot; class=&quot;data row2 col5&quot; &gt;0.5557&lt;/td&gt;
+                    &lt;td id=&quot;T_cd7ef_row2_col6&quot; class=&quot;data row2 col6&quot; &gt;0.5557&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_cd7ef_level0_row3&quot; class=&quot;row_heading level0 row3&quot; &gt;3&lt;/th&gt;
+                    &lt;td id=&quot;T_cd7ef_row3_col0&quot; class=&quot;data row3 col0&quot; &gt;0.7761&lt;/td&gt;
+                    &lt;td id=&quot;T_cd7ef_row3_col1&quot; class=&quot;data row3 col1&quot; &gt;0.8477&lt;/td&gt;
+                    &lt;td id=&quot;T_cd7ef_row3_col2&quot; class=&quot;data row3 col2&quot; &gt;0.7354&lt;/td&gt;
+                    &lt;td id=&quot;T_cd7ef_row3_col3&quot; class=&quot;data row3 col3&quot; &gt;0.7403&lt;/td&gt;
+                    &lt;td id=&quot;T_cd7ef_row3_col4&quot; class=&quot;data row3 col4&quot; &gt;0.7379&lt;/td&gt;
+                    &lt;td id=&quot;T_cd7ef_row3_col5&quot; class=&quot;data row3 col5&quot; &gt;0.5425&lt;/td&gt;
+                    &lt;td id=&quot;T_cd7ef_row3_col6&quot; class=&quot;data row3 col6&quot; &gt;0.5425&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_cd7ef_level0_row4&quot; class=&quot;row_heading level0 row4&quot; &gt;4&lt;/th&gt;
+                    &lt;td id=&quot;T_cd7ef_row4_col0&quot; class=&quot;data row4 col0&quot; &gt;0.7835&lt;/td&gt;
+                    &lt;td id=&quot;T_cd7ef_row4_col1&quot; class=&quot;data row4 col1&quot; &gt;0.8499&lt;/td&gt;
+                    &lt;td id=&quot;T_cd7ef_row4_col2&quot; class=&quot;data row4 col2&quot; &gt;0.7410&lt;/td&gt;
+                    &lt;td id=&quot;T_cd7ef_row4_col3&quot; class=&quot;data row4 col3&quot; &gt;0.7504&lt;/td&gt;
+                    &lt;td id=&quot;T_cd7ef_row4_col4&quot; class=&quot;data row4 col4&quot; &gt;0.7457&lt;/td&gt;
+                    &lt;td id=&quot;T_cd7ef_row4_col5&quot; class=&quot;data row4 col5&quot; &gt;0.5572&lt;/td&gt;
+                    &lt;td id=&quot;T_cd7ef_row4_col6&quot; class=&quot;data row4 col6&quot; &gt;0.5572&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_cd7ef_level0_row5&quot; class=&quot;row_heading level0 row5&quot; &gt;Mean&lt;/th&gt;
+                    &lt;td id=&quot;T_cd7ef_row5_col0&quot; class=&quot;data row5 col0&quot; &gt;0.7796&lt;/td&gt;
+                    &lt;td id=&quot;T_cd7ef_row5_col1&quot; class=&quot;data row5 col1&quot; &gt;0.8492&lt;/td&gt;
+                    &lt;td id=&quot;T_cd7ef_row5_col2&quot; class=&quot;data row5 col2&quot; &gt;0.7373&lt;/td&gt;
+                    &lt;td id=&quot;T_cd7ef_row5_col3&quot; class=&quot;data row5 col3&quot; &gt;0.7456&lt;/td&gt;
+                    &lt;td id=&quot;T_cd7ef_row5_col4&quot; class=&quot;data row5 col4&quot; &gt;0.7414&lt;/td&gt;
+                    &lt;td id=&quot;T_cd7ef_row5_col5&quot; class=&quot;data row5 col5&quot; &gt;0.5494&lt;/td&gt;
+                    &lt;td id=&quot;T_cd7ef_row5_col6&quot; class=&quot;data row5 col6&quot; &gt;0.5495&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_cd7ef_level0_row6&quot; class=&quot;row_heading level0 row6&quot; &gt;SD&lt;/th&gt;
+                    &lt;td id=&quot;T_cd7ef_row6_col0&quot; class=&quot;data row6 col0&quot; &gt;0.0029&lt;/td&gt;
+                    &lt;td id=&quot;T_cd7ef_row6_col1&quot; class=&quot;data row6 col1&quot; &gt;0.0022&lt;/td&gt;
+                    &lt;td id=&quot;T_cd7ef_row6_col2&quot; class=&quot;data row6 col2&quot; &gt;0.0048&lt;/td&gt;
+                    &lt;td id=&quot;T_cd7ef_row6_col3&quot; class=&quot;data row6 col3&quot; &gt;0.0043&lt;/td&gt;
+                    &lt;td id=&quot;T_cd7ef_row6_col4&quot; class=&quot;data row6 col4&quot; &gt;0.0034&lt;/td&gt;
+                    &lt;td id=&quot;T_cd7ef_row6_col5&quot; class=&quot;data row6 col5&quot; &gt;0.0059&lt;/td&gt;
+                    &lt;td id=&quot;T_cd7ef_row6_col6&quot; class=&quot;data row6 col6&quot; &gt;0.0059&lt;/td&gt;
+        &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;
+</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">catboost = tune_model(catboost</span><br><span class="line">                     , optimize=<span class="string">&#x27;AUC&#x27;</span> </span><br><span class="line">                     )</span><br></pre></td></tr></table></figure>
+
+
+<style  type="text/css" >
+#T_27911_row5_col0,#T_27911_row5_col1,#T_27911_row5_col2,#T_27911_row5_col3,#T_27911_row5_col4,#T_27911_row5_col5,#T_27911_row5_col6{
+            background:  yellow;
+        }</style><table id="T_27911_" ><thead>    <tr>        <th class="blank level0" ></th>        <th class="col_heading level0 col0" >Accuracy</th>        <th class="col_heading level0 col1" >AUC</th>        <th class="col_heading level0 col2" >Recall</th>        <th class="col_heading level0 col3" >Prec.</th>        <th class="col_heading level0 col4" >F1</th>        <th class="col_heading level0 col5" >Kappa</th>        <th class="col_heading level0 col6" >MCC</th>    </tr></thead><tbody>
+<pre><code>            &lt;tr&gt;
+                    &lt;th id=&quot;T_27911_level0_row0&quot; class=&quot;row_heading level0 row0&quot; &gt;0&lt;/th&gt;
+                    &lt;td id=&quot;T_27911_row0_col0&quot; class=&quot;data row0 col0&quot; &gt;0.7815&lt;/td&gt;
+                    &lt;td id=&quot;T_27911_row0_col1&quot; class=&quot;data row0 col1&quot; &gt;0.8501&lt;/td&gt;
+                    &lt;td id=&quot;T_27911_row0_col2&quot; class=&quot;data row0 col2&quot; &gt;0.7455&lt;/td&gt;
+                    &lt;td id=&quot;T_27911_row0_col3&quot; class=&quot;data row0 col3&quot; &gt;0.7447&lt;/td&gt;
+                    &lt;td id=&quot;T_27911_row0_col4&quot; class=&quot;data row0 col4&quot; &gt;0.7451&lt;/td&gt;
+                    &lt;td id=&quot;T_27911_row0_col5&quot; class=&quot;data row0 col5&quot; &gt;0.5539&lt;/td&gt;
+                    &lt;td id=&quot;T_27911_row0_col6&quot; class=&quot;data row0 col6&quot; &gt;0.5539&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_27911_level0_row1&quot; class=&quot;row_heading level0 row1&quot; &gt;1&lt;/th&gt;
+                    &lt;td id=&quot;T_27911_row1_col0&quot; class=&quot;data row1 col0&quot; &gt;0.7802&lt;/td&gt;
+                    &lt;td id=&quot;T_27911_row1_col1&quot; class=&quot;data row1 col1&quot; &gt;0.8490&lt;/td&gt;
+                    &lt;td id=&quot;T_27911_row1_col2&quot; class=&quot;data row1 col2&quot; &gt;0.7485&lt;/td&gt;
+                    &lt;td id=&quot;T_27911_row1_col3&quot; class=&quot;data row1 col3&quot; &gt;0.7410&lt;/td&gt;
+                    &lt;td id=&quot;T_27911_row1_col4&quot; class=&quot;data row1 col4&quot; &gt;0.7448&lt;/td&gt;
+                    &lt;td id=&quot;T_27911_row1_col5&quot; class=&quot;data row1 col5&quot; &gt;0.5518&lt;/td&gt;
+                    &lt;td id=&quot;T_27911_row1_col6&quot; class=&quot;data row1 col6&quot; &gt;0.5518&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_27911_level0_row2&quot; class=&quot;row_heading level0 row2&quot; &gt;2&lt;/th&gt;
+                    &lt;td id=&quot;T_27911_row2_col0&quot; class=&quot;data row2 col0&quot; &gt;0.7861&lt;/td&gt;
+                    &lt;td id=&quot;T_27911_row2_col1&quot; class=&quot;data row2 col1&quot; &gt;0.8554&lt;/td&gt;
+                    &lt;td id=&quot;T_27911_row2_col2&quot; class=&quot;data row2 col2&quot; &gt;0.7539&lt;/td&gt;
+                    &lt;td id=&quot;T_27911_row2_col3&quot; class=&quot;data row2 col3&quot; &gt;0.7486&lt;/td&gt;
+                    &lt;td id=&quot;T_27911_row2_col4&quot; class=&quot;data row2 col4&quot; &gt;0.7512&lt;/td&gt;
+                    &lt;td id=&quot;T_27911_row2_col5&quot; class=&quot;data row2 col5&quot; &gt;0.5636&lt;/td&gt;
+                    &lt;td id=&quot;T_27911_row2_col6&quot; class=&quot;data row2 col6&quot; &gt;0.5636&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_27911_level0_row3&quot; class=&quot;row_heading level0 row3&quot; &gt;3&lt;/th&gt;
+                    &lt;td id=&quot;T_27911_row3_col0&quot; class=&quot;data row3 col0&quot; &gt;0.7786&lt;/td&gt;
+                    &lt;td id=&quot;T_27911_row3_col1&quot; class=&quot;data row3 col1&quot; &gt;0.8494&lt;/td&gt;
+                    &lt;td id=&quot;T_27911_row3_col2&quot; class=&quot;data row3 col2&quot; &gt;0.7462&lt;/td&gt;
+                    &lt;td id=&quot;T_27911_row3_col3&quot; class=&quot;data row3 col3&quot; &gt;0.7395&lt;/td&gt;
+                    &lt;td id=&quot;T_27911_row3_col4&quot; class=&quot;data row3 col4&quot; &gt;0.7428&lt;/td&gt;
+                    &lt;td id=&quot;T_27911_row3_col5&quot; class=&quot;data row3 col5&quot; &gt;0.5485&lt;/td&gt;
+                    &lt;td id=&quot;T_27911_row3_col6&quot; class=&quot;data row3 col6&quot; &gt;0.5486&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_27911_level0_row4&quot; class=&quot;row_heading level0 row4&quot; &gt;4&lt;/th&gt;
+                    &lt;td id=&quot;T_27911_row4_col0&quot; class=&quot;data row4 col0&quot; &gt;0.7830&lt;/td&gt;
+                    &lt;td id=&quot;T_27911_row4_col1&quot; class=&quot;data row4 col1&quot; &gt;0.8509&lt;/td&gt;
+                    &lt;td id=&quot;T_27911_row4_col2&quot; class=&quot;data row4 col2&quot; &gt;0.7482&lt;/td&gt;
+                    &lt;td id=&quot;T_27911_row4_col3&quot; class=&quot;data row4 col3&quot; &gt;0.7460&lt;/td&gt;
+                    &lt;td id=&quot;T_27911_row4_col4&quot; class=&quot;data row4 col4&quot; &gt;0.7471&lt;/td&gt;
+                    &lt;td id=&quot;T_27911_row4_col5&quot; class=&quot;data row4 col5&quot; &gt;0.5570&lt;/td&gt;
+                    &lt;td id=&quot;T_27911_row4_col6&quot; class=&quot;data row4 col6&quot; &gt;0.5570&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_27911_level0_row5&quot; class=&quot;row_heading level0 row5&quot; &gt;Mean&lt;/th&gt;
+                    &lt;td id=&quot;T_27911_row5_col0&quot; class=&quot;data row5 col0&quot; &gt;0.7819&lt;/td&gt;
+                    &lt;td id=&quot;T_27911_row5_col1&quot; class=&quot;data row5 col1&quot; &gt;0.8510&lt;/td&gt;
+                    &lt;td id=&quot;T_27911_row5_col2&quot; class=&quot;data row5 col2&quot; &gt;0.7485&lt;/td&gt;
+                    &lt;td id=&quot;T_27911_row5_col3&quot; class=&quot;data row5 col3&quot; &gt;0.7439&lt;/td&gt;
+                    &lt;td id=&quot;T_27911_row5_col4&quot; class=&quot;data row5 col4&quot; &gt;0.7462&lt;/td&gt;
+                    &lt;td id=&quot;T_27911_row5_col5&quot; class=&quot;data row5 col5&quot; &gt;0.5550&lt;/td&gt;
+                    &lt;td id=&quot;T_27911_row5_col6&quot; class=&quot;data row5 col6&quot; &gt;0.5550&lt;/td&gt;
+        &lt;/tr&gt;
+        &lt;tr&gt;
+                    &lt;th id=&quot;T_27911_level0_row6&quot; class=&quot;row_heading level0 row6&quot; &gt;SD&lt;/th&gt;
+                    &lt;td id=&quot;T_27911_row6_col0&quot; class=&quot;data row6 col0&quot; &gt;0.0025&lt;/td&gt;
+                    &lt;td id=&quot;T_27911_row6_col1&quot; class=&quot;data row6 col1&quot; &gt;0.0023&lt;/td&gt;
+                    &lt;td id=&quot;T_27911_row6_col2&quot; class=&quot;data row6 col2&quot; &gt;0.0029&lt;/td&gt;
+                    &lt;td id=&quot;T_27911_row6_col3&quot; class=&quot;data row6 col3&quot; &gt;0.0033&lt;/td&gt;
+                    &lt;td id=&quot;T_27911_row6_col4&quot; class=&quot;data row6 col4&quot; &gt;0.0028&lt;/td&gt;
+                    &lt;td id=&quot;T_27911_row6_col5&quot; class=&quot;data row6 col5&quot; &gt;0.0051&lt;/td&gt;
+                    &lt;td id=&quot;T_27911_row6_col6&quot; class=&quot;data row6 col6&quot; &gt;0.0051&lt;/td&gt;
+        &lt;/tr&gt;
+&lt;/tbody&gt;&lt;/table&gt;
+</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ada=create_model(&#x27;ada&#x27;)</span></span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># ada=tune_model(ada,optimize=&#x27;AUC&#x27;)</span></span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">def</span> <span class="title">create_submission</span>(<span class="params">model, test, test_passenger_id, model_name</span>):</span></span><br><span class="line">    y_pred_test = model.predict_proba(test)[:, <span class="number">1</span>]</span><br><span class="line">    submission = pd.DataFrame(</span><br><span class="line">        &#123;</span><br><span class="line">            <span class="string">&#x27;PassengerId&#x27;</span>: test_passenger_id, </span><br><span class="line">            <span class="string">&#x27;Survived&#x27;</span>: (y_pred_test &gt;= <span class="number">0.5</span>).astype(<span class="built_in">int</span>),</span><br><span class="line">        &#125;</span><br><span class="line">    )</span><br><span class="line">    submission.to_csv(<span class="string">f&quot;submission_<span class="subst">&#123;model_name&#125;</span>.csv&quot;</span>, index=<span class="literal">False</span>)</span><br><span class="line">    </span><br><span class="line">    <span class="keyword">return</span> y_pred_test</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">test = all_df.iloc[<span class="number">100000</span>:, :] <span class="comment">#100000개~ </span></span><br><span class="line">X_test=test.drop(drop_list,axis=<span class="number">1</span>)</span><br><span class="line">X_test.head()</span><br></pre></td></tr></table></figure>
+
+
+
+
+<div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+<pre><code>.dataframe tbody tr th &#123;
+    vertical-align: top;
+&#125;
+
+.dataframe thead th &#123;
+    text-align: right;
+&#125;
+</code></pre>
+<p></style></p>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>Age</th>
+      <th>SibSp</th>
+      <th>Fare</th>
+      <th>Name</th>
+      <th>Ticket</th>
+      <th>Sex</th>
+      <th>Pclass</th>
+      <th>Embarked</th>
+      <th>Cabin_A</th>
+      <th>Cabin_B</th>
+      <th>Cabin_C</th>
+      <th>Cabin_D</th>
+      <th>Cabin_E</th>
+      <th>Cabin_F</th>
+      <th>Cabin_G</th>
+      <th>Cabin_T</th>
+      <th>Cabin_X</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>100000</th>
+      <td>-0.937422</td>
+      <td>-0.539572</td>
+      <td>0.949786</td>
+      <td>10830</td>
+      <td>49</td>
+      <td>1</td>
+      <td>2</td>
+      <td>2</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>100001</th>
+      <td>1.123570</td>
+      <td>-0.539572</td>
+      <td>-1.273379</td>
+      <td>17134</td>
+      <td>49</td>
+      <td>0</td>
+      <td>2</td>
+      <td>2</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>100002</th>
+      <td>-0.937422</td>
+      <td>-0.539572</td>
+      <td>0.481059</td>
+      <td>9978</td>
+      <td>49</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <th>100003</th>
+      <td>-0.573717</td>
+      <td>-0.539572</td>
+      <td>-0.563310</td>
+      <td>13303</td>
+      <td>49</td>
+      <td>1</td>
+      <td>1</td>
+      <td>2</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+    </tr>
+    <tr>
+      <th>100004</th>
+      <td>-1.058657</td>
+      <td>-0.539572</td>
+      <td>0.125497</td>
+      <td>4406</td>
+      <td>49</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>1</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+      <td>0</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+
+
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">test_pred_lightgbm = create_submission(</span><br><span class="line">    lightgbm, X_test, test_df[<span class="string">&quot;PassengerId&quot;</span>], <span class="string">&quot;lightgbm&quot;</span></span><br><span class="line">)</span><br><span class="line"><span class="comment"># test_pred_ada = create_submission(</span></span><br><span class="line"><span class="comment">#     ada, X_test, test_df[&quot;PassengerId&quot;], &quot;ada&quot;</span></span><br><span class="line"><span class="comment"># )</span></span><br><span class="line"><span class="comment"># test_pred_gbc = create_submission(</span></span><br><span class="line"><span class="comment">#     ada, X_test, test_df[&quot;PassengerId&quot;], &quot;gbc&quot;</span></span><br><span class="line"><span class="comment"># )</span></span><br><span class="line">test_pred_catboost = create_submission(</span><br><span class="line">    catboost, X_test, test_df[<span class="string">&quot;PassengerId&quot;</span>], <span class="string">&quot;catboost&quot;</span></span><br><span class="line">)</span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">test_pred_merged = (</span><br><span class="line"></span><br><span class="line">    test_pred_lightgbm + </span><br><span class="line">    test_pred_catboost</span><br><span class="line"><span class="comment">#     test_pred_ada +</span></span><br><span class="line"><span class="comment">#     test_pred_gbc</span></span><br><span class="line">)</span><br><span class="line"></span><br><span class="line">test_pred_merged = np.<span class="built_in">round</span>(test_pred_merged / <span class="number">2</span>)</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">submission = pd.DataFrame(</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="string">&#x27;PassengerId&#x27;</span>: test_df[<span class="string">&quot;PassengerId&quot;</span>], </span><br><span class="line">        <span class="string">&#x27;Survived&#x27;</span>: test_pred_merged.astype(<span class="built_in">int</span>),</span><br><span class="line">    &#125;</span><br><span class="line">submission.to_csv(<span class="string">f&quot;submission_merged.csv&quot;</span>, index=<span class="literal">False</span>)</span><br></pre></td></tr></table></figure>
+
+
+<pre><code>  File &quot;&lt;ipython-input-39-f1cf7d72db78&gt;&quot;, line 6
+    submission.to_csv(f&quot;submission_merged.csv&quot;, index=False)
+             ^
+SyntaxError: invalid syntax
+</code></pre>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"></span><br></pre></td></tr></table></figure>
+
+<h1 id=""><a href="#" class="headerlink" title=""></a></h1></div><div class="article-licensing box"><div class="licensing-title"><p>Pycaret을 사용한 모델링</p><p><a href="https://ggaggu.github.io/2021/04/28/pycaret_modeling/">https://ggaggu.github.io/2021/04/28/pycaret_modeling/</a></p></div><div class="licensing-meta level is-mobile"><div class="level-left"><div class="level-item is-narrow"><div><h6>Author</h6><p>lhj</p></div></div><div class="level-item is-narrow"><div><h6>Posted on</h6><p>2021-04-28</p></div></div><div class="level-item is-narrow"><div><h6>Updated on</h6><p>2021-04-28</p></div></div><div class="level-item is-narrow"><div><h6>Licensed under</h6><p><a class="icon" rel="noopener" target="_blank" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a><a class="icon" rel="noopener" target="_blank" title="Attribution" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a><a class="icon" rel="noopener" target="_blank" title="Noncommercial" href="https://creativecommons.org/licenses/by-nc/4.0/"><i class="fab fa-creative-commons-nc"></i></a></p></div></div></div></div></div><div class="notification is-danger">You need to set <code>install_url</code> to use ShareThis. Please set it in <code>_config.yml</code>.</div></article></div><div class="card"><div class="card-content"><h3 class="menu-label has-text-centered">Like this article? Support the author with</h3><div class="buttons is-centered"><a class="button donate" href="/" target="_blank" rel="noopener" data-type="afdian"><span class="icon is-small"><i class="fas fa-charging-station"></i></span><span>Afdian.net</span></a><a class="button donate" data-type="alipay"><span class="icon is-small"><i class="fab fa-alipay"></i></span><span>Alipay</span><span class="qrcode"><img src="/" alt="Alipay"></span></a><a class="button donate" href="/" target="_blank" rel="noopener" data-type="buymeacoffee"><span class="icon is-small"><i class="fas fa-coffee"></i></span><span>Buy me a coffee</span></a><a class="button donate" href="/" target="_blank" rel="noopener" data-type="patreon"><span class="icon is-small"><i class="fab fa-patreon"></i></span><span>Patreon</span></a><div class="notification is-danger">You forgot to set the <code>business</code> or <code>currency_code</code> for Paypal. Please set it in <code>_config.yml</code>.</div><a class="button donate" data-type="wechat"><span class="icon is-small"><i class="fab fa-weixin"></i></span><span>Wechat</span><span class="qrcode"><img src="/" alt="Wechat"></span></a></div></div></div><nav class="post-navigation mt-4 level is-mobile"><div class="level-end"><a class="article-nav-next level level-item link-muted" href="/2021/04/27/kaggle_playground_featureengineering_study2/"><span class="level-item">2021 0427 타이타닉 playground EDA 스터디</span><i class="level-item fas fa-chevron-right"></i></a></div></nav><div class="card"><div class="card-content"><h3 class="title is-5">Comments</h3><div class="notification is-danger">You forgot to set the <code>shortname</code> for Disqus. Please set it in <code>_config.yml</code>.</div></div></div></div><div class="column column-left is-4-tablet is-4-desktop is-4-widescreen  order-1"><div class="card widget" data-type="profile"><div class="card-content"><nav class="level"><div class="level-item has-text-centered flex-shrink-1"><div><figure class="image is-128x128 mx-auto mb-2"><img class="avatar" src="/img/avatar.png" alt="Your name"></figure><p class="title is-size-4 is-block" style="line-height:inherit;">Your name</p><p class="is-size-6 is-block">Your title</p><p class="is-size-6 is-flex justify-content-center"><i class="fas fa-map-marker-alt mr-1"></i><span>Your location</span></p></div></div></nav><nav class="level is-mobile"><div class="level-item has-text-centered is-marginless"><div><p class="heading">Posts</p><a href="/archives"><p class="title">15</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Categories</p><a href="/categories"><p class="title">0</p></a></div></div><div class="level-item has-text-centered is-marginless"><div><p class="heading">Tags</p><a href="/tags"><p class="title">0</p></a></div></div></nav><div class="level"><a class="level-item button is-primary is-rounded" href="https://github.com/ppoffice" target="_blank" rel="noopener">Follow</a></div><div class="level is-mobile is-multiline"><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Github" href="https://github.com/ppoffice"><i class="fab fa-github"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Facebook" href="https://facebook.com"><i class="fab fa-facebook"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Twitter" href="https://twitter.com"><i class="fab fa-twitter"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="Dribbble" href="https://dribbble.com"><i class="fab fa-dribbble"></i></a><a class="level-item button is-transparent is-marginless" target="_blank" rel="noopener" title="RSS" href="/"><i class="fas fa-rss"></i></a></div></div></div><!--!--><div class="card widget" data-type="links"><div class="card-content"><div class="menu"><h3 class="menu-label">Links</h3><ul class="menu-list"><li><a class="level is-mobile" href="https://hexo.io" target="_blank" rel="noopener"><span class="level-left"><span class="level-item">Hexo</span></span><span class="level-right"><span class="level-item tag">hexo.io</span></span></a></li><li><a class="level is-mobile" href="https://bulma.io" target="_blank" rel="noopener"><span class="level-left"><span class="level-item">Bulma</span></span><span class="level-right"><span class="level-item tag">bulma.io</span></span></a></li></ul></div></div></div><!--!--><div class="card widget" data-type="recent-posts"><div class="card-content"><h3 class="menu-label">Recents</h3><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-04-27T15:00:00.000Z">2021-04-28</time></p><p class="title"><a href="/2021/04/28/pycaret_modeling/">Pycaret을 사용한 모델링</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-04-26T15:00:00.000Z">2021-04-27</time></p><p class="title"><a href="/2021/04/27/kaggle_playground_featureengineering_study2/">2021 0427 타이타닉 playground EDA 스터디</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-04-16T05:53:04.000Z">2021-04-16</time></p><p class="title"><a href="/2021/04/16/210416%EB%B0%9C%ED%91%9C/">210416발표</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-04-15T08:10:16.000Z">2021-04-15</time></p><p class="title"><a href="/2021/04/15/210415study/">210415study</a></p></div></article><article class="media"><div class="media-content"><p class="date"><time dateTime="2021-04-15T02:11:22.139Z">2021-04-15</time></p><p class="title"><a href="/2021/04/15/Tree_Method%EC%8A%A4%ED%84%B0%EB%94%94_%EB%B2%94%EC%A3%BC%ED%98%95/"> </a></p></div></article></div></div><div class="card widget" data-type="archives"><div class="card-content"><div class="menu"><h3 class="menu-label">Archives</h3><ul class="menu-list"><li><a class="level is-mobile" href="/archives/2021/04/"><span class="level-start"><span class="level-item">April 2021</span></span><span class="level-end"><span class="level-item tag">9</span></span></a></li><li><a class="level is-mobile" href="/archives/2021/03/"><span class="level-start"><span class="level-item">March 2021</span></span><span class="level-end"><span class="level-item tag">6</span></span></a></li></ul></div></div></div><!--!--><div class="card widget" data-type="subscribe-email"><div class="card-content"><div class="menu"><h3 class="menu-label">Subscribe for updates</h3><form action="https://feedburner.google.com/fb/a/mailverify" method="post" target="popupwindow" onsubmit="window.open(&#039;https://feedburner.google.com/fb/a/mailverify?uri=&#039;,&#039;popupwindow&#039;,&#039;scrollbars=yes,width=550,height=520&#039;);return true"><input type="hidden" value="" name="uri"><input type="hidden" name="loc" value="en_US"><div class="field has-addons"><div class="control has-icons-left is-expanded"><input class="input" name="email" type="email" placeholder="Email"><span class="icon is-small is-left"><i class="fas fa-envelope"></i></span></div><div class="control"><input class="button" type="submit" value="Subscribe"></div></div></form></div></div></div><div class="card widget"><div class="card-content"><div class="notification is-danger">You need to set <code>client_id</code> and <code>slot_id</code> to show this AD unit. Please set it in <code>_config.yml</code>.</div></div></div></div><!--!--></div></div></section><footer class="footer"><div class="container"><div class="level"><div class="level-start"><a class="footer-logo is-block mb-2" href="/"><img src="/img/logo.svg" alt="이현정의 블로그" height="28"></a><p class="is-size-7"><span>&copy; 2021 lhj</span>  Powered by <a href="https://hexo.io/" target="_blank" rel="noopener">Hexo</a> &amp; <a href="https://github.com/ppoffice/hexo-theme-icarus" target="_blank" rel="noopener">Icarus</a></p></div><div class="level-end"><div class="field has-addons"><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Creative Commons" href="https://creativecommons.org/"><i class="fab fa-creative-commons"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Attribution 4.0 International" href="https://creativecommons.org/licenses/by/4.0/"><i class="fab fa-creative-commons-by"></i></a></p><p class="control"><a class="button is-transparent is-large" target="_blank" rel="noopener" title="Download on GitHub" href="https://github.com/ppoffice/hexo-theme-icarus"><i class="fab fa-github"></i></a></p></div></div></div></div></footer><script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script><script src="https://cdn.jsdelivr.net/npm/moment@2.22.2/min/moment-with-locales.min.js"></script><script src="https://cdn.jsdelivr.net/npm/clipboard@2.0.4/dist/clipboard.min.js" defer></script><script>moment.locale("en");</script><script>var IcarusThemeSettings = {
+            article: {
+                highlight: {
+                    clipboard: true,
+                    fold: 'unfolded'
+                }
+            }
+        };</script><script src="/js/column.js"></script><script src="/js/animation.js"></script><a id="back-to-top" title="Back to top" href="javascript:;"><i class="fas fa-chevron-up"></i></a><script src="/js/back_to_top.js" defer></script><!--!--><!--!--><!--!--><script src="https://cdn.jsdelivr.net/npm/cookieconsent@3.1.1/build/cookieconsent.min.js" defer></script><script>window.addEventListener("load", () => {
+      window.cookieconsent.initialise({
+        type: "info",
+        theme: "edgeless",
+        static: false,
+        position: "bottom-left",
+        content: {
+          message: "This website uses cookies to improve your experience.",
+          dismiss: "Got it!",
+          allow: "Allow cookies",
+          deny: "Decline",
+          link: "Learn more",
+          policy: "Cookie Policy",
+          href: "https://www.cookiesandyou.com/",
+        },
+        palette: {
+          popup: {
+            background: "#edeff5",
+            text: "#838391"
+          },
+          button: {
+            background: "#4b81e8"
+          },
+        },
+      });
+    });</script><script src="https://cdn.jsdelivr.net/npm/lightgallery@1.6.8/dist/js/lightgallery.min.js" defer></script><script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js" defer></script><script>window.addEventListener("load", () => {
+            if (typeof $.fn.lightGallery === 'function') {
+                $('.article').lightGallery({ selector: '.gallery-item' });
+            }
+            if (typeof $.fn.justifiedGallery === 'function') {
+                if ($('.justified-gallery > p > .gallery-item').length) {
+                    $('.justified-gallery > p > .gallery-item').unwrap();
+                }
+                $('.justified-gallery').justifiedGallery();
+            }
+        });</script><!--!--><!--!--><!--!--><!--!--><!--!--><script src="/js/main.js" defer></script><div class="searchbox"><div class="searchbox-container"><div class="searchbox-header"><div class="searchbox-input-container"><input class="searchbox-input" type="text" placeholder="Type something..."></div><a class="searchbox-close" href="javascript:;">×</a></div><div class="searchbox-body"></div></div></div><script src="/js/insight.js" defer></script><script>document.addEventListener('DOMContentLoaded', function () {
+            loadInsight({"contentUrl":"/content.json"}, {"hint":"Type something...","untitled":"(Untitled)","posts":"Posts","pages":"Pages","categories":"Categories","tags":"Tags"});
+        });</script></body></html>
